@@ -169,12 +169,14 @@ export function ChannelInfoDialog({
                           key={m.id}
                           className="flex items-center gap-3 rounded-md p-2 hover:bg-muted"
                         >
-                          <AvatarWithPresence
-                            userId={m.user.id}
-                            src={m.user.image ?? undefined}
-                            fallback={getInitials(m.user.name)}
-                            size="sm"
-                          />
+                          <AvatarWithPresence size="sm">
+                            <Avatar className="h-7 w-7">
+                              <AvatarImage src={m.user.image ?? undefined} />
+                              <AvatarFallback>
+                                {getInitials(m.user.name)}
+                              </AvatarFallback>
+                            </Avatar>
+                          </AvatarWithPresence>
                           <div className="flex min-w-0 flex-1 flex-col">
                             <span className="truncate text-sm font-medium">
                               {m.user.name}
