@@ -29,9 +29,6 @@ jobs:
           # Add Turso CLI to PATH for this step
           export PATH="$HOME/.turso:$PATH"
 
-          # Authenticate with Turso
-          turso auth login --token ${{ secrets.DATABASE_AUTH_TOKEN }}
-
           DB_NAME="${{ secrets.TURSO_DB_NAME }}"
 
           # Loop through and apply all migration SQL files in order
@@ -40,6 +37,6 @@ jobs:
             turso db shell "$DB_NAME" < "$migration_file"
           done
         env:
-          # Expose the token and URL to the step for the turso CLI
-          TURSO_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+          # TURSO_API_TOKEN is used by the CLI for authentication in CI
+          TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
           TURSO_DATABASE_URL: ${{ secrets.DATABASE_URL }}
