@@ -23,7 +23,7 @@ jobs:
           echo "$HOME/.turso/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --ignore-scripts
 
       - name: Apply Turso database migrations
         run: |
