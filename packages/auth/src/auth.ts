@@ -46,11 +46,8 @@ export const ownerRole = ac.newRole({
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
-  trustedOrigins: [
-    "http://localhost:3000",
-    `${process.env.NEXT_PUBLIC_APP_URL}`,
-  ],
+  baseURL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+  trustedOrigins: [`${process.env.NEXT_PUBLIC_APP_URL}`],
   database: prismaAdapter(db, {
     provider: "sqlite",
   }),
@@ -83,21 +80,21 @@ export const auth = betterAuth({
         // For now, log the invitation details
         const inviteLink = `${process.env.BETTER_AUTH_URL ?? "http://localhost:3000"}/accept-invitation/${data.id}`;
         console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         );
         console.log("📧 ORGANIZATION INVITATION");
         console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         );
         console.log(`To: ${data.email}`);
         console.log(`Organization: ${data.organization.name}`);
         console.log(
-          `Invited by: ${data.inviter.user.name} (${data.inviter.user.email})`,
+          `Invited by: ${data.inviter.user.name} (${data.inviter.user.email})`
         );
         console.log(`Role: ${data.role}`);
         console.log(`Invitation Link: ${inviteLink}`);
         console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         );
       },
     }),
