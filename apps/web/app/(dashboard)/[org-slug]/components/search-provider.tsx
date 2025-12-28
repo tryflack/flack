@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { SearchCommand } from "./search-command";
 
 interface SearchContextValue {
@@ -33,7 +40,9 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   }, [toggleSearch]);
 
   return (
-    <SearchContext.Provider value={{ open, openSearch, closeSearch, toggleSearch }}>
+    <SearchContext.Provider
+      value={{ open, openSearch, closeSearch, toggleSearch }}
+    >
       {children}
       <SearchCommand open={open} onOpenChange={setOpen} />
     </SearchContext.Provider>
@@ -47,4 +56,3 @@ export function useSearchContext() {
   }
   return context;
 }
-

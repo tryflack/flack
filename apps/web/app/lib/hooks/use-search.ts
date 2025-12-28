@@ -94,7 +94,8 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
   // Computed states
   const isEmpty = !debouncedQuery;
-  const hasResults = messages.length > 0 || channels.length > 0 || members.length > 0;
+  const hasResults =
+    messages.length > 0 || channels.length > 0 || members.length > 0;
 
   return {
     query,
@@ -112,4 +113,3 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
 // Re-export types for convenience
 export type { SearchResultMessage, SearchResultChannel, SearchResultMember };
-

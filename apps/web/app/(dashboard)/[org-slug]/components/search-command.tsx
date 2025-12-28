@@ -96,8 +96,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       // Check if we already have a DM with this user
       const existingDm = conversations.find(
         (c) =>
-          c.type === "dm" &&
-          c.participants.some((p) => p.userId === userId),
+          c.type === "dm" && c.participants.some((p) => p.userId === userId),
       );
 
       if (existingDm) {
@@ -247,7 +246,9 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                 </CommandItem>
               ))}
             </CommandGroup>
-            {(members.length > 0 || messages.length > 0) && <CommandSeparator />}
+            {(members.length > 0 || messages.length > 0) && (
+              <CommandSeparator />
+            )}
           </>
         )}
 
@@ -276,7 +277,9 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                   </div>
                   {member.role !== "member" && (
                     <Badge
-                      variant={member.role === "owner" ? "default" : "secondary"}
+                      variant={
+                        member.role === "owner" ? "default" : "secondary"
+                      }
                       className="text-xs capitalize"
                     >
                       {member.role}
@@ -382,4 +385,3 @@ export function useSearchCommand() {
     setOpen,
   };
 }
-
