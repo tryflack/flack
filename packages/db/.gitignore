@@ -7,3 +7,5 @@ node_modules
 # dev.db and prod.db
 dev.db
 prod.db
+
+*.db
