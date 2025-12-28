@@ -21,7 +21,7 @@ export function MessageInput({
   const [content, setContent] = useState("");
   const [isSending, setIsSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+  const typingTimeoutRef = useRef<NodeJS.Timeout>(null);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -38,7 +38,7 @@ export function MessageInput({
         onTyping(false);
       }, 3000);
     },
-    [onTyping],
+    [onTyping]
   );
 
   const handleSend = useCallback(async () => {
@@ -72,7 +72,7 @@ export function MessageInput({
         handleSend();
       }
     },
-    [handleSend],
+    [handleSend]
   );
 
   // Auto-resize textarea

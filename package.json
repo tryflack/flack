@@ -6,7 +6,12 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo run check-types",
+    "db:generate": "turbo run db:generate",
+    "db:migrate": "turbo run db:migrate",
+    "db:deploy": "turbo run db:deploy",
+    "db:studio": "turbo run db:studio",
+    "deploy:partykit": "turbo run deploy:partykit --filter=@flack/realtime"
   },
   "devDependencies": {
     "prettier": "^3.7.4",
@@ -22,8 +27,6 @@
     "packages/*"
   ],
   "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^7.2.0",
-    "better-sqlite3": "^12.5.0",
     "next-themes": "^0.4.6"
   }
 }

@@ -123,7 +123,7 @@ function ChannelSection() {
                             isActive={isActive}
                             tooltip={channel.name}
                             className={cn(
-                              hasUnread && !isActive && "font-medium",
+                              hasUnread && !isActive && "font-medium"
                             )}
                             onClick={() => navigateToChannel(channel.slug)}
                           >
@@ -131,14 +131,14 @@ function ChannelSection() {
                               <Lock
                                 className={cn(
                                   "h-4 w-4",
-                                  hasUnread && !isActive && "text-foreground",
+                                  hasUnread && !isActive && "text-foreground"
                                 )}
                               />
                             ) : (
                               <Hash
                                 className={cn(
                                   "h-4 w-4",
-                                  hasUnread && !isActive && "text-foreground",
+                                  hasUnread && !isActive && "text-foreground"
                                 )}
                               />
                             )}
@@ -292,7 +292,7 @@ function DirectMessagesSection() {
                           <MessageSquare
                             className={cn(
                               "h-4 w-4",
-                              hasUnread && !isActive && "text-foreground",
+                              hasUnread && !isActive && "text-foreground"
                             )}
                           />
                         )}
@@ -318,12 +318,35 @@ function DirectMessagesSection() {
   );
 }
 
+function OrgLogo({ organization }: { organization: Organization }) {
+  const logoDomain = organization.domain ?? `${organization.slug}.com`;
+  const logoDevKey = process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY;
+
+  if (logoDevKey) {
+    return (
+      <Image
+        src={`https://img.logo.dev/${logoDomain}?token=${logoDevKey}`}
+        alt={organization.name}
+        width={32}
+        height={32}
+      />
+    );
+  }
+
+  // Fallback: show initials avatar
+  return (
+    <Avatar className="h-8 w-8 rounded-lg">
+      <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-sm font-medium">
+        {getInitials(organization.name)}
+      </AvatarFallback>
+    </Avatar>
+  );
+}
+
 export function OrganizationSidebar({
   organization,
   ...props
 }: OrganizationSidebarProps) {
-  const logoDomain = organization.domain ?? `${organization.slug}.com`;
-
   return (
     <Sidebar variant="floating" {...props}>
       <SidebarHeader>
@@ -332,12 +355,7 @@ export function OrganizationSidebar({
             <SidebarMenuButton size="lg" asChild>
               <a href={`/${organization.slug}`}>
                 <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
-                  <Image
-                    src={`https://img.logo.dev/${logoDomain}?token=${process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY}`}
-                    alt={organization.name}
-                    width={32}
-                    height={32}
-                  />
+                  <OrgLogo organization={organization} />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">

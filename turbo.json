@@ -29,6 +29,13 @@
     },
     "db:studio": {
       "cache": false
+    },
+    "deploy": {
+      "dependsOn": ["build"],
+      "cache": false
+    },
+    "deploy:partykit": {
+      "cache": false
     }
   }
 }

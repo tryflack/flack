@@ -1,13 +1,13 @@
 import { config } from "dotenv";
 import { z } from "zod";
 
-// Load .env file before validating
 config();
 
 const envSchema = z.object({
-  TURSO_DATABASE_URL: z.string().min(1, "TURSO_DATABASE_URL is required"),
-  TURSO_AUTH_TOKEN: z.string().min(1, "TURSO_AUTH_TOKEN is required"),
-  LOCAL_DATABASE_URL: z.string().min(1, "LOCAL_DATABASE_URL is required"),
+  DATABASE_URL: z.string().default("file:./dev.db"),
+  DATABASE_AUTH_TOKEN: z.string().optional(),
+  // Local SQLite URL for Prisma CLI migrations (required when using Turso)
+  LOCAL_DATABASE_URL: z.string().optional(),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),

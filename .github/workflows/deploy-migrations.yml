@@ -1,0 +1,43 @@
+name: Deploy Prisma Migrations to Turso
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Turso CLI
+        run: |
+          curl -sSfL get.tur.so | bash
+          echo "$HOME/.turso/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Apply Turso database migrations
+        run: |
+          # The Turso CLI requires a configuration file for authentication in a CI environment
+          turso auth login --token ${{ secrets.DATABASE_AUTH_TOKEN }}
+
+          DB_NAME="${{ secrets.TURSO_DB_NAME }}"
+
+          # Loop through and apply all migration SQL files in order
+          for migration_file in prisma/migrations/*/migration.sql; do
+            echo "Applying migration: $migration_file"
+            turso db shell "$DB_NAME" < "$migration_file"
+          done
+        env:
+          # Expose the token and URL to the step for the turso CLI
+          TURSO_AUTH_TOKEN: ${{ secrets.DATABASE_AUTH_TOKEN }}
+          TURSO_DATABASE_URL: ${{ secrets.DATABASE_URL }}

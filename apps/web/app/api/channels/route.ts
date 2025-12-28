@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (!membership) {
     return NextResponse.json(
       { error: "Not a member of this organization" },
-      { status: 403 },
+      { status: 403 }
     );
   }
 
@@ -129,7 +129,7 @@ export async function GET(req: NextRequest) {
         unreadCount,
         createdAt: channel.createdAt,
       };
-    }),
+    })
   );
 
   return NextResponse.json({ channels: transformedChannels });

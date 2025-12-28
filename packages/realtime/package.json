@@ -13,7 +13,9 @@
   },
   "scripts": {
     "dev": "partykit dev",
-    "deploy": "partykit deploy"
+    "deploy": "partykit deploy",
+    "deploy:partykit": "partykit deploy",
+    "deploy:cloudflare": "partykit deploy --domain $PARTYKIT_DOMAIN"
   },
   "dependencies": {
     "partysocket": "^1.0.2"
