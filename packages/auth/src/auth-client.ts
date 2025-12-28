@@ -3,10 +3,8 @@ import {
   emailOTPClient,
   adminClient,
   organizationClient,
-  inferAdditionalFields,
 } from "better-auth/client/plugins";
 import { createAccessControl } from "better-auth/plugins/access";
-import type { auth } from "./auth";
 
 const BEARER_TOKEN_KEY = "flack_bearer_token";
 

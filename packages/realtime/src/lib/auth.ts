@@ -6,15 +6,11 @@ import type { ConnectionState } from "./types.js";
  */
 export async function validateToken(
   token: string,
-  authUrl: string,
+  authUrl: string
 ): Promise<ConnectionState | null> {
   // Remove trailing slash if present
   const baseUrl = authUrl.endsWith("/") ? authUrl.slice(0, -1) : authUrl;
   const url = `${baseUrl}/api/auth/validate-session`;
-
-  console.log("[PartyKit Auth] BETTER_AUTH_URL:", authUrl);
-  console.log("[PartyKit Auth] Validating against:", url);
-  console.log("[PartyKit Auth] Token prefix:", token?.substring(0, 20));
 
   try {
     const response = await fetch(url, {
@@ -24,13 +20,7 @@ export async function validateToken(
       },
     });
 
-    console.log("[PartyKit Auth] Response status:", response.status);
-
-    if (!response.ok) {
-      const text = await response.text();
-      console.log("[PartyKit Auth] Error body:", text);
-      return null;
-    }
+    if (!response.ok) return null;
 
     const data = (await response.json()) as {
       valid: boolean;
@@ -38,8 +28,6 @@ export async function validateToken(
       userName: string;
       userImage: string | null;
     };
-
-    console.log("[PartyKit Auth] Valid:", data.valid);
 
     if (!data.valid) return null;
 
@@ -49,8 +37,7 @@ export async function validateToken(
       userImage: data.userImage,
       authenticated: true,
     };
-  } catch (error) {
-    console.error("[PartyKit Auth] Fetch error:", error);
+  } catch {
     return null;
   }
 }
