@@ -110,7 +110,7 @@ type BroadcastPayload =
 export async function broadcastToRoom(
   partyType: "channel" | "conversation" | "presence",
   roomId: string,
-  payload: BroadcastPayload
+  payload: BroadcastPayload,
 ): Promise<boolean> {
   try {
     const response = await fetch(
@@ -119,12 +119,12 @@ export async function broadcastToRoom(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     if (!response.ok) {
       console.error(
-        `Failed to broadcast to PartyKit: ${response.status} ${response.statusText}`
+        `Failed to broadcast to PartyKit: ${response.status} ${response.statusText}`,
       );
       return false;
     }
@@ -145,7 +145,7 @@ export async function broadcastNewMessage(
   message: BroadcastNewMessagePayload["message"],
   channelId: string | null,
   conversationId: string | null,
-  organizationId?: string
+  organizationId?: string,
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -183,7 +183,7 @@ export async function broadcastMessageEdit(
   content: string,
   updatedAt: Date,
   channelId: string | null,
-  conversationId: string | null
+  conversationId: string | null,
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -207,7 +207,7 @@ export async function broadcastMessageEdit(
 export async function broadcastMessageDelete(
   messageId: string,
   channelId: string | null,
-  conversationId: string | null
+  conversationId: string | null,
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -235,7 +235,7 @@ export async function broadcastReactionAdd(
     userName: string;
   },
   channelId: string | null,
-  conversationId: string | null
+  conversationId: string | null,
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -262,7 +262,7 @@ export async function broadcastReactionRemove(
   messageId: string,
   reactionId: string,
   channelId: string | null,
-  conversationId: string | null
+  conversationId: string | null,
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
