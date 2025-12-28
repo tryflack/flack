@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -101,7 +101,7 @@ export async function GET(req: NextRequest) {
   if (!membership) {
     return NextResponse.json(
       { error: "Not a member of this organization" },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
 async function searchMessages(
   organizationId: string,
   userId: string,
-  query: string
+  query: string,
 ): Promise<SearchResultMessage[]> {
   // Get channels user has access to
   const accessibleChannelIds = await db.channel
@@ -195,7 +195,7 @@ async function searchMessages(
 async function searchChannels(
   organizationId: string,
   userId: string,
-  query: string
+  query: string,
 ): Promise<SearchResultChannel[]> {
   const channels = await db.channel.findMany({
     where: {
@@ -233,7 +233,7 @@ async function searchChannels(
 
 async function searchMembers(
   organizationId: string,
-  query: string
+  query: string,
 ): Promise<SearchResultMember[]> {
   const members = await db.member.findMany({
     where: {

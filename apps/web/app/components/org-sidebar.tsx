@@ -132,7 +132,7 @@ function ChannelSection() {
                             isActive={isActive}
                             tooltip={channel.name}
                             className={cn(
-                              hasUnread && !isActive && "font-medium"
+                              hasUnread && !isActive && "font-medium",
                             )}
                             onClick={() => navigateToChannel(channel.slug)}
                           >
@@ -140,14 +140,14 @@ function ChannelSection() {
                               <Lock
                                 className={cn(
                                   "h-4 w-4",
-                                  hasUnread && !isActive && "text-foreground"
+                                  hasUnread && !isActive && "text-foreground",
                                 )}
                               />
                             ) : (
                               <Hash
                                 className={cn(
                                   "h-4 w-4",
-                                  hasUnread && !isActive && "text-foreground"
+                                  hasUnread && !isActive && "text-foreground",
                                 )}
                               />
                             )}
@@ -301,7 +301,7 @@ function DirectMessagesSection() {
                           <MessageSquare
                             className={cn(
                               "h-4 w-4",
-                              hasUnread && !isActive && "text-foreground"
+                              hasUnread && !isActive && "text-foreground",
                             )}
                           />
                         )}
