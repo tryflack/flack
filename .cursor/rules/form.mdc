@@ -1,0 +1,174 @@
+---
+description: When implementing, or adding forms
+alwaysApply: false
+---
+## Form Submission with Navigation
+
+When a form submission triggers navigation (e.g., `router.push`), use React's `useTransition` to track the pending navigation state. This provides a seamless loading experience during the transition.
+
+### Pattern
+
+```tsx
+import { useTransition } from "react"
+import { useRouter } from "next/navigation"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Spinner } from "@truxt/ui/components/spinner"
+import { Button } from "@truxt/ui/components/button"
+
+export function MyForm() {
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { /* ... */ },
+  })
+
+  const { isSubmitting } = form.formState
+
+  const onSubmit = async (formData: FormValues) => {
+    await someApiCall(formData, {
+      onSuccess: () => {
+        toast.success("Success!")
+        // Wrap navigation in startTransition
+        startTransition(() => {
+          router.push('/destination')
+        })
+      },
+      onError: (ctx) => {
+        toast.error(ctx.error.message)
+      },
+    })
+  }
+
+  return (
+   <div>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+        <FieldGroup>
+          <Field>
+          <FieldSet>
+            <FieldLegend>Payment Method</FieldLegend>
+            <FieldDescription>
+              All transactions are secure and encrypted
+            </FieldDescription>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="card-name">Name on Card</FieldLabel>
+                <Input id="card-name" placeholder="Evil Rabbit" required />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="card-number">Card Number</FieldLabel>
+                <Input id="card-number" placeholder="1234 5678 9012 3456" required />
+                <FieldDescription>Enter your 16-digit card number</FieldDescription>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+          <FieldSeparator />
+          <FieldSet>
+            <FieldLegend>Billing Address</FieldLegend>
+            <FieldGroup>
+              <Field orientation="horizontal">
+                <Checkbox id="same-as-shipping" defaultChecked />
+                <FieldLabel htmlFor="same-as-shipping" className="font-normal">
+                  Same as shipping address
+                </FieldLabel>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+            <Button type="submit" disabled={isPending || isSubmitting}>
+              {isPending || isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Spinner /> Submitting...
+                </span>
+              ) : (
+                "Submit"
+              )}
+            </Button>
+          </Field>
+        </FieldGroup>
+      </form>
+    </div>
+  )
+}
+```
+
+### Key Points
+
+1. **Import `useTransition`** from React
+2. **Destructure `[isPending, startTransition]`** from `useTransition()`
+3. **Wrap `router.push()` calls** in `startTransition()` callback
+4. **Combine `isPending` with `isSubmitting`** for button disabled state and loading indicator
+5. **Use `<Spinner />` component** to show loading state
+
+---
+
+## Field Components
+
+Example form:
+```tsx
+import { Button } from "@truxt/ui/components/button"
+import { Checkbox } from "@truxt/ui/components/checkbox"
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from "@truxt/ui/components/field"
+import { Input } from "@truxt/ui/components/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@truxt/ui/components/select"
+import { Textarea } from "@truxt/ui/components/textarea"
+
+export function FieldDemo() {
+  return (
+    <div>
+      <form>
+        <FieldGroup>
+          <FieldSet>
+            <FieldLegend>Payment Method</FieldLegend>
+            <FieldDescription>
+              All transactions are secure and encrypted
+            </FieldDescription>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="card-name">Name on Card</FieldLabel>
+                <Input id="card-name" placeholder="Evil Rabbit" required />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="card-number">Card Number</FieldLabel>
+                <Input id="card-number" placeholder="1234 5678 9012 3456" required />
+                <FieldDescription>Enter your 16-digit card number</FieldDescription>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+          <FieldSeparator />
+          <FieldSet>
+            <FieldLegend>Billing Address</FieldLegend>
+            <FieldGroup>
+              <Field orientation="horizontal">
+                <Checkbox id="same-as-shipping" defaultChecked />
+                <FieldLabel htmlFor="same-as-shipping" className="font-normal">
+                  Same as shipping address
+                </FieldLabel>
+              </Field>
+            </FieldGroup>
+          </FieldSet>
+          <Field orientation="horizontal">
+            <Button type="submit">Submit</Button>
+            <Button variant="outline" type="button">Cancel</Button>
+          </Field>
+        </FieldGroup>
+      </form>
+    </div>
+  )
+}
+```

@@ -1,0 +1,274 @@
+---
+description: Chat architecture patterns for channels, conversations, and messages
+globs: "**/actions/channels/**,**/actions/conversations/**,**/actions/messages/**,**/api/channels/**,**/api/conversations/**,**/api/messages/**,**/hooks/use-channel*,**/hooks/use-conversation*,**/hooks/use-messages*"
+---
+
+# Messaging Architecture
+
+## Overview
+
+Flack uses a unified messaging system with three room types:
+- **Channels** - Public or private rooms within an organization
+- **DMs** - 1:1 conversations between two org members
+- **Group DMs** - Multi-participant conversations (2+ people)
+
+All messages are scoped to an organization via `organizationId`.
+
+## Data Model
+
+### Key Entities
+
+| Entity | Purpose |
+|--------|---------|
+| `Channel` | Named room with membership, can be public/private |
+| `ChannelMember` | User membership in a channel with role |
+| `Conversation` | DM or Group DM container |
+| `ConversationParticipant` | User participation with read tracking |
+| `Message` | Content with threading via `parentId` |
+| `Reaction` | Emoji reactions on messages |
+| `Attachment` | File attachments on messages |
+
+### Message Routing
+
+Messages belong to EITHER a channel OR a conversation, never both:
+
+```ts
+// Message always has exactly one of these set
+interface Message {
+  channelId: string | null;      // XOR
+  conversationId: string | null; // XOR
+  parentId: string | null;       // For threading
+}
+```
+
+## Server Actions
+
+### Location
+
+All messaging server actions are in `apps/web/app/actions/`:
+
+```
+actions/
+  channels/
+    create-channel.ts
+    update-channel.ts
+    delete-channel.ts
+    join-channel.ts
+    leave-channel.ts
+  conversations/
+    create-dm.ts
+    create-group-dm.ts
+    add-participant.ts
+    remove-participant.ts
+    update-conversation.ts
+  messages/
+    send-message.ts
+    edit-message.ts
+    delete-message.ts
+    add-reaction.ts
+    remove-reaction.ts
+```
+
+### Action Pattern
+
+All actions use `orgActionClient` which:
+1. Validates the user is authenticated
+2. Validates the user has an active organization
+3. Validates the user is a member of that organization
+
+```ts
+"use server";
+
+import { z } from "zod";
+import db from "@flack/db";
+import { orgActionClient, ActionError } from "@/lib/safe-action";
+
+const sendMessageSchema = z.object({
+  content: z.string().min(1).max(4000),
+  channelId: z.string().optional(),
+  conversationId: z.string().optional(),
+  parentId: z.string().optional(),
+});
+
+export const sendMessage = orgActionClient
+  .metadata({ actionName: "sendMessage" })
+  .schema(sendMessageSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const { userId, organizationId } = ctx;
+    
+    // Validate access to channel/conversation
+    // Create message
+    // Broadcast via PartyKit
+    
+    return { message };
+  });
+```
+
+## API Routes
+
+### Location
+
+Read endpoints for SWR are in `apps/web/app/api/`:
+
+```
+api/
+  channels/
+    route.ts              # GET - list channels
+    [channelId]/
+      route.ts            # GET - channel details
+  conversations/
+    route.ts              # GET - list conversations
+    [conversationId]/
+      route.ts            # GET - conversation details
+  messages/
+    route.ts              # GET - paginated messages
+    [messageId]/
+      route.ts            # GET - single message with thread preview
+```
+
+### Pagination Pattern
+
+Messages use cursor-based pagination for infinite scroll:
+
+```ts
+// Request
+GET /api/messages?channelId=xxx&limit=50&cursor=2024-01-01T00:00:00Z
+
+// Response
+{
+  messages: Message[],
+  nextCursor: string | null,
+  hasMore: boolean
+}
+```
+
+## SWR Hooks
+
+### Available Hooks
+
+| Hook | Purpose |
+|------|---------|
+| `useChannels()` | List channels with mutations |
+| `useChannel(id)` | Single channel with members |
+| `useConversations(type?)` | List DMs/Group DMs |
+| `useConversation(id)` | Single conversation |
+| `useMessages(roomId, roomType)` | Paginated messages with mutations |
+| `useThread(parentId)` | Thread replies |
+
+### Usage Pattern
+
+```tsx
+function ChannelView({ channelId }: { channelId: string }) {
+  const { messages, isLoading, hasMore, loadMore, send, react } = useMessages(
+    channelId,
+    "channel"
+  );
+  
+  const handleSend = async (content: string) => {
+    const result = await send(content);
+    if (result?.serverError) {
+      toast.error(result.serverError);
+    }
+  };
+  
+  return (
+    <MessageList
+      messages={messages}
+      onLoadMore={loadMore}
+      hasMore={hasMore}
+    />
+  );
+}
+```
+
+## Access Control
+
+### Channel Access
+
+- **Public channels**: All org members can view and join
+- **Private channels**: Only members can view, requires invitation to join
+
+```ts
+// Check access in API routes/actions
+const channel = await db.channel.findFirst({
+  where: {
+    id: channelId,
+    organizationId,
+    OR: [
+      { isPrivate: false },
+      { isPrivate: true, members: { some: { userId } } },
+    ],
+  },
+});
+```
+
+### Conversation Access
+
+- Only participants can access a conversation
+- DMs are always between exactly 2 people
+- Group DMs have 3+ participants
+
+```ts
+const conversation = await db.conversation.findFirst({
+  where: {
+    id: conversationId,
+    organizationId,
+    participants: { some: { userId } },
+  },
+});
+```
+
+## Threading
+
+Messages support threading via self-referential `parentId`:
+
+```ts
+// Get thread replies
+const replies = await db.message.findMany({
+  where: {
+    parentId: messageId,
+    deletedAt: null,
+  },
+  orderBy: { createdAt: "asc" },
+});
+
+// Send a reply
+await db.message.create({
+  data: {
+    content,
+    parentId: parentMessageId,
+    channelId: parentMessage.channelId,
+    organizationId,
+    authorId: userId,
+  },
+});
+```
+
+## Soft Deletes
+
+Messages use soft deletes for "This message was deleted" UX:
+
+```ts
+// Delete a message
+await db.message.update({
+  where: { id: messageId },
+  data: {
+    deletedAt: new Date(),
+    content: "", // Clear content for privacy
+  },
+});
+
+// Query excludes deleted
+const messages = await db.message.findMany({
+  where: { deletedAt: null },
+});
+```
+
+## Best Practices
+
+1. **Always validate org membership** - Use `orgActionClient` for all messaging actions
+2. **Check room access** - Verify channel membership or conversation participation
+3. **Use soft deletes** - Set `deletedAt` instead of hard deleting
+4. **Broadcast changes** - Notify PartyKit after mutations for real-time updates
+5. **Paginate messages** - Use cursor-based pagination for large rooms
+6. **Handle threading** - Support `parentId` for thread replies

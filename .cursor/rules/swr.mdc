@@ -1,0 +1,228 @@
+---
+description: Data fetching and mutation architecture
+globs: **/*.ts,**/*.tsx
+---
+
+# Data Fetching Architecture
+
+## Core Principles
+
+1. **Use Server Actions** for all data mutations via `next-safe-action`
+2. **Use SWR** for data fetching with custom hooks
+3. **Use PartyKit** for real-time updates that merge into SWR cache
+4. **Return mutations from hooks** - no separate mutation hooks or selectors
+
+## Pattern: SWR Hook with Mutations
+
+```tsx
+// lib/hooks/use-channels.ts
+import useSWR from "swr";
+import { createChannel, deleteChannel } from "@/actions/channels";
+
+export function useChannels(organizationId: string) {
+  const { data, error, isLoading, mutate } = useSWR(
+    `/api/channels?organizationId=${organizationId}`,
+    fetcher
+  );
+
+  // Wrap server actions for optimistic updates
+  const handleCreateChannel = async (input: CreateChannelInput) => {
+    const result = await createChannel(input);
+    if (result?.data?.success) {
+      mutate(); // Revalidate cache
+    }
+    return result;
+  };
+
+  const handleDeleteChannel = async (id: string) => {
+    // Optimistic update
+    mutate(
+      (current) => current?.filter((c) => c.id !== id),
+      { revalidate: false }
+    );
+    
+    const result = await deleteChannel({ id });
+    if (!result?.data?.success) {
+      mutate(); // Rollback on failure
+    }
+    return result;
+  };
+
+  return {
+    channels: data?.channels ?? [],
+    isLoading,
+    error,
+    createChannel: handleCreateChannel,
+    deleteChannel: handleDeleteChannel,
+  };
+}
+```
+
+## API Route Pattern (for SWR fetching)
+
+```tsx
+// app/api/channels/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@flack/auth";
+import { headers } from "next/headers";
+import { db } from "@flack/db";
+
+export async function GET(req: NextRequest) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+  
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const organizationId = searchParams.get("organizationId");
+
+  const channels = await db.channel.findMany({
+    where: { organizationId },
+    orderBy: { name: "asc" },
+  });
+
+  return NextResponse.json({ channels });
+}
+```
+
+## Hybrid Pattern: SWR + PartyKit
+
+For real-time data like messages, combine SWR for initial fetch with PartyKit for live updates:
+
+```tsx
+// lib/hooks/use-messages.ts
+import useSWRInfinite from "swr/infinite";
+
+export function useMessages(roomType: "channel" | "conversation", roomId: string) {
+  const getKey = (pageIndex: number, previousPageData: Message[] | null) => {
+    if (previousPageData && !previousPageData.length) return null;
+    const cursor = previousPageData?.[previousPageData.length - 1]?.id;
+    return `/api/messages?${roomType}Id=${roomId}${cursor ? `&cursor=${cursor}` : ""}`;
+  };
+
+  const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite(
+    getKey,
+    fetcher,
+    { revalidateFirstPage: false }
+  );
+
+  const messages = data?.flat() ?? [];
+  const hasMore = data?.[data.length - 1]?.length === PAGE_SIZE;
+
+  return {
+    messages,
+    isLoading,
+    error,
+    loadMore: () => setSize(size + 1),
+    hasMore,
+    mutate,
+  };
+}
+
+// Companion hook for real-time updates
+// lib/hooks/use-partykit-messages.ts
+import { useEffect } from "react";
+import { useSWRConfig } from "swr";
+import PartySocket from "partysocket";
+
+export function usePartyKitMessages(roomType: "channel" | "conversation", roomId: string) {
+  const { mutate } = useSWRConfig();
+
+  useEffect(() => {
+    const socket = new PartySocket({
+      host: process.env.NEXT_PUBLIC_PARTYKIT_HOST!,
+      room: `${roomType}:${roomId}`,
+    });
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      
+      if (message.type === "message:new") {
+        // Merge new message into SWR cache without revalidation
+        mutate(
+          (key) => typeof key === "string" && key.startsWith(`/api/messages?${roomType}Id=${roomId}`),
+          (pages: Message[][] = []) => {
+            const [firstPage = [], ...rest] = pages;
+            return [[message.payload, ...firstPage], ...rest];
+          },
+          { revalidate: false }
+        );
+      }
+    };
+
+    return () => socket.close();
+  }, [roomType, roomId, mutate]);
+}
+```
+
+## Usage in Components
+
+```tsx
+function ChannelView({ channelId }: { channelId: string }) {
+  const { messages, isLoading, loadMore, hasMore } = useMessages("channel", channelId);
+  
+  // Subscribe to real-time updates
+  usePartyKitMessages("channel", channelId);
+
+  if (isLoading) return <Skeleton />;
+
+  return (
+    <div className="flex flex-col-reverse">
+      {messages.map((message) => (
+        <MessageItem key={message.id} message={message} />
+      ))}
+      {hasMore && <LoadMoreButton onClick={loadMore} />}
+    </div>
+  );
+}
+```
+
+## Server Action Pattern
+
+```tsx
+// actions/channels/create-channel.ts
+"use server";
+
+import { z } from "zod";
+import { authActionClient } from "@/app/lib/safe-action";
+import { db } from "@flack/db";
+
+const createChannelSchema = z.object({
+  name: z.string().min(1).max(80),
+  description: z.string().max(250).optional(),
+  isPrivate: z.boolean().default(false),
+});
+
+export const createChannel = authActionClient
+  .schema(createChannelSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    const { user, activeOrganizationId } = ctx;
+
+    const channel = await db.channel.create({
+      data: {
+        organizationId: activeOrganizationId,
+        createdById: user.id,
+        name: parsedInput.name,
+        slug: slugify(parsedInput.name),
+        description: parsedInput.description,
+        isPrivate: parsedInput.isPrivate,
+      },
+    });
+
+    return { success: true, channel };
+  });
+```
+
+## Rules
+
+1. **Use server actions for mutations** - validated with Zod, authorized via `authActionClient`
+2. **Use API routes for reads** - SWR fetches from `/api/*` endpoints
+3. **Always return mutations from SWR hooks** - keeps related logic together
+4. **Use `mutate()` after mutations** to revalidate cache
+5. **For real-time data, use PartyKit** - merge updates into SWR cache with `{ revalidate: false }`
+6. **Handle auth in API routes** - check session server-side with Better Auth
+7. **Return consistent response shapes** - `{ success: boolean, data?: T, error?: string }`
+8. **Optimistic updates for better UX** - update cache immediately, rollback on failure

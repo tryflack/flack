@@ -1,0 +1,357 @@
+---
+description: Real-time patterns with PartyKit for WebSocket connections
+globs: "**/packages/realtime/**,**/hooks/use-partykit*,**/parties/**"
+---
+
+# PartyKit Real-time Architecture
+
+## Overview
+
+Flack uses PartyKit for real-time messaging and presence. PartyKit provides:
+- Edge-deployed WebSocket servers
+- Room-based message routing
+- Connection state management
+- Works well with Turso/SQLite
+
+## Package Structure
+
+```
+packages/realtime/
+  package.json
+  partykit.json
+  tsconfig.json
+  src/
+    index.ts                 # Export types for web app
+    lib/
+      types.ts               # Shared message types
+      auth.ts                # Token validation
+    parties/
+      main.ts                # Default party (health checks)
+      channel.ts             # Channel messaging
+      conversation.ts        # DM/Group DM messaging
+      presence.ts            # Online status
+```
+
+## Room Strategy
+
+| Room Type | ID Pattern | Purpose |
+|-----------|------------|---------|
+| channel | `{channelId}` | Channel messages |
+| conversation | `{conversationId}` | DM/Group DM messages |
+| presence | `{organizationId}` | Org-wide online status |
+
+## Message Types
+
+### Client to Server
+
+```ts
+type ClientMessage =
+  | { type: "auth"; token: string }      // Authenticate connection
+  | { type: "typing"; isTyping: boolean } // Typing indicator
+  | { type: "read"; messageId: string }; // Read receipt
+```
+
+### Server to Client
+
+```ts
+type ServerMessage =
+  | { type: "connected"; userId: string }
+  | { type: "error"; message: string }
+  | { type: "message:new"; message: ChatMessage }
+  | { type: "message:edit"; messageId: string; content: string; updatedAt: string }
+  | { type: "message:delete"; messageId: string }
+  | { type: "reaction:add"; messageId: string; reaction: Reaction }
+  | { type: "reaction:remove"; messageId: string; reactionId: string }
+  | { type: "typing"; userId: string; userName: string; isTyping: boolean }
+  | { type: "presence"; users: PresenceUser[] };
+```
+
+## Party Implementation
+
+### Basic Structure
+
+```ts
+// packages/realtime/src/parties/channel.ts
+import type { Party, PartyKitServer, Connection, ConnectionContext } from "partykit/server";
+import type { ClientMessage, ServerMessage, ConnectionState } from "../lib/types.js";
+
+export default class ChannelParty implements PartyKitServer {
+  connections: Map<string, ConnectionState> = new Map();
+
+  constructor(public room: Party) {}
+
+  async onConnect(conn: Connection, ctx: ConnectionContext) {
+    // Authenticate from cookies or require auth message
+  }
+
+  async onMessage(message: string, sender: Connection) {
+    const parsed: ClientMessage = JSON.parse(message);
+    // Handle client messages
+  }
+
+  onClose(conn: Connection) {
+    this.connections.delete(conn.id);
+  }
+
+  // HTTP endpoint for server-to-server broadcasts
+  async onRequest(req: Request): Promise<Response> {
+    const body = await req.json();
+    this.broadcast(JSON.stringify(body));
+    return new Response("OK");
+  }
+
+  private broadcast(message: string) {
+    for (const conn of this.room.getConnections()) {
+      conn.send(message);
+    }
+  }
+}
+```
+
+## Authentication Flow
+
+### Cookie-based (Automatic)
+
+```ts
+async onConnect(conn: Connection, ctx: ConnectionContext) {
+  const token = getTokenFromRequest(ctx.request);
+  
+  if (token) {
+    const state = await validateToken(token, authUrl);
+    if (state) {
+      this.connections.set(conn.id, state);
+      conn.send(JSON.stringify({ type: "connected", userId: state.userId }));
+      return;
+    }
+  }
+  
+  // Fallback to manual auth
+  conn.send(JSON.stringify({ type: "error", message: "Authentication required" }));
+}
+```
+
+### Token-based (Manual)
+
+```ts
+// Client sends auth message after connect
+socket.send(JSON.stringify({ type: "auth", token: sessionToken }));
+
+// Server validates
+case "auth": {
+  const state = await validateToken(parsed.token, authUrl);
+  if (state) {
+    this.connections.set(sender.id, state);
+    sender.send(JSON.stringify({ type: "connected", userId: state.userId }));
+  }
+  break;
+}
+```
+
+## Broadcasting from Server Actions
+
+After a mutation, broadcast the change to connected clients:
+
+```ts
+// In a server action
+export const sendMessage = orgActionClient
+  .schema(sendMessageSchema)
+  .action(async ({ parsedInput, ctx }) => {
+    // 1. Save to database
+    const message = await db.message.create({ ... });
+
+    // 2. Broadcast to PartyKit
+    await fetch(
+      `${PARTYKIT_URL}/parties/channel/${message.channelId}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "message:new",
+          message: transformMessage(message),
+        }),
+      }
+    );
+
+    return { message };
+  });
+```
+
+## Client Hook
+
+```tsx
+// lib/hooks/use-partykit.ts
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import PartySocket from "partysocket";
+
+export function usePartyKit({
+  roomId,
+  roomType,
+  onMessage,
+  onTyping,
+}: UsePartyKitOptions) {
+  const socketRef = useRef<PartySocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    if (!roomId) return;
+
+    const socket = new PartySocket({
+      host: process.env.NEXT_PUBLIC_PARTYKIT_HOST!,
+      room: roomId,
+      party: roomType,
+    });
+
+    socket.addEventListener("message", (event) => {
+      const message = JSON.parse(event.data);
+      
+      switch (message.type) {
+        case "message:new":
+          onMessage?.(message.message);
+          break;
+        case "typing":
+          onTyping?.(message.userId, message.userName, message.isTyping);
+          break;
+      }
+    });
+
+    socketRef.current = socket;
+    return () => socket.close();
+  }, [roomId, roomType]);
+
+  const sendTyping = (isTyping: boolean) => {
+    socketRef.current?.send(JSON.stringify({ type: "typing", isTyping }));
+  };
+
+  return { isConnected, sendTyping };
+}
+```
+
+## Integrating with SWR
+
+Merge PartyKit updates into SWR cache for seamless real-time:
+
+```tsx
+function ChatRoom({ channelId }: { channelId: string }) {
+  const { messages, addMessage, updateMessage, removeFromCache } = useMessages(
+    channelId,
+    "channel"
+  );
+
+  usePartyKit({
+    roomId: channelId,
+    roomType: "channel",
+    onMessage: (message) => {
+      addMessage(message); // Merge into SWR cache
+    },
+    onMessageEdit: (messageId, content, updatedAt) => {
+      updateMessage(messageId, { content, updatedAt, isEdited: true });
+    },
+    onMessageDelete: (messageId) => {
+      removeFromCache(messageId);
+    },
+  });
+
+  return <MessageList messages={messages} />;
+}
+```
+
+## Typing Indicators
+
+### Client Side
+
+```tsx
+function MessageInput({ roomId, roomType }: Props) {
+  const { sendTyping } = usePartyKit({ roomId, roomType });
+  const typingTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    sendTyping(true);
+    
+    // Auto-clear after 3 seconds of no typing
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      sendTyping(false);
+    }, 3000);
+  };
+
+  const handleSubmit = () => {
+    sendTyping(false);
+    clearTimeout(typingTimeoutRef.current);
+    // ... send message
+  };
+
+  return <textarea onChange={handleChange} />;
+}
+```
+
+### Server Side
+
+```ts
+// Auto-expire typing after 5 seconds
+if (parsed.isTyping) {
+  const timeout = setTimeout(() => {
+    this.broadcastTyping(userId, userName, false, sender.id);
+  }, 5000);
+  this.typingUsers.set(userId, timeout);
+}
+```
+
+## Presence System
+
+### Organization-wide Presence
+
+```tsx
+function OnlineUsers() {
+  const { users, onlineCount } = usePresence(organizationId);
+
+  return (
+    <div>
+      <span>{onlineCount} online</span>
+      <ul>
+        {users
+          .filter((u) => u.status === "online")
+          .map((user) => (
+            <li key={user.id}>
+              <Avatar src={user.image} />
+              {user.name}
+            </li>
+          ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+## Environment Variables
+
+```env
+# Client-side
+NEXT_PUBLIC_PARTYKIT_HOST=localhost:1999
+
+# Server-side (for broadcasts)
+PARTYKIT_URL=http://localhost:1999
+BETTER_AUTH_URL=http://localhost:3000
+```
+
+## Development
+
+```bash
+# Start PartyKit dev server
+cd packages/realtime
+bun run dev
+
+# Deploy to PartyKit cloud
+bun run deploy
+```
+
+## Best Practices
+
+1. **Authenticate connections** - Validate Better Auth tokens on connect
+2. **Use rooms per channel/conversation** - Natural isolation and scaling
+3. **Broadcast after DB write** - Persist first, then notify clients
+4. **Merge into SWR cache** - Use `{ revalidate: false }` for real-time updates
+5. **Handle reconnection** - PartySocket auto-reconnects with exponential backoff
+6. **Timeout typing indicators** - Auto-clear after 5 seconds server-side
+7. **Keep messages lean** - Only broadcast necessary data, not full objects

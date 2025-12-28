@@ -1,0 +1,264 @@
+---
+description: URL state management with nuqs for chat navigation
+globs: "**/chat/**,**/hooks/use-*-params*"
+---
+
+# URL State with nuqs
+
+## Overview
+
+Use `nuqs` for URL state management instead of React state when:
+- State should be shareable via URL (deep linking)
+- State should survive page refresh
+- State should work with browser back/forward
+- State represents navigation within the app
+
+## Installation
+
+```bash
+bun add nuqs
+```
+
+## Chat URL Parameters
+
+| Parameter | Type | Purpose | Example |
+|-----------|------|---------|---------|
+| `channel` | string | Active channel slug | `?channel=general` |
+| `dm` | string | Active conversation ID | `?dm=abc123` |
+| `thread` | string | Open thread (message ID) | `?thread=msg456` |
+| `search` | string | Search query | `?search=deployment` |
+
+## Basic Usage
+
+### Define Parsers
+
+```tsx
+// lib/search-params.ts
+import { parseAsString, createSearchParamsCache } from "nuqs/server";
+
+export const chatSearchParams = {
+  channel: parseAsString.withDefault(""),
+  dm: parseAsString.withDefault(""),
+  thread: parseAsString.withDefault(""),
+  search: parseAsString.withDefault(""),
+};
+
+export const chatSearchParamsCache = createSearchParamsCache(chatSearchParams);
+```
+
+### Server Component Usage
+
+```tsx
+// app/(dashboard)/[org-slug]/chat/page.tsx
+import { chatSearchParamsCache } from "@/lib/search-params";
+
+export default async function ChatPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { channel, dm, thread } = chatSearchParamsCache.parse(await searchParams);
+
+  // Fetch data based on URL state
+  if (channel) {
+    const channelData = await getChannel(channel);
+    return <ChannelView channel={channelData} threadId={thread} />;
+  }
+
+  if (dm) {
+    const conversation = await getConversation(dm);
+    return <ConversationView conversation={conversation} threadId={thread} />;
+  }
+
+  return <EmptyState />;
+}
+```
+
+### Client Component Usage
+
+```tsx
+"use client";
+
+import { useQueryState, parseAsString } from "nuqs";
+
+export function ChatSidebar() {
+  const [channel, setChannel] = useQueryState("channel", parseAsString);
+  const [dm, setDm] = useQueryState("dm", parseAsString);
+  const [thread, setThread] = useQueryState("thread", parseAsString);
+
+  const openChannel = (slug: string) => {
+    // Clear other params when switching
+    setDm(null);
+    setThread(null);
+    setChannel(slug);
+  };
+
+  const openDm = (conversationId: string) => {
+    setChannel(null);
+    setThread(null);
+    setDm(conversationId);
+  };
+
+  const openThread = (messageId: string) => {
+    setThread(messageId);
+  };
+
+  const closeThread = () => {
+    setThread(null);
+  };
+
+  return (
+    <aside>
+      <ChannelList onSelect={openChannel} activeChannel={channel} />
+      <ConversationList onSelect={openDm} activeDm={dm} />
+    </aside>
+  );
+}
+```
+
+## Transition Mode for Better UX
+
+Use `startTransition` to avoid loading states during URL updates:
+
+```tsx
+"use client";
+
+import { useQueryState, parseAsString } from "nuqs";
+import { useTransition } from "react";
+
+export function ChannelSwitcher() {
+  const [isPending, startTransition] = useTransition();
+  const [channel, setChannel] = useQueryState("channel", parseAsString);
+
+  const switchChannel = (slug: string) => {
+    startTransition(() => {
+      setChannel(slug);
+    });
+  };
+
+  return (
+    <div className={isPending ? "opacity-50" : ""}>
+      {channels.map((ch) => (
+        <button
+          key={ch.slug}
+          onClick={() => switchChannel(ch.slug)}
+          data-active={channel === ch.slug}
+        >
+          {ch.name}
+        </button>
+      ))}
+    </div>
+  );
+}
+```
+
+## Custom Hooks Pattern
+
+Create semantic hooks for chat navigation:
+
+```tsx
+// lib/hooks/use-chat-params.ts
+"use client";
+
+import { useQueryState, parseAsString } from "nuqs";
+import { useCallback } from "react";
+
+export function useChatParams() {
+  const [channel, setChannel] = useQueryState("channel", parseAsString);
+  const [dm, setDm] = useQueryState("dm", parseAsString);
+  const [thread, setThread] = useQueryState("thread", parseAsString);
+  const [search, setSearch] = useQueryState("search", parseAsString);
+
+  const navigateToChannel = useCallback(
+    (slug: string) => {
+      setDm(null);
+      setThread(null);
+      setChannel(slug);
+    },
+    [setChannel, setDm, setThread]
+  );
+
+  const navigateToDm = useCallback(
+    (conversationId: string) => {
+      setChannel(null);
+      setThread(null);
+      setDm(conversationId);
+    },
+    [setChannel, setDm, setThread]
+  );
+
+  const openThread = useCallback(
+    (messageId: string) => {
+      setThread(messageId);
+    },
+    [setThread]
+  );
+
+  const closeThread = useCallback(() => {
+    setThread(null);
+  }, [setThread]);
+
+  const clearSearch = useCallback(() => {
+    setSearch(null);
+  }, [setSearch]);
+
+  return {
+    // Current state
+    activeChannel: channel,
+    activeDm: dm,
+    activeThread: thread,
+    searchQuery: search,
+    
+    // Navigation actions
+    navigateToChannel,
+    navigateToDm,
+    openThread,
+    closeThread,
+    setSearch,
+    clearSearch,
+  };
+}
+```
+
+## Layout with nuqs Provider
+
+Wrap your chat layout with the NuqsAdapter:
+
+```tsx
+// app/(dashboard)/[org-slug]/chat/layout.tsx
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+
+export default function ChatLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <NuqsAdapter>
+      <div className="flex h-screen">
+        <ChatSidebar />
+        <main className="flex-1">{children}</main>
+        <ThreadPanel />
+      </div>
+    </NuqsAdapter>
+  );
+}
+```
+
+## Deep Linking Examples
+
+With nuqs, these URLs work out of the box:
+
+```
+/acme/chat                           # Empty state
+/acme/chat?channel=general           # General channel
+/acme/chat?channel=general&thread=abc # General with thread open
+/acme/chat?dm=xyz                    # DM conversation
+/acme/chat?search=deployment         # Search results
+```
+
+## Best Practices
+
+1. **Use nuqs instead of useState** for navigation-related state
+2. **Clear conflicting params** when switching contexts (channel vs dm)
+3. **Use startTransition** for smoother navigation without loading flickers
+4. **Create semantic hooks** like `useChatParams()` for cleaner component code
+5. **Parse on server** with `createSearchParamsCache` for SSR
+6. **Default to empty string** with `parseAsString.withDefault("")` for optional params
+7. **Don't store sensitive data** in URL - only IDs and slugs

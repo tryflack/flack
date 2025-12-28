@@ -1,0 +1,156 @@
+import type { PartyKitServer, Connection, Room } from "partykit/server";
+import type { ServerMessage, ConnectionState, PresenceUser } from "../lib/types.js";
+import { validateToken } from "../lib/auth.js";
+
+// Presence party - handles online status for an organization
+export default class PresenceParty implements PartyKitServer {
+  connections: Map<string, ConnectionState> = new Map();
+  userConnections: Map<string, Set<string>> = new Map(); // userId -> Set<connectionId>
+  userStatus: Map<string, PresenceUser> = new Map();
+
+  constructor(public room: Room) {}
+
+  onConnect(_conn: Connection) {
+    // Wait for client to send auth message - no immediate response needed
+    // Client will send { type: "auth", token: "..." } on connect
+  }
+
+  async onMessage(message: string | ArrayBuffer | ArrayBufferView, sender: Connection) {
+    if (typeof message !== "string") {
+      sender.send(JSON.stringify({ type: "error", message: "Binary messages not supported" }));
+      return;
+    }
+    
+    let parsed: { type: string; token?: string; status?: string };
+    
+    try {
+      parsed = JSON.parse(message);
+    } catch {
+      sender.send(JSON.stringify({ type: "error", message: "Invalid message format" }));
+      return;
+    }
+
+    const connectionState = this.connections.get(sender.id);
+
+    switch (parsed.type) {
+      case "auth": {
+        if (!parsed.token) {
+          sender.send(JSON.stringify({ type: "error", message: "Token required" }));
+          return;
+        }
+
+        const authUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+        const state = await validateToken(parsed.token, authUrl);
+        
+        if (state) {
+          this.connections.set(sender.id, state);
+          this.addUserConnection(state.userId, sender.id, state);
+          sender.send(JSON.stringify({ type: "connected", userId: state.userId }));
+          this.broadcastPresence();
+        } else {
+          sender.send(JSON.stringify({ type: "error", message: "Invalid token" }));
+        }
+        break;
+      }
+
+      case "status": {
+        if (!connectionState?.authenticated) {
+          sender.send(JSON.stringify({ type: "error", message: "Not authenticated" }));
+          return;
+        }
+
+        const user = this.userStatus.get(connectionState.userId);
+        if (user && parsed.status) {
+          user.status = parsed.status as "online" | "away" | "offline";
+          user.lastSeen = new Date().toISOString();
+          this.broadcastPresence();
+        }
+        break;
+      }
+
+      case "ping": {
+        // Keep connection alive and update last seen
+        if (connectionState?.authenticated) {
+          const user = this.userStatus.get(connectionState.userId);
+          if (user) {
+            user.lastSeen = new Date().toISOString();
+          }
+        }
+        sender.send(JSON.stringify({ type: "pong" }));
+        break;
+      }
+    }
+  }
+
+  onClose(conn: Connection) {
+    const state = this.connections.get(conn.id);
+    
+    if (state) {
+      this.removeUserConnection(state.userId, conn.id);
+    }
+    
+    this.connections.delete(conn.id);
+  }
+
+  private addUserConnection(userId: string, connectionId: string, state: ConnectionState) {
+    // Track user connections
+    let userConns = this.userConnections.get(userId);
+    if (!userConns) {
+      userConns = new Set();
+      this.userConnections.set(userId, userConns);
+    }
+    userConns.add(connectionId);
+
+    // Update or create user status
+    if (!this.userStatus.has(userId)) {
+      this.userStatus.set(userId, {
+        id: userId,
+        name: state.userName,
+        image: state.userImage,
+        status: "online",
+        lastSeen: new Date().toISOString(),
+      });
+    } else {
+      const user = this.userStatus.get(userId)!;
+      user.status = "online";
+      user.lastSeen = new Date().toISOString();
+    }
+  }
+
+  private removeUserConnection(userId: string, connectionId: string) {
+    const userConns = this.userConnections.get(userId);
+    if (userConns) {
+      userConns.delete(connectionId);
+      
+      // If no more connections, mark user as offline
+      if (userConns.size === 0) {
+        this.userConnections.delete(userId);
+        const user = this.userStatus.get(userId);
+        if (user) {
+          user.status = "offline";
+          user.lastSeen = new Date().toISOString();
+        }
+        this.broadcastPresence();
+      }
+    }
+  }
+
+  private broadcastPresence() {
+    const users = Array.from(this.userStatus.values());
+    
+    const message: ServerMessage = {
+      type: "presence",
+      users,
+    };
+    
+    const messageStr = JSON.stringify(message);
+    
+    for (const conn of this.room.getConnections()) {
+      const state = this.connections.get(conn.id);
+      if (state?.authenticated) {
+        conn.send(messageStr);
+      }
+    }
+  }
+}
+

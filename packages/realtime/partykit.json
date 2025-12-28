@@ -1,0 +1,11 @@
+{
+  "name": "flack-realtime",
+  "compatibilityDate": "2025-12-28",
+  "main": "src/parties/main.ts",
+  "parties": {
+    "channel": "src/parties/channel.ts",
+    "conversation": "src/parties/conversation.ts",
+    "presence": "src/parties/presence.ts"
+  }
+}
+
