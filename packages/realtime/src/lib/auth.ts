@@ -6,7 +6,7 @@ import type { ConnectionState } from "./types.js";
  */
 export async function validateToken(
   token: string,
-  authUrl: string
+  authUrl: string,
 ): Promise<ConnectionState | null> {
   try {
     const response = await fetch(`${authUrl}/api/auth/validate-session`, {
