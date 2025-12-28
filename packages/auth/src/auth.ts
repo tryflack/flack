@@ -80,21 +80,21 @@ export const auth = betterAuth({
         // For now, log the invitation details
         const inviteLink = `${process.env.BETTER_AUTH_URL ?? "http://localhost:3000"}/accept-invitation/${data.id}`;
         console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         );
         console.log("📧 ORGANIZATION INVITATION");
         console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         );
         console.log(`To: ${data.email}`);
         console.log(`Organization: ${data.organization.name}`);
         console.log(
-          `Invited by: ${data.inviter.user.name} (${data.inviter.user.email})`
+          `Invited by: ${data.inviter.user.name} (${data.inviter.user.email})`,
         );
         console.log(`Role: ${data.role}`);
         console.log(`Invitation Link: ${inviteLink}`);
         console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
         );
       },
     }),
