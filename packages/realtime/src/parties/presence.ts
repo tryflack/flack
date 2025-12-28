@@ -133,6 +133,53 @@ export default class PresenceParty implements PartyKitServer {
         }
         break;
       }
+
+      case "user:updated": {
+        // User updated their profile - broadcast to all other users
+        if (!connectionState?.authenticated) {
+          sender.send(
+            JSON.stringify({ type: "error", message: "Not authenticated" })
+          );
+          return;
+        }
+
+        const update = parsed as {
+          type: "user:updated";
+          name?: string;
+          image?: string | null;
+        };
+
+        // Update user in presence
+        const user = this.userStatus.get(connectionState.userId);
+        if (user) {
+          if (update.name !== undefined) user.name = update.name;
+          if (update.image !== undefined) user.image = update.image;
+        }
+
+        // Also update connection state
+        if (update.name !== undefined) connectionState.userName = update.name;
+        if (update.image !== undefined)
+          connectionState.userImage = update.image;
+
+        // Broadcast to all users (including sender so their UI updates)
+        const updateMessage: ServerMessage = {
+          type: "user:updated",
+          userId: connectionState.userId,
+          user: {
+            id: connectionState.userId,
+            name: update.name ?? user?.name,
+            image: update.image ?? user?.image,
+          },
+        };
+
+        for (const conn of this.room.getConnections()) {
+          const state = this.connections.get(conn.id);
+          if (state?.authenticated) {
+            conn.send(JSON.stringify(updateMessage));
+          }
+        }
+        break;
+      }
     }
   }
 
@@ -223,6 +270,9 @@ export default class PresenceParty implements PartyKitServer {
         channelId?: string;
         conversationId?: string;
         senderId?: string;
+        userId?: string;
+        name?: string;
+        image?: string | null;
       };
 
       switch (body.type) {
@@ -238,6 +288,47 @@ export default class PresenceParty implements PartyKitServer {
                   conversationId: body.conversationId,
                 } satisfies ServerMessage)
               );
+            }
+          }
+          break;
+
+        case "user:updated":
+          // Update user in presence state
+          if (body.userId) {
+            const user = this.userStatus.get(body.userId);
+            if (user) {
+              if (body.name !== undefined) user.name = body.name;
+              if (body.image !== undefined) user.image = body.image;
+            }
+
+            // Update connection state for all connections of this user
+            const userConns = this.userConnections.get(body.userId);
+            if (userConns) {
+              for (const connId of userConns) {
+                const state = this.connections.get(connId);
+                if (state) {
+                  if (body.name !== undefined) state.userName = body.name;
+                  if (body.image !== undefined) state.userImage = body.image;
+                }
+              }
+            }
+
+            // Broadcast to all users
+            const updateMessage: ServerMessage = {
+              type: "user:updated",
+              userId: body.userId,
+              user: {
+                id: body.userId,
+                name: body.name ?? user?.name,
+                image: body.image ?? user?.image,
+              },
+            };
+
+            for (const conn of this.room.getConnections()) {
+              const state = this.connections.get(conn.id);
+              if (state?.authenticated) {
+                conn.send(JSON.stringify(updateMessage));
+              }
             }
           }
           break;

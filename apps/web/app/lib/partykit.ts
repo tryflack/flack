@@ -93,13 +93,21 @@ export interface BroadcastUnreadPayload {
   senderId?: string;
 }
 
+export interface BroadcastUserUpdatedPayload {
+  type: "user:updated";
+  userId: string;
+  name?: string;
+  image?: string | null;
+}
+
 type BroadcastPayload =
   | BroadcastNewMessagePayload
   | BroadcastEditMessagePayload
   | BroadcastDeleteMessagePayload
   | BroadcastAddReactionPayload
   | BroadcastRemoveReactionPayload
-  | BroadcastUnreadPayload;
+  | BroadcastUnreadPayload
+  | BroadcastUserUpdatedPayload;
 
 /**
  * Broadcast a message to a PartyKit room
@@ -276,5 +284,20 @@ export async function broadcastReactionRemove(
     type: "reaction:remove",
     messageId,
     reactionId,
+  });
+}
+
+/**
+ * Broadcast a user profile update to all users in an organization
+ */
+export async function broadcastUserUpdated(
+  organizationId: string,
+  userId: string,
+  updates: { name?: string; image?: string | null },
+): Promise<boolean> {
+  return broadcastToRoom("presence", organizationId, {
+    type: "user:updated",
+    userId,
+    ...updates,
   });
 }

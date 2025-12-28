@@ -34,7 +34,8 @@ export type ServerMessage =
   | { type: "reaction:remove"; messageId: string; reactionId: string }
   | { type: "typing"; userId: string; userName: string; isTyping: boolean }
   | { type: "presence"; users: PresenceUser[] }
-  | { type: "unread"; channelId?: string; conversationId?: string };
+  | { type: "unread"; channelId?: string; conversationId?: string }
+  | { type: "user:updated"; userId: string; user: Partial<PresenceUser> };
 
 export interface ChatMessage {
   id: string;

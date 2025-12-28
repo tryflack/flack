@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef } from "react";
 import type {
   SearchResponse,
   SearchResultMessage,
@@ -24,6 +24,7 @@ export interface UseSearchResult {
   channels: SearchResultChannel[];
   members: SearchResultMember[];
   isLoading: boolean;
+  isSearching: boolean; // True when pending or loading
   isEmpty: boolean;
   hasResults: boolean;
   clear: () => void;
@@ -32,9 +33,10 @@ export interface UseSearchResult {
 export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
   const [query, setQueryState] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
-  const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(
-    null,
-  );
+  const [isPending, setIsPending] = useState(false);
+
+  // Use ref for timer to avoid stale closure issues
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Set query with debouncing
   const setQuery = useCallback(
@@ -42,18 +44,31 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
       setQueryState(newQuery);
 
       // Clear existing timer
-      if (debounceTimer) {
-        clearTimeout(debounceTimer);
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
       }
 
-      // Set new timer for debounced query
-      const timer = setTimeout(() => {
-        setDebouncedQuery(newQuery.trim());
-      }, DEBOUNCE_DELAY);
+      const trimmedQuery = newQuery.trim();
 
-      setDebounceTimer(timer);
+      // If query is empty, immediately clear debounced query
+      if (!trimmedQuery) {
+        setDebouncedQuery("");
+        setIsPending(false);
+        return;
+      }
+
+      // Mark as pending while debouncing
+      setIsPending(true);
+
+      // Set new timer for debounced query
+      debounceTimerRef.current = setTimeout(() => {
+        setDebouncedQuery(trimmedQuery);
+        setIsPending(false);
+        debounceTimerRef.current = null;
+      }, DEBOUNCE_DELAY);
     },
-    [debounceTimer],
+    [] // No dependencies - refs don't cause stale closures
   );
 
   // Build search URL
@@ -70,8 +85,8 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
   // Fetch search results
   const { data, isLoading } = useSWR<SearchResponse>(searchUrl, fetcher, {
-    // Keep previous data while loading new results
-    keepPreviousData: true,
+    // Don't keep previous data - we'll manage display logic ourselves
+    keepPreviousData: false,
     // Don't revalidate on focus for search
     revalidateOnFocus: false,
     // Dedupe rapid requests
@@ -80,21 +95,29 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
   // Clear search
   const clear = useCallback(() => {
-    if (debounceTimer) {
-      clearTimeout(debounceTimer);
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = null;
     }
     setQueryState("");
     setDebouncedQuery("");
-  }, [debounceTimer]);
+    setIsPending(false);
+  }, []); // No dependencies - refs don't cause stale closures
 
-  // Result arrays with defaults
-  const messages = data?.messages ?? [];
-  const channels = data?.channels ?? [];
-  const members = data?.members ?? [];
+  // Only show results if they match the current debounced query
+  const resultsMatchQuery =
+    data?.query === debouncedQuery && debouncedQuery !== "";
 
-  // Computed states
-  const isEmpty = !debouncedQuery;
-  const hasResults = messages.length > 0 || channels.length > 0 || members.length > 0;
+  // Result arrays - only return results if they match current query
+  const messages = resultsMatchQuery ? (data?.messages ?? []) : [];
+  const channels = resultsMatchQuery ? (data?.channels ?? []) : [];
+  const members = resultsMatchQuery ? (data?.members ?? []) : [];
+
+  // Computed states - use raw query for isEmpty check
+  const isEmpty = !query.trim();
+  const isSearching = isPending || (isLoading && !!debouncedQuery);
+  const hasResults =
+    messages.length > 0 || channels.length > 0 || members.length > 0;
 
   return {
     query,
@@ -104,6 +127,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
     channels,
     members,
     isLoading: isLoading && !!debouncedQuery,
+    isSearching,
     isEmpty,
     hasResults,
     clear,
@@ -112,4 +136,3 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
 
 // Re-export types for convenience
 export type { SearchResultMessage, SearchResultChannel, SearchResultMember };
-

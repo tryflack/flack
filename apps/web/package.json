@@ -14,6 +14,7 @@
     "@flack/realtime": "*",
     "@flack/ui": "*",
     "@hookform/resolvers": "^5.2.2",
+    "@vercel/blob": "^2.0.0",
     "better-auth": "^1.4.9",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.562.0",

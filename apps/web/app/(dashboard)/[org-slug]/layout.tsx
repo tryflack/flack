@@ -6,6 +6,7 @@ import { OrganizationSidebar } from "@/app/components/org-sidebar";
 import { SetActiveOrg } from "@/app/components/set-active-org";
 import { PresenceProvider } from "./components/presence-provider";
 import { SearchProvider } from "./components/search-provider";
+import { UserProfileProvider } from "./components/user-profile-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export default async function OrganizationLayout({
@@ -56,25 +57,27 @@ export default async function OrganizationLayout({
     <NuqsAdapter>
       <PresenceProvider organizationId={organization.id}>
         <SearchProvider>
-          <SidebarProvider className="h-dvh bg-secondary">
-            <SetActiveOrg
-              organizationId={organization.id}
-              currentActiveOrgId={session.session.activeOrganizationId}
-            />
-            <OrganizationSidebar
-              organization={{
-                id: organization.id,
-                name: organization.name,
-                slug: organization.slug,
-                domain,
-              }}
-            />
-            <main className="flex-1 overflow-hidden md:p-2 md:pl-0">
-              <div className="flex h-full min-h-0 w-full flex-col bg-background md:rounded-lg md:border md:border-sidebar-border md:shadow-sm">
-                {children}
-              </div>
-            </main>
-          </SidebarProvider>
+          <UserProfileProvider>
+            <SidebarProvider className="h-dvh bg-secondary">
+              <SetActiveOrg
+                organizationId={organization.id}
+                currentActiveOrgId={session.session.activeOrganizationId}
+              />
+              <OrganizationSidebar
+                organization={{
+                  id: organization.id,
+                  name: organization.name,
+                  slug: organization.slug,
+                  domain,
+                }}
+              />
+              <main className="flex-1 overflow-hidden md:p-2 md:pl-0">
+                <div className="flex h-full min-h-0 w-full flex-col bg-background md:rounded-lg md:border md:border-sidebar-border md:shadow-sm">
+                  {children}
+                </div>
+              </main>
+            </SidebarProvider>
+          </UserProfileProvider>
         </SearchProvider>
       </PresenceProvider>
     </NuqsAdapter>

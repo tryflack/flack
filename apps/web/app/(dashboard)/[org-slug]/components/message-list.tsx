@@ -19,6 +19,7 @@ interface MessageListProps {
     messageId: string,
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
+  onAuthorClick?: (userId: string) => void;
 }
 
 export function MessageList({
@@ -30,6 +31,7 @@ export function MessageList({
   onEditMessage,
   onDeleteMessage,
   onReact,
+  onAuthorClick,
 }: MessageListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const topSentinelRef = useRef<HTMLDivElement>(null);
@@ -96,6 +98,7 @@ export function MessageList({
                 onEdit={onEditMessage}
                 onDelete={onDeleteMessage}
                 onReact={onReact}
+                onAuthorClick={onAuthorClick}
               />
             );
           })}

@@ -100,6 +100,37 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
               }, 300);
               break;
 
+            case "user:updated":
+              // A user updated their profile - update presence and invalidate caches
+              if (data.userId && data.user) {
+                setUsers((prev) => {
+                  const updated = new Map(prev);
+                  const existing = updated.get(data.userId);
+                  if (existing) {
+                    updated.set(data.userId, {
+                      ...existing,
+                      ...data.user,
+                    });
+                  }
+                  return updated;
+                });
+
+                // Invalidate all relevant caches so updated user info shows everywhere
+                mutate("/api/members");
+                mutate("/api/conversations");
+                mutate("/api/channels");
+                // Invalidate user profile if viewing
+                mutate(`/api/users/${data.userId}`);
+                // Invalidate all message caches (messages contain author info)
+                mutate(
+                  (key) =>
+                    typeof key === "string" && key.startsWith("/api/messages"),
+                  undefined,
+                  { revalidate: true }
+                );
+              }
+              break;
+
             case "error":
               console.error("Presence error:", data.message);
               break;

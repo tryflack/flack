@@ -10,6 +10,7 @@ import { markAsRead } from "@/app/actions/messages/mark-as-read";
 export interface MessageAuthor {
   id: string;
   name: string;
+  displayName?: string | null;
   image: string | null;
 }
 
@@ -20,6 +21,7 @@ export interface MessageReaction {
   user: {
     id: string;
     name: string;
+    displayName?: string | null;
   };
 }
 
@@ -46,6 +48,7 @@ export interface Message {
     author: {
       id: string;
       name: string;
+      displayName?: string | null;
     };
   } | null;
   isEdited: boolean;
@@ -69,11 +72,11 @@ const PAGE_SIZE = 50;
 
 export function useMessages(
   roomId: string | null,
-  roomType: "channel" | "conversation",
+  roomType: "channel" | "conversation"
 ) {
   const getKey = (
     pageIndex: number,
-    previousPageData: MessagesResponse | null,
+    previousPageData: MessagesResponse | null
   ) => {
     if (!roomId) return null;
     if (previousPageData && !previousPageData.hasMore) return null;
@@ -175,7 +178,7 @@ export function useMessages(
       return currentData.map((page) => ({
         ...page,
         messages: page.messages.map((msg) =>
-          msg.id === messageId ? { ...msg, ...updates } : msg,
+          msg.id === messageId ? { ...msg, ...updates } : msg
         ),
       }));
     }, false);
@@ -226,17 +229,17 @@ export function useMessages(
         (
           current:
             | { channels: Array<{ id: string; unreadCount: number }> }
-            | undefined,
+            | undefined
         ) => {
           if (!current) return current;
           return {
             ...current,
             channels: current.channels.map((ch) =>
-              ch.id === roomId ? { ...ch, unreadCount: 0 } : ch,
+              ch.id === roomId ? { ...ch, unreadCount: 0 } : ch
             ),
           };
         },
-        { revalidate: false }, // Don't refetch yet, we'll do it after the server action
+        { revalidate: false } // Don't refetch yet, we'll do it after the server action
       );
     } else {
       globalMutate(
@@ -244,24 +247,24 @@ export function useMessages(
         (
           current:
             | { conversations: Array<{ id: string; unreadCount: number }> }
-            | undefined,
+            | undefined
         ) => {
           if (!current) return current;
           return {
             ...current,
             conversations: current.conversations.map((conv) =>
-              conv.id === roomId ? { ...conv, unreadCount: 0 } : conv,
+              conv.id === roomId ? { ...conv, unreadCount: 0 } : conv
             ),
           };
         },
-        { revalidate: false },
+        { revalidate: false }
       );
     }
 
     const result = await markAsRead(
       roomType === "channel"
         ? { channelId: roomId }
-        : { conversationId: roomId },
+        : { conversationId: roomId }
     );
 
     // If the server action failed, revalidate to get the true state
@@ -302,7 +305,7 @@ export function useMessages(
 export function useThread(parentId: string | null) {
   const { data, error, isLoading, mutate } = useSWR<MessagesResponse>(
     parentId ? `/api/messages?parentId=${parentId}&limit=100` : null,
-    fetcher,
+    fetcher
   );
 
   // Send a reply

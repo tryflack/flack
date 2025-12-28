@@ -58,6 +58,7 @@ interface MessageItemProps {
     messageId: string,
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
+  onAuthorClick?: (userId: string) => void;
 }
 
 export function MessageItem({
@@ -67,6 +68,7 @@ export function MessageItem({
   onEdit,
   onDelete,
   onReact,
+  onAuthorClick,
 }: MessageItemProps) {
   const { openThread } = useChatParams();
   const [isHovered, setIsHovered] = useState(false);
@@ -99,6 +101,13 @@ export function MessageItem({
       .slice(0, 2);
   };
 
+  // Get display name, preferring displayName over name
+  const getDisplayName = (user: { name: string; displayName?: string | null }) => {
+    return user.displayName || user.name;
+  };
+
+  const authorDisplayName = getDisplayName(message.author);
+
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString("en-US", {
@@ -110,10 +119,11 @@ export function MessageItem({
   // Group reactions by emoji
   const groupedReactions = message.reactions.reduce(
     (acc, reaction) => {
+      const reactionUserName = reaction.user.displayName || reaction.user.name;
       const existing = acc.find((r) => r.emoji === reaction.emoji);
       if (existing) {
         existing.count++;
-        existing.users.push(reaction.user.name);
+        existing.users.push(reactionUserName);
         if (reaction.userId === currentUserId) {
           existing.hasReacted = true;
         }
@@ -121,7 +131,7 @@ export function MessageItem({
         acc.push({
           emoji: reaction.emoji,
           count: 1,
-          users: [reaction.user.name],
+          users: [reactionUserName],
           hasReacted: reaction.userId === currentUserId,
         });
       }
@@ -242,10 +252,16 @@ export function MessageItem({
       >
         {/* Avatar or spacing */}
         {showAvatar ? (
-          <Avatar className="h-9 w-9 shrink-0">
-            <AvatarImage src={message.author.image || undefined} />
-            <AvatarFallback>{getInitials(message.author.name)}</AvatarFallback>
-          </Avatar>
+          <button
+            type="button"
+            onClick={() => onAuthorClick?.(message.authorId)}
+            className="shrink-0 rounded-full transition-opacity hover:opacity-80"
+          >
+            <Avatar className="h-9 w-9">
+              <AvatarImage src={message.author.image || undefined} />
+              <AvatarFallback>{getInitials(authorDisplayName)}</AvatarFallback>
+            </Avatar>
+          </button>
         ) : (
           <div className="w-9 shrink-0 text-center">
             <span className="text-[10px] text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
@@ -258,9 +274,13 @@ export function MessageItem({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           {showAvatar && (
             <div className="flex items-baseline gap-2">
-              <span className="font-semibold text-sm">
-                {message.author.name}
-              </span>
+              <button
+                type="button"
+                onClick={() => onAuthorClick?.(message.authorId)}
+                className="font-semibold text-sm hover:underline"
+              >
+                {authorDisplayName}
+              </button>
               <span className="text-xs text-muted-foreground">
                 {formatTime(message.createdAt)}
               </span>

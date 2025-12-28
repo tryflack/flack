@@ -2,17 +2,15 @@
 
 import { useRouter, usePathname } from "next/navigation";
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
   Settings,
   Users,
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@flack/auth/auth-client";
+import { useUserProfile } from "@/app/(dashboard)/[org-slug]/components/user-profile-provider";
 
 import {
   Avatar,
@@ -41,6 +39,7 @@ export function NavUser() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const { openProfile } = useUserProfile();
 
   // Extract org slug from pathname
   const orgSlug = pathname.split("/").filter(Boolean)[0] || "";
@@ -48,6 +47,12 @@ export function NavUser() {
   const handleSignOut = async () => {
     await authClient.signOut();
     router.push("/login");
+  };
+
+  const handleOpenProfile = () => {
+    if (session?.user?.id) {
+      openProfile(session.user.id);
+    }
   };
 
   // Generate initials from user's name
@@ -126,6 +131,10 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
+              <DropdownMenuItem onClick={handleOpenProfile}>
+                <User />
+                My Profile
+              </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link href={`/${orgSlug}/settings`}>
                   <Settings />

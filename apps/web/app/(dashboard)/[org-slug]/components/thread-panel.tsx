@@ -10,6 +10,7 @@ import { TypingIndicator } from "./typing-indicator";
 import { useChatParams } from "@/app/lib/hooks/use-chat-params";
 import { useThread, useMessages } from "@/app/lib/hooks/use-messages";
 import { usePartyKit } from "@/app/lib/hooks/use-partykit";
+import { useUserProfile } from "./user-profile-provider";
 
 interface ThreadPanelProps {
   threadId: string;
@@ -19,6 +20,7 @@ interface ThreadPanelProps {
 
 export function ThreadPanel({ threadId, roomId, roomType }: ThreadPanelProps) {
   const { closeThread } = useChatParams();
+  const { openProfile } = useUserProfile();
   const { replies, isLoading, mutate } = useThread(threadId);
   const { send } = useMessages(roomId, roomType ?? "channel");
 
@@ -73,7 +75,11 @@ export function ThreadPanel({ threadId, roomId, roomType }: ThreadPanelProps) {
               {/* Parent message */}
               {parentMessage && (
                 <>
-                  <MessageItem message={parentMessage} showAvatar />
+                  <MessageItem
+                    message={parentMessage}
+                    showAvatar
+                    onAuthorClick={openProfile}
+                  />
                   <div className="my-2 flex items-center gap-2">
                     <div className="flex-1 border-t" />
                     <span className="text-xs text-muted-foreground">
@@ -89,7 +95,12 @@ export function ThreadPanel({ threadId, roomId, roomType }: ThreadPanelProps) {
               {replies
                 .filter((r) => r.id !== threadId)
                 .map((reply) => (
-                  <MessageItem key={reply.id} message={reply} showAvatar />
+                  <MessageItem
+                    key={reply.id}
+                    message={reply}
+                    showAvatar
+                    onAuthorClick={openProfile}
+                  />
                 ))}
 
               {replies.length === 0 && !isLoading && (

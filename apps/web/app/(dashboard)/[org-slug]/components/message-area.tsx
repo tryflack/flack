@@ -7,6 +7,7 @@ import { MessageInput } from "./message-input";
 import { TypingIndicator } from "./typing-indicator";
 import { ChannelSettingsDialog } from "./channel-settings-dialog";
 import { ChannelInfoDialog } from "./channel-info-dialog";
+import { useUserProfile } from "./user-profile-provider";
 import { useMessages, type Message } from "@/app/lib/hooks/use-messages";
 import { usePartyKit } from "@/app/lib/hooks/use-partykit";
 import { useActiveMember } from "@/app/lib/hooks/use-active-member";
@@ -74,6 +75,7 @@ export function MessageArea({
   channel,
 }: MessageAreaProps) {
   const { member } = useActiveMember();
+  const { openProfile } = useUserProfile();
   const [showChannelSettings, setShowChannelSettings] = useState(false);
   const [showChannelInfo, setShowChannelInfo] = useState(false);
   const lastMarkedRoomRef = useRef<string | null>(null);
@@ -109,14 +111,14 @@ export function MessageArea({
     (chatMessage: ChatMessage) => {
       addMessage(chatMessageToMessage(chatMessage));
     },
-    [addMessage],
+    [addMessage]
   );
 
   const handleMessageEdit = useCallback(
     (messageId: string, content: string, updatedAt: string) => {
       updateMessage(messageId, { content, updatedAt, isEdited: true });
     },
-    [updateMessage],
+    [updateMessage]
   );
 
   const handleReactionAdd = useCallback(
@@ -131,7 +133,7 @@ export function MessageArea({
         });
       }
     },
-    [messages, updateMessage],
+    [messages, updateMessage]
   );
 
   const handleReactionRemove = useCallback(
@@ -143,7 +145,7 @@ export function MessageArea({
         });
       }
     },
-    [messages, updateMessage],
+    [messages, updateMessage]
   );
 
   const { isConnected, typingUsers, sendTyping } = usePartyKit({
@@ -190,7 +192,7 @@ export function MessageArea({
     // Check if user already reacted with this emoji
     const message = messages.find((m) => m.id === messageId);
     const existingReaction = message?.reactions.find(
-      (r) => r.emoji === emoji && r.userId === member?.userId,
+      (r) => r.emoji === emoji && r.userId === member?.userId
     );
 
     if (existingReaction) {
@@ -267,6 +269,7 @@ export function MessageArea({
           onEditMessage={handleEdit}
           onDeleteMessage={handleDelete}
           onReact={handleReact}
+          onAuthorClick={openProfile}
         />
 
         {/* Typing Indicator */}

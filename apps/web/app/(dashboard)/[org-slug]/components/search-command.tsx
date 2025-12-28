@@ -47,7 +47,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
     messages,
     channels,
     members,
-    isLoading,
+    isSearching,
     isEmpty,
     hasResults,
     clear,
@@ -61,7 +61,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       onOpenChange(newOpen);
     },
-    [clear, onOpenChange],
+    [clear, onOpenChange]
   );
 
   // Navigate to a channel
@@ -70,7 +70,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       navigateToChannel(slug);
       handleOpenChange(false);
     },
-    [navigateToChannel, handleOpenChange],
+    [navigateToChannel, handleOpenChange]
   );
 
   // Navigate to a message (in its channel/conversation)
@@ -87,7 +87,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       handleOpenChange(false);
     },
-    [navigateToChannel, navigateToDm, handleOpenChange],
+    [navigateToChannel, navigateToDm, handleOpenChange]
   );
 
   // Navigate to or start DM with a member
@@ -96,8 +96,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       // Check if we already have a DM with this user
       const existingDm = conversations.find(
         (c) =>
-          c.type === "dm" &&
-          c.participants.some((p) => p.userId === userId),
+          c.type === "dm" && c.participants.some((p) => p.userId === userId)
       );
 
       if (existingDm) {
@@ -111,7 +110,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       handleOpenChange(false);
     },
-    [conversations, navigateToDm, startDm, handleOpenChange],
+    [conversations, navigateToDm, startDm, handleOpenChange]
   );
 
   // Truncate message content for display
@@ -189,13 +188,13 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
           </div>
         )}
 
-        {!isEmpty && isLoading && (
+        {!isEmpty && isSearching && (
           <div className="flex items-center justify-center py-14">
             <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
           </div>
         )}
 
-        {!isEmpty && !isLoading && !hasResults && (
+        {!isEmpty && !isSearching && !hasResults && (
           <CommandEmpty>
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
@@ -209,7 +208,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
         )}
 
         {/* Channels */}
-        {channels.length > 0 && (
+        {!isSearching && channels.length > 0 && (
           <>
             <CommandGroup heading="Channels">
               {channels.map((channel) => (
@@ -247,12 +246,14 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                 </CommandItem>
               ))}
             </CommandGroup>
-            {(members.length > 0 || messages.length > 0) && <CommandSeparator />}
+            {(members.length > 0 || messages.length > 0) && (
+              <CommandSeparator />
+            )}
           </>
         )}
 
         {/* Members */}
-        {members.length > 0 && (
+        {!isSearching && members.length > 0 && (
           <>
             <CommandGroup heading="People">
               {members.map((member) => (
@@ -276,7 +277,9 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                   </div>
                   {member.role !== "member" && (
                     <Badge
-                      variant={member.role === "owner" ? "default" : "secondary"}
+                      variant={
+                        member.role === "owner" ? "default" : "secondary"
+                      }
                       className="text-xs capitalize"
                     >
                       {member.role}
@@ -291,7 +294,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
         )}
 
         {/* Messages */}
-        {messages.length > 0 && (
+        {!isSearching && messages.length > 0 && (
           <CommandGroup heading="Messages">
             {messages.map((message) => (
               <CommandItem
@@ -382,4 +385,3 @@ export function useSearchCommand() {
     setOpen,
   };
 }
-
