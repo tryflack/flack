@@ -19,7 +19,7 @@ jobs:
 
       - name: Install Turso CLI
         run: |
-          curl -sSfL get.tur.so | bash
+          curl -sSfL https://get.tur.so/install.sh | bash
           echo "$HOME/.turso/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
