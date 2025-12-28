@@ -20,6 +20,10 @@ model User {
   normalizedEmail String?      @unique
   emailVerified   Boolean      @default(false)
   image           String?
+  displayName     String?      // Optional display name (shown instead of name)
+  firstName       String?
+  lastName        String?
+  bio             String?      // User bio/about me
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
   role            String       @default("user")

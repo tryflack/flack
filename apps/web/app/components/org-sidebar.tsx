@@ -2,7 +2,14 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { ChevronRight, Hash, Lock, MessageSquare, Plus } from "lucide-react";
+import {
+  ChevronRight,
+  Hash,
+  Lock,
+  MessageSquare,
+  Plus,
+  Search,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
@@ -31,6 +38,7 @@ import {
   AvatarImage,
 } from "@flack/ui/components/avatar";
 import { Skeleton } from "@flack/ui/components/skeleton";
+import { Kbd } from "@flack/ui/components/kbd";
 import { useChatParams } from "@/app/lib/hooks/use-chat-params";
 import { useChannels } from "@/app/lib/hooks/use-channels";
 import { useConversations } from "@/app/lib/hooks/use-conversations";
@@ -40,6 +48,7 @@ import { StartDmDialog } from "@/app/(dashboard)/[org-slug]/components/start-dm-
 import { BrowseChannelsDialog } from "@/app/(dashboard)/[org-slug]/components/browse-channels-dialog";
 import { AvatarWithPresence } from "@/app/(dashboard)/[org-slug]/components/presence-indicator";
 import { usePresenceContext } from "@/app/(dashboard)/[org-slug]/components/presence-provider";
+import { useSearchContext } from "@/app/(dashboard)/[org-slug]/components/search-provider";
 import { cn } from "@flack/ui/lib/utils";
 
 interface Organization {
@@ -123,7 +132,7 @@ function ChannelSection() {
                             isActive={isActive}
                             tooltip={channel.name}
                             className={cn(
-                              hasUnread && !isActive && "font-medium",
+                              hasUnread && !isActive && "font-medium"
                             )}
                             onClick={() => navigateToChannel(channel.slug)}
                           >
@@ -131,14 +140,14 @@ function ChannelSection() {
                               <Lock
                                 className={cn(
                                   "h-4 w-4",
-                                  hasUnread && !isActive && "text-foreground",
+                                  hasUnread && !isActive && "text-foreground"
                                 )}
                               />
                             ) : (
                               <Hash
                                 className={cn(
                                   "h-4 w-4",
-                                  hasUnread && !isActive && "text-foreground",
+                                  hasUnread && !isActive && "text-foreground"
                                 )}
                               />
                             )}
@@ -292,7 +301,7 @@ function DirectMessagesSection() {
                           <MessageSquare
                             className={cn(
                               "h-4 w-4",
-                              hasUnread && !isActive && "text-foreground",
+                              hasUnread && !isActive && "text-foreground"
                             )}
                           />
                         )}
@@ -343,6 +352,27 @@ function OrgLogo({ organization }: { organization: Organization }) {
   );
 }
 
+function SearchButton() {
+  const { openSearch } = useSearchContext();
+
+  return (
+    <SidebarGroup className="py-0">
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            onClick={openSearch}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <Search className="h-4 w-4" />
+            <span className="flex-1">Search</span>
+            <Kbd className="ml-auto text-[10px]">⌘K</Kbd>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+}
+
 export function OrganizationSidebar({
   organization,
   ...props
@@ -369,6 +399,7 @@ export function OrganizationSidebar({
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <SearchButton />
         <ChannelSection />
         <DirectMessagesSection />
       </SidebarContent>

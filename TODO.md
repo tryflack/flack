@@ -17,6 +17,7 @@ This file tracks the remaining UI features that need to be implemented based on 
 | Channel Member Management | Invite/remove members from channels                    | `actions/channels/invite-to-channel.ts`, `remove-from-channel.ts` |
 | Channel Info Dialog       | Click channel name in header for details               | `components/channel-info-dialog.tsx`                              |
 | Unread Messages           | Unread counts in sidebar, mark as read on view         | `actions/messages/mark-as-read.ts`, API updates                   |
+| Global Search             | Cmd+K search for messages, channels, and people        | `components/search-command.tsx`, `api/search/route.ts`            |
 
 ## Summary of Ready Actions
 
@@ -104,10 +105,13 @@ This file tracks the remaining UI features that need to be implemented based on 
   - New action: `actions/messages/mark-as-read.ts`
   - Updated API routes to include unread counts
 
-- [ ] **Search**
+- [x] **Search** ✓
   - Global search modal (Cmd+K)
-  - Search messages, channels, members
-  - New API routes and hooks needed
+  - Search messages, channels, members with debounced queries
+  - Fast parallel database queries for performance
+  - Navigate to channels, start DMs, or jump to message context
+  - Search button in sidebar with keyboard shortcut hint
+  - New: `api/search/route.ts`, `use-search.ts`, `search-command.tsx`, `search-provider.tsx`
 
 - [ ] **Notifications System**
   - Unread message counts
