@@ -3,3 +3,7 @@ node_modules
 .env
 
 /generated/prisma
+
+# dev.db and prod.db
+dev.db
+prod.db

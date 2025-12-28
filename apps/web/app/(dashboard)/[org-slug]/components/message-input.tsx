@@ -19,7 +19,6 @@ export function MessageInput({
   disabled = false,
 }: MessageInputProps) {
   const [content, setContent] = useState("");
-  const [isSending, setIsSending] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout>(null);
 
@@ -38,12 +37,12 @@ export function MessageInput({
         onTyping(false);
       }, 3000);
     },
-    [onTyping],
+    [onTyping]
   );
 
-  const handleSend = useCallback(async () => {
+  const handleSend = useCallback(() => {
     const trimmed = content.trim();
-    if (!trimmed || isSending) return;
+    if (!trimmed) return;
 
     // Clear typing indicator
     if (typingTimeoutRef.current) {
@@ -51,18 +50,15 @@ export function MessageInput({
     }
     onTyping(false);
 
-    setIsSending(true);
-    try {
-      await onSend(trimmed);
-      setContent("");
-      // Reset textarea height
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-      }
-    } finally {
-      setIsSending(false);
+    // Clear immediately - don't block on send
+    setContent("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
     }
-  }, [content, isSending, onSend, onTyping]);
+
+    // Fire and forget - let the message send in background
+    onSend(trimmed);
+  }, [content, onSend, onTyping]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -72,7 +68,7 @@ export function MessageInput({
         handleSend();
       }
     },
-    [handleSend],
+    [handleSend]
   );
 
   // Auto-resize textarea
@@ -85,8 +81,8 @@ export function MessageInput({
   }, []);
 
   return (
-    <div className="shrink-0 border-t p-4">
-      <div className="flex gap-2">
+    <div className="shrink-0 border-t px-4 py-3">
+      <div className="flex items-center gap-2">
         <Textarea
           ref={textareaRef}
           value={content}
@@ -94,24 +90,19 @@ export function MessageInput({
           onKeyDown={handleKeyDown}
           onInput={handleInput}
           placeholder={placeholder}
-          disabled={disabled || isSending}
+          disabled={disabled}
           rows={1}
-          className="min-h-[40px] max-h-[200px] resize-none"
+          className="min-h-[40px] max-h-[200px] flex-1 resize-none py-2"
         />
         <Button
           onClick={handleSend}
-          disabled={!content.trim() || isSending || disabled}
+          disabled={!content.trim() || disabled}
           size="icon"
-          className="shrink-0"
+          className="h-10 w-10 shrink-0"
         >
           <Send className="h-4 w-4" />
         </Button>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">
-        Press <kbd className="rounded border bg-muted px-1">Enter</kbd> to send,{" "}
-        <kbd className="rounded border bg-muted px-1">Shift + Enter</kbd> for
-        new line
-      </p>
     </div>
   );
 }
