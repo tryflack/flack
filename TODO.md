@@ -14,12 +14,14 @@ This file tracks the remaining UI features that need to be implemented based on 
 | Browse Channels | Discover and join public channels | `components/browse-channels-dialog.tsx` |
 | Group DM | Multi-select member picker for group conversations | `components/create-group-dm-dialog.tsx` |
 | User Presence | Online status indicators on avatars | `components/presence-indicator.tsx`, `use-presence.ts` |
+| Channel Member Management | Invite/remove members from channels | `actions/channels/invite-to-channel.ts`, `remove-from-channel.ts` |
+| Channel Info Dialog | Click channel name in header for details | `components/channel-info-dialog.tsx` |
 
 ## Summary of Ready Actions
 
 | Category | Actions |
 |----------|---------|
-| **Channels** | createChannel, updateChannel, deleteChannel, joinChannel, leaveChannel |
+| **Channels** | createChannel, updateChannel, deleteChannel, joinChannel, leaveChannel, inviteToChannel, removeFromChannel |
 | **Conversations** | createDm, createGroupDm, addParticipant, removeParticipant, updateConversation |
 | **Messages** | sendMessage, editMessage, deleteMessage, addReaction, removeReaction |
 | **Members** | inviteMember, resendInvitation, cancelInvitation, removeMember, updateRole |
@@ -65,18 +67,19 @@ This file tracks the remaining UI features that need to be implemented based on 
   - Leave channel option in channel settings dialog
   - Wired to `joinChannel` and `leaveChannel` actions
 
-- [ ] **Channel Member Management** (for private channels)
-  - View channel members panel
-  - Invite to channel
-  - Remove member from channel
+- [x] **Channel Member Management** ✓
+  - Added "Add member" button in channel settings Members tab
+  - Member search and picker for inviting users to channels
+  - Remove member functionality with confirmation dialog
+  - New actions: `actions/channels/invite-to-channel.ts`, `remove-from-channel.ts`
 
 ### Priority 3: Polish Features
 
-- [ ] **Channel Info Dialog from Header**
+- [x] **Channel Info Dialog from Header** ✓
   - Click channel name in header to open channel info dialog
-  - Show channel description, member count, member list
-  - Quick access to settings, leave channel
-  - Similar to Slack's channel details popover
+  - Shows channel description, member count, member list with presence
+  - Quick access to settings and leave channel
+  - Created: `components/channel-info-dialog.tsx`
 
 - [x] **User Presence Indicators** ✓
   - Created `use-presence.ts` hook for subscribing to presence updates

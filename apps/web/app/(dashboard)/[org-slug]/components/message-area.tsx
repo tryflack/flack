@@ -183,7 +183,20 @@ export function MessageArea({ roomId, roomType, roomName, channel }: MessageArea
     <div className="flex h-full flex-col">
       {/* Header */}
       <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-        {roomType === "channel" ? (
+        {roomType === "channel" && channel ? (
+          <button
+            onClick={() => setShowChannelInfo(true)}
+            className="group flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-muted"
+          >
+            {channel.isPrivate ? (
+              <Lock className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <Hash className="h-5 w-5 text-muted-foreground" />
+            )}
+            <h1 className="font-semibold">{roomName || "Channel"}</h1>
+            <ChevronDown className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+          </button>
+        ) : roomType === "channel" ? (
           <>
             <Hash className="h-5 w-5 text-muted-foreground" />
             <h1 className="font-semibold">{roomName || "Channel"}</h1>
@@ -246,6 +259,15 @@ export function MessageArea({ roomId, roomType, roomName, channel }: MessageArea
       <ChannelSettingsDialog
         open={showChannelSettings}
         onOpenChange={setShowChannelSettings}
+        channel={channel}
+      />
+    )}
+
+    {/* Channel Info Dialog */}
+    {channel && (
+      <ChannelInfoDialog
+        open={showChannelInfo}
+        onOpenChange={setShowChannelInfo}
         channel={channel}
       />
     )}
