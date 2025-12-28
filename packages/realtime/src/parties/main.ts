@@ -17,4 +17,32 @@ export default class MainParty implements PartyKitServer {
       sender.send(message);
     }
   }
+
+  // Debug endpoint - GET /parties/main/debug
+  async onRequest(req: Request): Promise<Response> {
+    const authUrl = process.env.BETTER_AUTH_URL || "NOT SET - using localhost:3000";
+    
+    // Test the connection
+    const baseUrl = authUrl.endsWith("/") ? authUrl.slice(0, -1) : authUrl;
+    const testUrl = `${baseUrl}/api/auth/validate-session`;
+    
+    let testResult = "not tested";
+    try {
+      const response = await fetch(testUrl, {
+        method: "GET",
+        headers: { "Authorization": "Bearer test-invalid-token" },
+      });
+      testResult = `status: ${response.status}, reachable: true`;
+    } catch (error) {
+      testResult = `error: ${error}`;
+    }
+    
+    return new Response(JSON.stringify({
+      BETTER_AUTH_URL: authUrl,
+      testUrl: testUrl,
+      testResult: testResult,
+    }, null, 2), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 }

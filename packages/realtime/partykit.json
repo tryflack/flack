@@ -6,6 +6,9 @@
     "channel": "src/parties/channel.ts",
     "conversation": "src/parties/conversation.ts",
     "presence": "src/parties/presence.ts"
+  },
+  "vars": {
+    "BETTER_AUTH_URL": "https://flack-web.vercel.app"
   }
 }
 
