@@ -10,7 +10,7 @@ export default class MainParty implements PartyKitServer {
 
   onMessage(
     message: string | ArrayBuffer | ArrayBufferView,
-    sender: Connection
+    sender: Connection,
   ) {
     // Echo back for health checks
     if (typeof message === "string") {
