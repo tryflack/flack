@@ -4,7 +4,11 @@
  */
 
 // Server-side PartyKit URL for HTTP broadcasts
-const PARTYKIT_URL = process.env.PARTYKIT_URL || "http://localhost:1999";
+// Derive from NEXT_PUBLIC_PARTYKIT_HOST so we only need one env var
+const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || "localhost:1999";
+const PARTYKIT_URL = PARTYKIT_HOST.includes("localhost")
+  ? `http://${PARTYKIT_HOST}`
+  : `https://${PARTYKIT_HOST}`;
 
 export interface BroadcastNewMessagePayload {
   type: "message:new";
@@ -104,7 +108,7 @@ type BroadcastPayload =
 export async function broadcastToRoom(
   partyType: "channel" | "conversation" | "presence",
   roomId: string,
-  payload: BroadcastPayload,
+  payload: BroadcastPayload
 ): Promise<boolean> {
   try {
     const response = await fetch(
@@ -113,12 +117,12 @@ export async function broadcastToRoom(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-      },
+      }
     );
 
     if (!response.ok) {
       console.error(
-        `Failed to broadcast to PartyKit: ${response.status} ${response.statusText}`,
+        `Failed to broadcast to PartyKit: ${response.status} ${response.statusText}`
       );
       return false;
     }
@@ -139,7 +143,7 @@ export async function broadcastNewMessage(
   message: BroadcastNewMessagePayload["message"],
   channelId: string | null,
   conversationId: string | null,
-  organizationId?: string,
+  organizationId?: string
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -177,7 +181,7 @@ export async function broadcastMessageEdit(
   content: string,
   updatedAt: Date,
   channelId: string | null,
-  conversationId: string | null,
+  conversationId: string | null
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -201,7 +205,7 @@ export async function broadcastMessageEdit(
 export async function broadcastMessageDelete(
   messageId: string,
   channelId: string | null,
-  conversationId: string | null,
+  conversationId: string | null
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -229,7 +233,7 @@ export async function broadcastReactionAdd(
     userName: string;
   },
   channelId: string | null,
-  conversationId: string | null,
+  conversationId: string | null
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -256,7 +260,7 @@ export async function broadcastReactionRemove(
   messageId: string,
   reactionId: string,
   channelId: string | null,
-  conversationId: string | null,
+  conversationId: string | null
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";

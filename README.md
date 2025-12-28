@@ -305,6 +305,14 @@ openssl rand -base64 32
 2. Check `NEXT_PUBLIC_PARTYKIT_HOST` matches your PartyKit server
 3. For production, ensure your domain is correctly configured
 
+### Messages require hard refresh in production
+
+This means the server-side broadcast isn't reaching PartyKit. Check that:
+
+1. `PARTYKIT_URL` is set on your hosting platform (e.g., `https://your-project.partykit.dev`)
+2. The URL uses `https://` protocol (not just the hostname)
+3. The URL matches your deployed PartyKit server exactly
+
 ### Database migration errors
 
 ```bash
