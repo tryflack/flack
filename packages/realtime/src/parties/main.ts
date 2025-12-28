@@ -10,7 +10,7 @@ export default class MainParty implements PartyKitServer {
 
   onMessage(
     message: string | ArrayBuffer | ArrayBufferView,
-    sender: Connection
+    sender: Connection,
   ) {
     // Echo back for health checks
     if (typeof message === "string") {
@@ -49,11 +49,11 @@ export default class MainParty implements PartyKitServer {
           testResult: testResult,
         },
         null,
-        2
+        2,
       ),
       {
         headers: { "Content-Type": "application/json" },
-      }
+      },
     );
   }
 }
