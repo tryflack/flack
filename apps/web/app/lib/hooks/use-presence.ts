@@ -4,7 +4,9 @@ import { useSWRConfig } from "swr";
 import { getBearerToken, fetchBearerToken } from "@flack/auth/auth-client";
 import type { PresenceUser } from "@flack/realtime";
 
-const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || "localhost:1999";
+// Strip protocol if present - PartySocket needs just the host
+const RAW_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || "localhost:1999";
+const PARTYKIT_HOST = RAW_HOST.replace(/^https?:\/\//, "");
 
 interface UsePresenceOptions {
   organizationId: string | null;
@@ -22,7 +24,7 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
     (userId: string): "online" | "away" | "offline" => {
       return users.get(userId)?.status ?? "offline";
     },
-    [users],
+    [users]
   );
 
   // Check if user is online
@@ -30,12 +32,12 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
     (userId: string): boolean => {
       return getStatus(userId) === "online";
     },
-    [getStatus],
+    [getStatus]
   );
 
   // Get all online users
   const onlineUsers = Array.from(users.values()).filter(
-    (u) => u.status === "online",
+    (u) => u.status === "online"
   );
 
   useEffect(() => {

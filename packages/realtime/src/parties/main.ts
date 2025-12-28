@@ -19,7 +19,9 @@ export default class MainParty implements PartyKitServer {
   }
 
   // Debug endpoint - GET /parties/main/debug
-  async onRequest(req: Request): Promise<Response> {
+  async onRequest(
+    req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0]
+  ): Promise<Response> {
     // TODO: Remove hardcoded URL after fixing env vars
     const authUrl =
       process.env.BETTER_AUTH_URL || "https://flack-web.vercel.app";
