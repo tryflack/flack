@@ -92,4 +92,3 @@ export const createDefaultChannels = authActionClient
 
     return { channels, created: true };
   });
-

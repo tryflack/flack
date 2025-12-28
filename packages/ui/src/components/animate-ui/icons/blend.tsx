@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { motion, type Variants } from 'motion/react';
+import * as React from "react";
+import { motion, type Variants } from "motion/react";
 
 import {
   getVariants,
   useAnimateIconContext,
   IconWrapper,
   type IconProps,
-} from '@flack/ui/components/animate-ui/icons/icon';
+} from "@flack/ui/components/animate-ui/icons/icon";
 
 type BlendProps = IconProps<keyof typeof animations>;
 
@@ -22,7 +22,7 @@ const animations = {
       animate: {
         x: 6,
         y: 6,
-        transition: { type: 'spring', stiffness: 100, damping: 12 },
+        transition: { type: "spring", stiffness: 100, damping: 12 },
       },
     },
     circle2: {
@@ -33,7 +33,7 @@ const animations = {
       animate: {
         x: -6,
         y: -6,
-        transition: { type: 'spring', stiffness: 100, damping: 12 },
+        transition: { type: "spring", stiffness: 100, damping: 12 },
       },
     },
   } satisfies Record<string, Variants>,

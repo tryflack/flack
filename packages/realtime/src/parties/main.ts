@@ -8,11 +8,13 @@ export default class MainParty implements PartyKitServer {
     conn.send(JSON.stringify({ type: "connected", room: this.room.id }));
   }
 
-  onMessage(message: string | ArrayBuffer | ArrayBufferView, sender: Connection) {
+  onMessage(
+    message: string | ArrayBuffer | ArrayBufferView,
+    sender: Connection,
+  ) {
     // Echo back for health checks
     if (typeof message === "string") {
       sender.send(message);
     }
   }
 }
-

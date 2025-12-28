@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { X, Check, Users } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
 import { Badge } from "@flack/ui/components/badge";
 import { Button } from "@flack/ui/components/button";
 import { Input } from "@flack/ui/components/input";
@@ -42,11 +46,14 @@ function getInitials(name: string) {
     .slice(0, 2);
 }
 
-export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogProps) {
+export function CreateGroupDmDialog({
+  open,
+  onOpenChange,
+}: CreateGroupDmDialogProps) {
   const { members, isLoading: membersLoading } = useMembers();
   const { member: activeMember } = useActiveMember();
   const { navigateToDm } = useChatParams();
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [groupName, setGroupName] = useState("");
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
@@ -56,7 +63,7 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
   const filteredMembers = members.filter((m) => {
     if (m.userId === activeMember?.userId) return false;
     if (!searchQuery) return true;
-    
+
     const query = searchQuery.toLowerCase();
     return (
       m.user.name.toLowerCase().includes(query) ||
@@ -64,13 +71,15 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
     );
   });
 
-  const selectedMembers = members.filter((m) => selectedUserIds.includes(m.userId));
+  const selectedMembers = members.filter((m) =>
+    selectedUserIds.includes(m.userId),
+  );
 
   const toggleSelection = (userId: string) => {
     setSelectedUserIds((prev) =>
       prev.includes(userId)
         ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
+        : [...prev, userId],
     );
   };
 
@@ -133,7 +142,7 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
             Select members to start a group conversation.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-4">
           {/* Group name input */}
           <Field>
@@ -177,7 +186,7 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
-          
+
           <ScrollArea className="h-[250px] rounded-md border">
             {membersLoading ? (
               <div className="flex items-center justify-center py-8">
@@ -186,7 +195,9 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
             ) : filteredMembers.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <p className="text-sm text-muted-foreground">
-                  {searchQuery ? "No members found" : "No other members in this workspace"}
+                  {searchQuery
+                    ? "No members found"
+                    : "No other members in this workspace"}
                 </p>
               </div>
             ) : (
@@ -201,12 +212,14 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
                         "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors",
                         isSelected
                           ? "bg-primary/10 text-primary"
-                          : "hover:bg-accent"
+                          : "hover:bg-accent",
                       )}
                     >
                       <Avatar className="h-9 w-9">
                         <AvatarImage src={member.user.image ?? undefined} />
-                        <AvatarFallback>{getInitials(member.user.name)}</AvatarFallback>
+                        <AvatarFallback>
+                          {getInitials(member.user.name)}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span className="truncate text-sm font-medium">
@@ -259,4 +272,3 @@ export function CreateGroupDmDialog({ open, onOpenChange }: CreateGroupDmDialogP
     </Dialog>
   );
 }
-

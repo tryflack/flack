@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ channelId: string }> }
+  { params }: { params: Promise<{ channelId: string }> },
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -21,7 +21,7 @@ export async function GET(
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -66,13 +66,13 @@ export async function GET(
     if (!isMember) {
       return NextResponse.json(
         { error: "You don't have access to this channel" },
-        { status: 403 }
+        { status: 403 },
       );
     }
   }
 
   const userMembership = channel.members.find(
-    (m) => m.userId === session.user.id
+    (m) => m.userId === session.user.id,
   );
 
   return NextResponse.json({
@@ -96,4 +96,3 @@ export async function GET(
     },
   });
 }
-

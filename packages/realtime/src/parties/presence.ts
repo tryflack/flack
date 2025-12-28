@@ -1,5 +1,14 @@
-import type { PartyKitServer, Connection, Room, Request } from "partykit/server";
-import type { ServerMessage, ConnectionState, PresenceUser } from "../lib/types.js";
+import type {
+  PartyKitServer,
+  Connection,
+  Room,
+  Request,
+} from "partykit/server";
+import type {
+  ServerMessage,
+  ConnectionState,
+  PresenceUser,
+} from "../lib/types.js";
 import { validateToken } from "../lib/auth.js";
 
 // Presence party - handles online status for an organization
@@ -15,18 +24,28 @@ export default class PresenceParty implements PartyKitServer {
     // Client will send { type: "auth", token: "..." } on connect
   }
 
-  async onMessage(message: string | ArrayBuffer | ArrayBufferView, sender: Connection) {
+  async onMessage(
+    message: string | ArrayBuffer | ArrayBufferView,
+    sender: Connection,
+  ) {
     if (typeof message !== "string") {
-      sender.send(JSON.stringify({ type: "error", message: "Binary messages not supported" }));
+      sender.send(
+        JSON.stringify({
+          type: "error",
+          message: "Binary messages not supported",
+        }),
+      );
       return;
     }
-    
+
     let parsed: { type: string; token?: string; status?: string };
-    
+
     try {
       parsed = JSON.parse(message);
     } catch {
-      sender.send(JSON.stringify({ type: "error", message: "Invalid message format" }));
+      sender.send(
+        JSON.stringify({ type: "error", message: "Invalid message format" }),
+      );
       return;
     }
 
@@ -35,27 +54,35 @@ export default class PresenceParty implements PartyKitServer {
     switch (parsed.type) {
       case "auth": {
         if (!parsed.token) {
-          sender.send(JSON.stringify({ type: "error", message: "Token required" }));
+          sender.send(
+            JSON.stringify({ type: "error", message: "Token required" }),
+          );
           return;
         }
 
         const authUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
         const state = await validateToken(parsed.token, authUrl);
-        
+
         if (state) {
           this.connections.set(sender.id, state);
           this.addUserConnection(state.userId, sender.id, state);
-          sender.send(JSON.stringify({ type: "connected", userId: state.userId }));
+          sender.send(
+            JSON.stringify({ type: "connected", userId: state.userId }),
+          );
           this.broadcastPresence();
         } else {
-          sender.send(JSON.stringify({ type: "error", message: "Invalid token" }));
+          sender.send(
+            JSON.stringify({ type: "error", message: "Invalid token" }),
+          );
         }
         break;
       }
 
       case "status": {
         if (!connectionState?.authenticated) {
-          sender.send(JSON.stringify({ type: "error", message: "Not authenticated" }));
+          sender.send(
+            JSON.stringify({ type: "error", message: "Not authenticated" }),
+          );
           return;
         }
 
@@ -83,17 +110,24 @@ export default class PresenceParty implements PartyKitServer {
       case "unread": {
         // Broadcast unread notification to all users except sender
         // This is used to notify other users that there's a new message in a channel/conversation
-        const notification = parsed as { type: "unread"; channelId?: string; conversationId?: string; senderId?: string };
-        
+        const notification = parsed as {
+          type: "unread";
+          channelId?: string;
+          conversationId?: string;
+          senderId?: string;
+        };
+
         for (const conn of this.room.getConnections()) {
           const state = this.connections.get(conn.id);
           // Send to all authenticated users except the message sender
           if (state?.authenticated && state.userId !== notification.senderId) {
-            conn.send(JSON.stringify({
-              type: "unread",
-              channelId: notification.channelId,
-              conversationId: notification.conversationId,
-            }));
+            conn.send(
+              JSON.stringify({
+                type: "unread",
+                channelId: notification.channelId,
+                conversationId: notification.conversationId,
+              }),
+            );
           }
         }
         break;
@@ -103,15 +137,19 @@ export default class PresenceParty implements PartyKitServer {
 
   onClose(conn: Connection) {
     const state = this.connections.get(conn.id);
-    
+
     if (state) {
       this.removeUserConnection(state.userId, conn.id);
     }
-    
+
     this.connections.delete(conn.id);
   }
 
-  private addUserConnection(userId: string, connectionId: string, state: ConnectionState) {
+  private addUserConnection(
+    userId: string,
+    connectionId: string,
+    state: ConnectionState,
+  ) {
     // Track user connections
     let userConns = this.userConnections.get(userId);
     if (!userConns) {
@@ -140,7 +178,7 @@ export default class PresenceParty implements PartyKitServer {
     const userConns = this.userConnections.get(userId);
     if (userConns) {
       userConns.delete(connectionId);
-      
+
       // If no more connections, mark user as offline
       if (userConns.size === 0) {
         this.userConnections.delete(userId);
@@ -156,14 +194,14 @@ export default class PresenceParty implements PartyKitServer {
 
   private broadcastPresence() {
     const users = Array.from(this.userStatus.values());
-    
+
     const message: ServerMessage = {
       type: "presence",
       users,
     };
-    
+
     const messageStr = JSON.stringify(message);
-    
+
     for (const conn of this.room.getConnections()) {
       const state = this.connections.get(conn.id);
       if (state?.authenticated) {
@@ -185,18 +223,20 @@ export default class PresenceParty implements PartyKitServer {
         conversationId?: string;
         senderId?: string;
       };
-      
+
       switch (body.type) {
         case "unread":
           // Broadcast to all authenticated users except the sender
           for (const conn of this.room.getConnections()) {
             const state = this.connections.get(conn.id);
             if (state?.authenticated && state.userId !== body.senderId) {
-              conn.send(JSON.stringify({
-                type: "unread",
-                channelId: body.channelId,
-                conversationId: body.conversationId,
-              } satisfies ServerMessage));
+              conn.send(
+                JSON.stringify({
+                  type: "unread",
+                  channelId: body.channelId,
+                  conversationId: body.conversationId,
+                } satisfies ServerMessage),
+              );
             }
           }
           break;
@@ -212,4 +252,3 @@ export default class PresenceParty implements PartyKitServer {
     }
   }
 }
-

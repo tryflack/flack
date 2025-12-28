@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm, Controller } from "react-hook-form"
-import * as z from "zod"
-import { useId, useTransition } from "react"
-import { Button } from "@flack/ui/components/button"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
+import * as z from "zod";
+import { useId, useTransition } from "react";
+import { Button } from "@flack/ui/components/button";
 import {
   Card,
   CardContent,
@@ -12,36 +12,34 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@flack/ui/components/card"
+} from "@flack/ui/components/card";
 import {
   Field,
   FieldError,
   FieldGroup,
   FieldLabel,
-} from "@flack/ui/components/field"
+} from "@flack/ui/components/field";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-  } from "@flack/ui/components/input-otp"
-import { Spinner } from "@flack/ui/components/spinner"
-import { authClient } from "@flack/auth/auth-client"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+} from "@flack/ui/components/input-otp";
+import { Spinner } from "@flack/ui/components/spinner";
+import { authClient } from "@flack/auth/auth-client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const verifyEmailSchema = z.object({
   otp: z.string().length(6, "OTP must be 6 digits"),
-})
+});
 
-type VerifyEmailFormValues = z.infer<typeof verifyEmailSchema>
+type VerifyEmailFormValues = z.infer<typeof verifyEmailSchema>;
 
-export function VerifyEmailForm({
-  email,
-}: { email: string }) {
-  const otpInputId = useId()
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+export function VerifyEmailForm({ email }: { email: string }) {
+  const otpInputId = useId();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<VerifyEmailFormValues>({
     resolver: zodResolver(verifyEmailSchema),
@@ -49,33 +47,35 @@ export function VerifyEmailForm({
       otp: "",
     },
     mode: "onChange",
-  })
+  });
 
   const onSubmit = async (formData: VerifyEmailFormValues) => {
-    await authClient.emailOtp.verifyEmail({
-      email: email,
-      otp: formData.otp,
-    }, {
-      onSuccess: () => {
-        toast.success("Email verified successfully")
-        startTransition(() => {
-          router.push('/')
-        })
+    await authClient.emailOtp.verifyEmail(
+      {
+        email: email,
+        otp: formData.otp,
       },
-      onError: (ctx) => {
-        toast.error(ctx.error.message ?? "Sorry, that didn't work. Please try again.")
+      {
+        onSuccess: () => {
+          toast.success("Email verified successfully");
+          startTransition(() => {
+            router.push("/");
+          });
+        },
+        onError: (ctx) => {
+          toast.error(
+            ctx.error.message ?? "Sorry, that didn't work. Please try again.",
+          );
+        },
       },
-    })
-  }
-
+    );
+  };
 
   return (
     <div>
       <Card>
         <CardHeader>
-          <CardTitle>
-            Verify your email ({email})
-          </CardTitle>
+          <CardTitle>Verify your email ({email})</CardTitle>
           <CardDescription>
             Enter the 6-digit code sent to your email address
           </CardDescription>
@@ -88,7 +88,9 @@ export function VerifyEmailForm({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor={otpInputId}>Verification Code</FieldLabel>
+                    <FieldLabel htmlFor={otpInputId}>
+                      Verification Code
+                    </FieldLabel>
                     <InputOTP
                       autoFocus
                       maxLength={6}
@@ -119,8 +121,17 @@ export function VerifyEmailForm({
             </FieldGroup>
           </CardContent>
           <CardFooter className="flex justify-end mt-4">
-            <Button type="submit" disabled={isPending || form.formState.isSubmitting}>
-              {isPending || form.formState.isSubmitting ? <span className="flex items-center gap-2"><Spinner /> Verifying...</span> : "Verify Email"}
+            <Button
+              type="submit"
+              disabled={isPending || form.formState.isSubmitting}
+            >
+              {isPending || form.formState.isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <Spinner /> Verifying...
+                </span>
+              ) : (
+                "Verify Email"
+              )}
             </Button>
           </CardFooter>
         </form>

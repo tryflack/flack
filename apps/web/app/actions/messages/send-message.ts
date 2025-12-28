@@ -151,7 +151,7 @@ export const sendMessage = orgActionClient
       },
       channelId ?? null,
       conversationId ?? null,
-      organizationId
+      organizationId,
     );
 
     return { message };

@@ -53,7 +53,7 @@ export function ChannelList() {
                 className={cn(
                   "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent",
                   isActive && "bg-accent text-accent-foreground",
-                  hasUnread && !isActive && "font-semibold"
+                  hasUnread && !isActive && "font-semibold",
                 )}
               >
                 {channel.isPrivate ? (
@@ -62,7 +62,7 @@ export function ChannelList() {
                       "h-4 w-4 shrink-0",
                       hasUnread && !isActive
                         ? "text-foreground"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
                     )}
                   />
                 ) : (
@@ -71,7 +71,7 @@ export function ChannelList() {
                       "h-4 w-4 shrink-0",
                       hasUnread && !isActive
                         ? "text-foreground"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
                     )}
                   />
                 )}

@@ -30,7 +30,7 @@ export const removeMember = orgActionClient
         },
       });
 
-      return { 
+      return {
         success: true,
         member: result,
       };
@@ -41,4 +41,3 @@ export const removeMember = orgActionClient
       throw new ActionError("Failed to remove member");
     }
   });
-

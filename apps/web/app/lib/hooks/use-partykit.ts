@@ -19,7 +19,7 @@ interface UsePartyKitOptions {
   onMessageEdit?: (
     messageId: string,
     content: string,
-    updatedAt: string
+    updatedAt: string,
   ) => void;
   onMessageDelete?: (messageId: string) => void;
   onReactionAdd?: (messageId: string, reaction: Reaction) => void;
@@ -42,7 +42,7 @@ export function usePartyKit({
   const socketRef = useRef<PartySocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState<Map<string, string>>(
-    new Map()
+    new Map(),
   );
 
   // Use refs to store callbacks so they don't cause socket reconnection
@@ -115,7 +115,7 @@ export function usePartyKit({
             callbacks.onMessageEdit?.(
               message.messageId,
               message.content,
-              message.updatedAt
+              message.updatedAt,
             );
             break;
 
@@ -134,7 +134,7 @@ export function usePartyKit({
           case "typing":
             if (message.isTyping) {
               setTypingUsers((prev) =>
-                new Map(prev).set(message.userId, message.userName)
+                new Map(prev).set(message.userId, message.userName),
               );
             } else {
               setTypingUsers((prev) => {
@@ -146,7 +146,7 @@ export function usePartyKit({
             callbacks.onTyping?.(
               message.userId,
               message.userName,
-              message.isTyping
+              message.isTyping,
             );
             break;
 

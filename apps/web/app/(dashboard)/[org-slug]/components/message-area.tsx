@@ -109,14 +109,14 @@ export function MessageArea({
     (chatMessage: ChatMessage) => {
       addMessage(chatMessageToMessage(chatMessage));
     },
-    [addMessage]
+    [addMessage],
   );
 
   const handleMessageEdit = useCallback(
     (messageId: string, content: string, updatedAt: string) => {
       updateMessage(messageId, { content, updatedAt, isEdited: true });
     },
-    [updateMessage]
+    [updateMessage],
   );
 
   const handleReactionAdd = useCallback(
@@ -131,7 +131,7 @@ export function MessageArea({
         });
       }
     },
-    [messages, updateMessage]
+    [messages, updateMessage],
   );
 
   const handleReactionRemove = useCallback(
@@ -143,7 +143,7 @@ export function MessageArea({
         });
       }
     },
-    [messages, updateMessage]
+    [messages, updateMessage],
   );
 
   const { isConnected, typingUsers, sendTyping } = usePartyKit({
@@ -190,7 +190,7 @@ export function MessageArea({
     // Check if user already reacted with this emoji
     const message = messages.find((m) => m.id === messageId);
     const existingReaction = message?.reactions.find(
-      (r) => r.emoji === emoji && r.userId === member?.userId
+      (r) => r.emoji === emoji && r.userId === member?.userId,
     );
 
     if (existingReaction) {

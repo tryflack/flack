@@ -50,7 +50,7 @@ export default async function OrganizationSettingsPage({
 
   // Find the current user's membership
   const currentMember = fullOrganization.members.find(
-    (member) => member.userId === session.user.id
+    (member) => member.userId === session.user.id,
   );
 
   const isOwner = currentMember?.role === "owner";
@@ -67,4 +67,3 @@ export default async function OrganizationSettingsPage({
     />
   );
 }
-

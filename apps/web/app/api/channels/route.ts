@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -32,7 +32,7 @@ export async function GET(req: NextRequest) {
   if (!membership) {
     return NextResponse.json(
       { error: "Not a member of this organization" },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
     channels.map(async (channel) => {
       const membership = channel.members[0] ?? null;
       const lastMessage = channel.messages[0] ?? null;
-      
+
       // Calculate unread count if user is a member
       let unreadCount = 0;
       if (membership && membership.lastReadAt) {
@@ -119,15 +119,18 @@ export async function GET(req: NextRequest) {
         memberCount: channel._count.members,
         isMember: channel.members.length > 0,
         membership: membership
-          ? { role: membership.role, joinedAt: membership.joinedAt, lastReadAt: membership.lastReadAt }
+          ? {
+              role: membership.role,
+              joinedAt: membership.joinedAt,
+              lastReadAt: membership.lastReadAt,
+            }
           : null,
         lastMessage,
         unreadCount,
         createdAt: channel.createdAt,
       };
-    })
+    }),
   );
 
   return NextResponse.json({ channels: transformedChannels });
 }
-

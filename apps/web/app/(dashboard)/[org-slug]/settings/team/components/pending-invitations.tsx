@@ -45,7 +45,7 @@ export function PendingInvitations({
     setCancellingId(invitation.id);
     try {
       const result = await onCancel(invitation.id);
-      if (result && typeof result === 'object' && 'serverError' in result) {
+      if (result && typeof result === "object" && "serverError" in result) {
         toast.error(result.serverError as string);
       } else {
         toast.success(`Invitation to ${invitation.email} has been cancelled`);
@@ -61,7 +61,7 @@ export function PendingInvitations({
     setResendingId(invitation.id);
     try {
       const result = await onResend(invitation.id);
-      if (result && typeof result === 'object' && 'serverError' in result) {
+      if (result && typeof result === "object" && "serverError" in result) {
         toast.error(result.serverError as string);
       } else {
         toast.success(`Invitation resent to ${invitation.email}`);
@@ -102,7 +102,12 @@ export function PendingInvitations({
                 <div className="flex flex-col gap-1">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{invitation.email}</span>
-                    <Badge variant={invitation.role === "admin" ? "secondary" : "outline"} className="gap-1">
+                    <Badge
+                      variant={
+                        invitation.role === "admin" ? "secondary" : "outline"
+                      }
+                      className="gap-1"
+                    >
                       <RoleIcon className="h-3 w-3" />
                       {invitation.role || "member"}
                     </Badge>
@@ -127,7 +132,10 @@ export function PendingInvitations({
                     variant="outline"
                     size="sm"
                     onClick={() => handleResend(invitation)}
-                    disabled={resendingId === invitation.id || cancellingId === invitation.id}
+                    disabled={
+                      resendingId === invitation.id ||
+                      cancellingId === invitation.id
+                    }
                   >
                     {resendingId === invitation.id ? (
                       <Spinner className="h-4 w-4" />
@@ -142,7 +150,10 @@ export function PendingInvitations({
                     variant="ghost"
                     size="sm"
                     onClick={() => handleCancel(invitation)}
-                    disabled={resendingId === invitation.id || cancellingId === invitation.id}
+                    disabled={
+                      resendingId === invitation.id ||
+                      cancellingId === invitation.id
+                    }
                     className="text-muted-foreground hover:text-destructive"
                   >
                     {cancellingId === invitation.id ? (
@@ -163,4 +174,3 @@ export function PendingInvitations({
     </Card>
   );
 }
-

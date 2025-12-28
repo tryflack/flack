@@ -26,7 +26,7 @@ const fetcher = async (url: string): Promise<ActiveMemberResponse> => {
 export function useActiveMember() {
   const { data, error, isLoading, mutate } = useSWR<ActiveMemberResponse>(
     "/api/members/me",
-    fetcher
+    fetcher,
   );
 
   const member = data?.member ?? null;

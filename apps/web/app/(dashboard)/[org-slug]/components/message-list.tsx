@@ -13,10 +13,10 @@ interface MessageListProps {
   currentUserId?: string;
   onEditMessage?: (
     messageId: string,
-    content: string
+    content: string,
   ) => Promise<{ serverError?: string } | undefined>;
   onDeleteMessage?: (
-    messageId: string
+    messageId: string,
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
 }
@@ -45,7 +45,7 @@ export function MessageList({
           onLoadMore();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     observer.observe(sentinel);
@@ -82,7 +82,7 @@ export function MessageList({
               prevMessage.authorId !== message.authorId ||
               isMoreThan5MinutesApart(
                 prevMessage.createdAt,
-                message.createdAt
+                message.createdAt,
               ) ||
               message.type === "system" ||
               prevMessage.type === "system";

@@ -59,8 +59,15 @@ export const removeFromChannel = orgActionClient
     const isRemovingSelf = targetUserId === userId;
 
     // Users can remove themselves, or admins can remove others
-    if (!isRemovingSelf && !isOrgAdmin && !isChannelAdmin && !isChannelCreator) {
-      throw new ActionError("You don't have permission to remove members from this channel");
+    if (
+      !isRemovingSelf &&
+      !isOrgAdmin &&
+      !isChannelAdmin &&
+      !isChannelCreator
+    ) {
+      throw new ActionError(
+        "You don't have permission to remove members from this channel",
+      );
     }
 
     // Cannot remove the channel creator (they should delete the channel instead)
@@ -139,9 +146,8 @@ export const removeFromChannel = orgActionClient
       },
       channelId,
       null,
-      organizationId
+      organizationId,
     );
 
     return { success: true };
   });
-

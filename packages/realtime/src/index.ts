@@ -7,4 +7,3 @@ export type {
   PresenceUser,
   MessageAuthor,
 } from "./lib/types.js";
-

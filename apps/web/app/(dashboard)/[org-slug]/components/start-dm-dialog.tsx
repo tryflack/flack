@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import { Users } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
 import { Button } from "@flack/ui/components/button";
 import {
   Dialog,
@@ -41,7 +45,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
   const { startDm } = useConversations();
   const { member: activeMember } = useActiveMember();
   const { navigateToDm } = useChatParams();
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isStarting, setIsStarting] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -51,7 +55,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
   const filteredMembers = members.filter((m) => {
     if (m.userId === activeMember?.userId) return false;
     if (!searchQuery) return true;
-    
+
     const query = searchQuery.toLowerCase();
     return (
       m.user.name.toLowerCase().includes(query) ||
@@ -62,15 +66,15 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
   const handleStartDm = async (targetUserId: string) => {
     setIsStarting(true);
     setSelectedUserId(targetUserId);
-    
+
     try {
       const result = await startDm(targetUserId);
-      
+
       if (result?.serverError) {
         toast.error(result.serverError);
         return;
       }
-      
+
       if (result?.data?.conversation) {
         onOpenChange(false);
         navigateToDm(result.data.conversation.id);
@@ -99,7 +103,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
               Select a team member to start a direct message.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             {/* Create group button */}
             <Button
@@ -117,7 +121,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
             />
-            
+
             <ScrollArea className="h-[280px] rounded-md border">
               {membersLoading ? (
                 <div className="flex items-center justify-center py-8">
@@ -126,7 +130,9 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
               ) : filteredMembers.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
                   <p className="text-sm text-muted-foreground">
-                    {searchQuery ? "No members found" : "No other members in this workspace"}
+                    {searchQuery
+                      ? "No members found"
+                      : "No other members in this workspace"}
                   </p>
                 </div>
               ) : (
@@ -138,12 +144,16 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
                       disabled={isStarting}
                       className={cn(
                         "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-accent",
-                        isStarting && selectedUserId === member.userId && "opacity-50"
+                        isStarting &&
+                          selectedUserId === member.userId &&
+                          "opacity-50",
                       )}
                     >
                       <Avatar className="h-9 w-9">
                         <AvatarImage src={member.user.image ?? undefined} />
-                        <AvatarFallback>{getInitials(member.user.name)}</AvatarFallback>
+                        <AvatarFallback>
+                          {getInitials(member.user.name)}
+                        </AvatarFallback>
                       </Avatar>
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span className="truncate text-sm font-medium">
@@ -172,4 +182,3 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
     </>
   );
 }
-

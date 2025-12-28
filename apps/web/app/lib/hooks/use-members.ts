@@ -45,7 +45,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export function useMembers() {
   const { data, error, isLoading, mutate } = useSWR<MembersResponse>(
     "/api/members",
-    fetcher
+    fetcher,
   );
 
   // Invite a new member
@@ -72,7 +72,7 @@ export function useMembers() {
   // Update a member's role
   const updateRole = async (
     memberId: string,
-    role: "member" | "admin" | "owner"
+    role: "member" | "admin" | "owner",
   ) => {
     const result = await updateMemberRole({ memberId, role });
     if (result?.data?.success) {

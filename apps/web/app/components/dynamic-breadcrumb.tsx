@@ -36,7 +36,7 @@ export function DynamicBreadcrumb({ orgSlug }: { orgSlug: string }) {
 // Find the breadcrumb label by checking the current path, then walking up parent paths
 function findBreadcrumbLabel(
   pathname: string,
-  breadcrumbMap: Record<string, string>
+  breadcrumbMap: Record<string, string>,
 ): string {
   // First, check if the exact path exists in the map
   if (breadcrumbMap[pathname]) {

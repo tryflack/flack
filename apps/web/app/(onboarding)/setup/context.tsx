@@ -18,10 +18,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   },
 ];
 
-const STEP_PATHS = [
-  "/setup/welcome",
-  "/setup/workspace",
-];
+const STEP_PATHS = ["/setup/welcome", "/setup/workspace"];
 
 interface WorkspaceData {
   name: string;
@@ -39,7 +36,7 @@ interface OnboardingContextValue {
 }
 
 const OnboardingContext = React.createContext<OnboardingContextValue | null>(
-  null
+  null,
 );
 
 export function OnboardingProvider({
@@ -122,7 +119,7 @@ export function OnboardingProvider({
       isLoading: !!isLoading,
       refetchOrganizations: refetch,
     }),
-    [currentStep, completedStep, workspaceData, isLoading, refetch]
+    [currentStep, completedStep, workspaceData, isLoading, refetch],
   );
 
   return (

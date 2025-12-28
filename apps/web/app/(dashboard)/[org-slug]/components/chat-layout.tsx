@@ -7,7 +7,8 @@ import { useChatParams } from "@/app/lib/hooks/use-chat-params";
 import { useChannels } from "@/app/lib/hooks/use-channels";
 
 export function ChatLayout() {
-  const { activeChannel, activeDm, activeThread, navigateToChannel } = useChatParams();
+  const { activeChannel, activeDm, activeThread, navigateToChannel } =
+    useChatParams();
   const { channels, isLoading } = useChannels();
 
   // Auto-select the first channel if no channel or DM is selected
@@ -58,4 +59,3 @@ export function ChatLayout() {
     </div>
   );
 }
-

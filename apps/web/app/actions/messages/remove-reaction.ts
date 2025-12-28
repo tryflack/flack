@@ -49,7 +49,7 @@ export const removeReaction = orgActionClient
       messageId,
       reaction.id,
       reaction.message.channelId,
-      reaction.message.conversationId
+      reaction.message.conversationId,
     );
 
     return { success: true, reactionId: reaction.id };

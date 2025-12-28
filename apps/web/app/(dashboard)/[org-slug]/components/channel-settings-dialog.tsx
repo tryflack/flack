@@ -243,14 +243,14 @@ export function ChannelSettingsDialog({
 
   // Get members not already in the channel
   const channelMemberIds = new Set(
-    channelDetails?.members.map((m) => m.user.id) ?? []
+    channelDetails?.members.map((m) => m.user.id) ?? [],
   );
   const availableMembers = orgMembers.filter(
     (m) =>
       !channelMemberIds.has(m.userId) &&
       (memberSearch === "" ||
         m.user.name.toLowerCase().includes(memberSearch.toLowerCase()) ||
-        m.user.email.toLowerCase().includes(memberSearch.toLowerCase()))
+        m.user.email.toLowerCase().includes(memberSearch.toLowerCase())),
   );
 
   return (
@@ -450,7 +450,7 @@ export function ChannelSettingsDialog({
                             disabled={isInviting === m.userId}
                             className={cn(
                               "flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-accent",
-                              isInviting === m.userId && "opacity-50"
+                              isInviting === m.userId && "opacity-50",
                             )}
                           >
                             <Avatar className="h-8 w-8">

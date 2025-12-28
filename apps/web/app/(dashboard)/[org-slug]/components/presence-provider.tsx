@@ -20,7 +20,10 @@ interface PresenceProviderProps {
   children: React.ReactNode;
 }
 
-export function PresenceProvider({ organizationId, children }: PresenceProviderProps) {
+export function PresenceProvider({
+  organizationId,
+  children,
+}: PresenceProviderProps) {
   const presence = usePresence({ organizationId });
 
   const value = useMemo(
@@ -32,7 +35,7 @@ export function PresenceProvider({ organizationId, children }: PresenceProviderP
       onlineUsers: presence.onlineUsers,
       setStatus: presence.setStatus,
     }),
-    [presence]
+    [presence],
   );
 
   return (
@@ -57,4 +60,3 @@ export function usePresenceContext() {
   }
   return context;
 }
-

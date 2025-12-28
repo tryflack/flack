@@ -45,7 +45,9 @@ export const inviteToChannel = orgActionClient
     const isChannelCreator = channel.createdById === userId;
 
     if (!isOrgAdmin && !isChannelAdmin && !isChannelCreator) {
-      throw new ActionError("You don't have permission to invite members to this channel");
+      throw new ActionError(
+        "You don't have permission to invite members to this channel",
+      );
     }
 
     // Check if target user is a member of the organization
@@ -140,9 +142,8 @@ export const inviteToChannel = orgActionClient
       },
       channelId,
       null,
-      organizationId
+      organizationId,
     );
 
     return { success: true, membership };
   });
-

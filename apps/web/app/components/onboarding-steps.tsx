@@ -41,7 +41,7 @@ export function OnboardingSteps({
             transition={{ delay: index * 0.1, duration: 0.3 }}
             className={cn(
               "relative flex gap-4",
-              isClickable && "cursor-pointer group"
+              isClickable && "cursor-pointer group",
             )}
             onClick={isClickable ? () => onStepClick(stepNumber) : undefined}
             role={isClickable ? "button" : undefined}
@@ -86,7 +86,7 @@ export function OnboardingSteps({
                   isCurrent &&
                     "border-primary bg-primary text-primary-foreground",
                   isFuture &&
-                    "border-muted-foreground/30 bg-background text-muted-foreground/50"
+                    "border-muted-foreground/30 bg-background text-muted-foreground/50",
                 )}
                 initial={false}
                 animate={{
@@ -147,7 +147,7 @@ export function OnboardingSteps({
                   "font-semibold leading-tight",
                   isCompleted && "text-foreground group-hover:text-emerald-600",
                   isCurrent && "text-foreground",
-                  isFuture && "text-muted-foreground/60"
+                  isFuture && "text-muted-foreground/60",
                 )}
                 initial={false}
                 animate={{
@@ -162,7 +162,7 @@ export function OnboardingSteps({
                   "mt-1 text-sm leading-relaxed",
                   isCompleted && "text-muted-foreground",
                   isCurrent && "text-muted-foreground",
-                  isFuture && "text-muted-foreground/40"
+                  isFuture && "text-muted-foreground/40",
                 )}
                 initial={false}
                 animate={{

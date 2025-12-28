@@ -37,7 +37,7 @@ export const addParticipant = orgActionClient
     // Cannot add participants to a DM - it becomes a group DM
     if (conversation.type === "dm") {
       throw new ActionError(
-        "Cannot add participants to a DM. Start a new group conversation instead."
+        "Cannot add participants to a DM. Start a new group conversation instead.",
       );
     }
 
@@ -55,7 +55,7 @@ export const addParticipant = orgActionClient
 
     // Check if already a participant
     const existingParticipant = conversation.participants.find(
-      (p) => p.userId === targetUserId
+      (p) => p.userId === targetUserId,
     );
 
     if (existingParticipant) {
@@ -87,4 +87,3 @@ export const addParticipant = orgActionClient
 
     return { participant };
   });
-

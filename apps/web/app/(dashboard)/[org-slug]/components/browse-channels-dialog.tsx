@@ -49,7 +49,7 @@ export function BrowseChannelsDialog({
   // Separate joined and not-joined channels
   const joinedChannels = filteredChannels.filter((c) => c.isMember);
   const availableChannels = filteredChannels.filter(
-    (c) => !c.isMember && !c.isPrivate
+    (c) => !c.isMember && !c.isPrivate,
   );
 
   const handleJoin = async (channel: ChannelListItem) => {
@@ -185,7 +185,7 @@ function ChannelRow({
     <div
       className={cn(
         "flex items-center justify-between rounded-md p-3 transition-colors",
-        isJoined ? "bg-muted/50" : "hover:bg-muted/50"
+        isJoined ? "bg-muted/50" : "hover:bg-muted/50",
       )}
     >
       <div className="flex min-w-0 flex-1 items-start gap-3">

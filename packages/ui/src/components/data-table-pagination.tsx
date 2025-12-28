@@ -1,25 +1,25 @@
-"use client"
+"use client";
 
-import type { Table } from "@tanstack/react-table"
+import type { Table } from "@tanstack/react-table";
 import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-} from "lucide-react"
+} from "lucide-react";
 
-import { Button } from "@flack/ui/components/button"
+import { Button } from "@flack/ui/components/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@flack/ui/components/select"
+} from "@flack/ui/components/select";
 
 interface DataTablePaginationProps<TData> {
-  table: Table<TData>
-  pageSizeOptions?: number[]
+  table: Table<TData>;
+  pageSizeOptions?: number[];
 }
 
 function DataTablePagination<TData>({
@@ -38,7 +38,7 @@ function DataTablePagination<TData>({
           <Select
             value={`${table.getState().pagination.pageSize}`}
             onValueChange={(value) => {
-              table.setPageSize(Number(value))
+              table.setPageSize(Number(value));
             }}
           >
             <SelectTrigger className="h-8 w-[70px]">
@@ -97,8 +97,7 @@ function DataTablePagination<TData>({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export { DataTablePagination }
-
+export { DataTablePagination };

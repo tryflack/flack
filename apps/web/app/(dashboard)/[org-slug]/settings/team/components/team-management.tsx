@@ -19,7 +19,10 @@ interface TeamManagementProps {
   currentUserId: string;
 }
 
-export function TeamManagement({ organizationName, currentUserId }: TeamManagementProps) {
+export function TeamManagement({
+  organizationName,
+  currentUserId,
+}: TeamManagementProps) {
   const {
     members,
     invitations,
@@ -32,7 +35,8 @@ export function TeamManagement({ organizationName, currentUserId }: TeamManageme
     resend,
   } = useMembers();
 
-  const canManageMembers = currentUserRole === "owner" || currentUserRole === "admin";
+  const canManageMembers =
+    currentUserRole === "owner" || currentUserRole === "admin";
 
   if (isLoading) {
     return (
@@ -68,7 +72,9 @@ export function TeamManagement({ organizationName, currentUserId }: TeamManageme
     <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Team Members</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Team Members
+          </h1>
           <p className="text-muted-foreground">
             Manage members of {organizationName}
           </p>
@@ -115,4 +121,3 @@ export function TeamManagement({ organizationName, currentUserId }: TeamManageme
     </div>
   );
 }
-

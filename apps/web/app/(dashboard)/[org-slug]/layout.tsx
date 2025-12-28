@@ -38,12 +38,13 @@ export default async function OrganizationLayout({
   let domain: string | undefined;
   if (organization.metadata) {
     try {
-      const metadata = typeof organization.metadata === 'string'
-        ? JSON.parse(organization.metadata)
-        : organization.metadata;
+      const metadata =
+        typeof organization.metadata === "string"
+          ? JSON.parse(organization.metadata)
+          : organization.metadata;
       if (metadata.website) {
         const url = new URL(metadata.website);
-        domain = url.hostname.replace(/^www\./, '');
+        domain = url.hostname.replace(/^www\./, "");
       }
     } catch {
       // Invalid metadata or URL, use default

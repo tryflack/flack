@@ -19,9 +19,7 @@ export default async function OnboardingLayout({
   return (
     <OnboardingProvider>
       <main className="flex min-h-dvh items-center justify-center bg-background p-6">
-        <div className="w-full max-w-lg">
-          {children}
-        </div>
+        <div className="w-full max-w-lg">{children}</div>
       </main>
     </OnboardingProvider>
   );

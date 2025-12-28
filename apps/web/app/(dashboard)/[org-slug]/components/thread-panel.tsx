@@ -48,7 +48,12 @@ export function ThreadPanel({ threadId, roomId, roomType }: ThreadPanelProps) {
           <MessageSquare className="h-4 w-4 text-muted-foreground" />
           <h2 className="font-semibold text-sm">Thread</h2>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={closeThread}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={closeThread}
+        >
           <X className="h-4 w-4" />
         </Button>
       </header>
@@ -125,4 +130,3 @@ function ThreadMessageSkeleton() {
     </div>
   );
 }
-

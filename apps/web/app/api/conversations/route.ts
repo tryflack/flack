@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -72,12 +72,12 @@ export async function GET(req: NextRequest) {
     conversations.map(async (conv) => {
       // For DMs, get the other participant
       const otherParticipants = conv.participants.filter(
-        (p) => p.userId !== session.user.id
+        (p) => p.userId !== session.user.id,
       );
 
       // Get current user's participation info
       const userParticipation = conv.participants.find(
-        (p) => p.userId === session.user.id
+        (p) => p.userId === session.user.id,
       );
 
       // Calculate unread count
@@ -127,7 +127,7 @@ export async function GET(req: NextRequest) {
         createdAt: conv.createdAt,
         updatedAt: conv.updatedAt,
       };
-    })
+    }),
   );
 
   return NextResponse.json({ conversations: transformedConversations });

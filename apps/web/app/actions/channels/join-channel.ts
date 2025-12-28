@@ -30,7 +30,9 @@ export const joinChannel = orgActionClient
 
     // Private channels require an invitation (handled separately)
     if (channel.isPrivate) {
-      throw new ActionError("This is a private channel. You need an invitation to join.");
+      throw new ActionError(
+        "This is a private channel. You need an invitation to join.",
+      );
     }
 
     // Check if already a member
@@ -108,9 +110,8 @@ export const joinChannel = orgActionClient
       },
       channelId,
       null,
-      organizationId
+      organizationId,
     );
 
     return { membership };
   });
-

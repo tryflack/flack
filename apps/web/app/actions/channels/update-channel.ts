@@ -92,4 +92,3 @@ export const updateChannel = orgActionClient
 
     return { channel: updatedChannel };
   });
-

@@ -35,7 +35,10 @@ interface MemberListProps {
   currentUserRole: string;
   currentUserId: string;
   onRemove: (memberIdOrEmail: string) => Promise<unknown>;
-  onUpdateRole: (memberId: string, role: "member" | "admin" | "owner") => Promise<unknown>;
+  onUpdateRole: (
+    memberId: string,
+    role: "member" | "admin" | "owner",
+  ) => Promise<unknown>;
 }
 
 const roleConfig = {
@@ -76,17 +79,20 @@ export function MemberList({
   const [confirmRemove, setConfirmRemove] = useState<Member | null>(null);
   const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null);
 
-  const canManageMembers = currentUserRole === "owner" || currentUserRole === "admin";
+  const canManageMembers =
+    currentUserRole === "owner" || currentUserRole === "admin";
   const isOwner = currentUserRole === "owner";
 
   const handleRemove = async (member: Member) => {
     setRemovingId(member.id);
     try {
       const result = await onRemove(member.id);
-      if (result && typeof result === 'object' && 'serverError' in result) {
+      if (result && typeof result === "object" && "serverError" in result) {
         toast.error(result.serverError as string);
       } else {
-        toast.success(`${member.user.name} has been removed from the organization`);
+        toast.success(
+          `${member.user.name} has been removed from the organization`,
+        );
       }
     } catch {
       toast.error("Failed to remove member");
@@ -96,16 +102,21 @@ export function MemberList({
     }
   };
 
-  const handleUpdateRole = async (member: Member, newRole: "member" | "admin" | "owner") => {
+  const handleUpdateRole = async (
+    member: Member,
+    newRole: "member" | "admin" | "owner",
+  ) => {
     if (member.role === newRole) return;
-    
+
     setUpdatingRoleId(member.id);
     try {
       const result = await onUpdateRole(member.id, newRole);
-      if (result && typeof result === 'object' && 'serverError' in result) {
+      if (result && typeof result === "object" && "serverError" in result) {
         toast.error(result.serverError as string);
       } else {
-        toast.success(`${member.user.name}'s role has been updated to ${newRole}`);
+        toast.success(
+          `${member.user.name}'s role has been updated to ${newRole}`,
+        );
       }
     } catch {
       toast.error("Failed to update role");
@@ -118,11 +129,14 @@ export function MemberList({
     <>
       <div className="divide-y divide-border rounded-lg border">
         {members.map((member) => {
-          const role = roleConfig[member.role as keyof typeof roleConfig] ?? roleConfig.member;
+          const role =
+            roleConfig[member.role as keyof typeof roleConfig] ??
+            roleConfig.member;
           const RoleIcon = role.icon;
           const isCurrentUser = member.userId === currentUserId;
           const isMemberOwner = member.role === "owner";
-          const canModify = canManageMembers && !isCurrentUser && !isMemberOwner;
+          const canModify =
+            canManageMembers && !isCurrentUser && !isMemberOwner;
           const canChangeRole = isOwner && !isCurrentUser;
 
           return (
@@ -133,13 +147,17 @@ export function MemberList({
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={member.user.image || undefined} />
-                  <AvatarFallback>{getInitials(member.user.name)}</AvatarFallback>
+                  <AvatarFallback>
+                    {getInitials(member.user.name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{member.user.name}</span>
                     {isCurrentUser && (
-                      <span className="text-xs text-muted-foreground">(you)</span>
+                      <span className="text-xs text-muted-foreground">
+                        (you)
+                      </span>
                     )}
                   </div>
                   <span className="text-sm text-muted-foreground">
@@ -160,9 +178,13 @@ export function MemberList({
                       <Button
                         variant="ghost"
                         size="icon"
-                        disabled={removingId === member.id || updatingRoleId === member.id}
+                        disabled={
+                          removingId === member.id ||
+                          updatingRoleId === member.id
+                        }
                       >
-                        {removingId === member.id || updatingRoleId === member.id ? (
+                        {removingId === member.id ||
+                        updatingRoleId === member.id ? (
                           <Spinner className="h-4 w-4" />
                         ) : (
                           <MoreHorizontal className="h-4 w-4" />
@@ -214,14 +236,17 @@ export function MemberList({
         })}
       </div>
 
-      <AlertDialog open={!!confirmRemove} onOpenChange={() => setConfirmRemove(null)}>
+      <AlertDialog
+        open={!!confirmRemove}
+        onOpenChange={() => setConfirmRemove(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Remove member?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to remove{" "}
-              <span className="font-medium">{confirmRemove?.user.name}</span> from
-              this organization? They will lose access to all channels and
+              <span className="font-medium">{confirmRemove?.user.name}</span>{" "}
+              from this organization? They will lose access to all channels and
               conversations.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -239,4 +264,3 @@ export function MemberList({
     </>
   );
 }
-

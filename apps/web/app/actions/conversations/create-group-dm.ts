@@ -20,7 +20,7 @@ export const createGroupDm = orgActionClient
 
     // Remove duplicates and self from participant list
     const uniqueParticipants = [...new Set(participantIds)].filter(
-      (id) => id !== userId
+      (id) => id !== userId,
     );
 
     if (uniqueParticipants.length < 2) {
@@ -37,7 +37,7 @@ export const createGroupDm = orgActionClient
 
     if (memberships.length !== uniqueParticipants.length) {
       throw new ActionError(
-        "Some participants are not members of this organization"
+        "Some participants are not members of this organization",
       );
     }
 
@@ -71,4 +71,3 @@ export const createGroupDm = orgActionClient
 
     return { conversation };
   });
-

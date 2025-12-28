@@ -36,4 +36,3 @@ export function TypingIndicator({ users }: TypingIndicatorProps) {
     </div>
   );
 }
-

@@ -107,7 +107,7 @@ export const addReaction = orgActionClient
         userName: reaction.user.name,
       },
       message.channelId,
-      message.conversationId
+      message.conversationId,
     );
 
     return { reaction };

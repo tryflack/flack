@@ -39,7 +39,7 @@ export const leaveChannel = orgActionClient
 
       if (adminCount <= 1) {
         throw new ActionError(
-          "You cannot leave this channel as you are the only admin. Please promote another member first."
+          "You cannot leave this channel as you are the only admin. Please promote another member first.",
         );
       }
     }
@@ -96,7 +96,7 @@ export const leaveChannel = orgActionClient
       },
       channelId,
       null,
-      organizationId
+      organizationId,
     );
 
     // Remove membership
@@ -109,4 +109,3 @@ export const leaveChannel = orgActionClient
 
     return { success: true };
   });
-

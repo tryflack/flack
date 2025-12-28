@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ conversationId: string }> }
+  { params }: { params: Promise<{ conversationId: string }> },
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -21,7 +21,7 @@ export async function GET(
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -56,17 +56,17 @@ export async function GET(
   if (!conversation) {
     return NextResponse.json(
       { error: "Conversation not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
   // Get other participants for DM display name
   const otherParticipants = conversation.participants.filter(
-    (p) => p.userId !== session.user.id
+    (p) => p.userId !== session.user.id,
   );
 
   const userParticipation = conversation.participants.find(
-    (p) => p.userId === session.user.id
+    (p) => p.userId === session.user.id,
   );
 
   return NextResponse.json({
@@ -92,4 +92,3 @@ export async function GET(
     },
   });
 }
-

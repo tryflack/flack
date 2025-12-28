@@ -64,4 +64,3 @@ export const createChannel = orgActionClient
 
     return { channel };
   });
-

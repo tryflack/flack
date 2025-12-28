@@ -32,9 +32,12 @@ const createChannelSchema = z.object({
     .max(80, "Channel name must be 80 characters or less")
     .regex(
       /^[a-z0-9-]+$/,
-      "Only lowercase letters, numbers, and hyphens allowed"
+      "Only lowercase letters, numbers, and hyphens allowed",
     ),
-  description: z.string().max(250, "Description must be 250 characters or less").optional(),
+  description: z
+    .string()
+    .max(250, "Description must be 250 characters or less")
+    .optional(),
   isPrivate: z.boolean(),
 });
 
@@ -172,4 +175,3 @@ export function CreateChannelDialog({
     </Dialog>
   );
 }
-

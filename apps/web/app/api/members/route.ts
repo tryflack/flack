@@ -17,7 +17,7 @@ export async function GET() {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -32,7 +32,7 @@ export async function GET() {
   if (!membership) {
     return NextResponse.json(
       { error: "Not a member of this organization" },
-      { status: 403 }
+      { status: 403 },
     );
   }
 
@@ -128,4 +128,3 @@ export async function GET() {
     currentUserRole: membership.role,
   });
 }
-

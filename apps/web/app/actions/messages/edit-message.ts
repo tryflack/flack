@@ -63,7 +63,7 @@ export const editMessage = orgActionClient
       content,
       updatedMessage.updatedAt,
       message.channelId,
-      message.conversationId
+      message.conversationId,
     );
 
     return { message: updatedMessage };

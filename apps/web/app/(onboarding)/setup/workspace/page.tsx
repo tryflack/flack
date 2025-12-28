@@ -37,7 +37,7 @@ const workspaceSchema = z.object({
     .max(50, "Slug must be less than 50 characters")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug must be lowercase alphanumeric with hyphens only"
+      "Slug must be lowercase alphanumeric with hyphens only",
     ),
   website: z
     .string()
@@ -106,7 +106,7 @@ export default function WorkspacePage() {
       metadata: JSON.parse(
         JSON.stringify({
           website: formData.website,
-        })
+        }),
       ),
     });
 
@@ -129,7 +129,7 @@ export default function WorkspacePage() {
       if (channelsResult?.serverError) {
         console.error(
           "Failed to create default channels:",
-          channelsResult.serverError
+          channelsResult.serverError,
         );
         // Don't block navigation, just log the error
       }

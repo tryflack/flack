@@ -1,10 +1,10 @@
-import { createAuthClient } from 'better-auth/react';
+import { createAuthClient } from "better-auth/react";
 import {
   emailOTPClient,
   adminClient,
   organizationClient,
-} from 'better-auth/client/plugins';
-import { createAccessControl } from 'better-auth/plugins/access';
+} from "better-auth/client/plugins";
+import { createAccessControl } from "better-auth/plugins/access";
 
 const BEARER_TOKEN_KEY = "flack_bearer_token";
 
@@ -71,16 +71,16 @@ export const authClient = createAuthClient({
  */
 export async function fetchBearerToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
-  
+
   try {
     // Use relative URL since we're on the same origin
     const response = await fetch("/api/auth/token", {
       method: "GET",
       credentials: "include",
     });
-    
+
     if (!response.ok) return null;
-    
+
     const data = await response.json();
     if (data.token) {
       localStorage.setItem(BEARER_TOKEN_KEY, data.token);

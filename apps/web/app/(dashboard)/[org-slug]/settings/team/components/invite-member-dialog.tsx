@@ -37,7 +37,10 @@ type InviteFormValues = z.infer<typeof inviteSchema>;
 
 interface InviteMemberDialogProps {
   currentUserRole: string;
-  onInvite: (input: { email: string; role: "member" | "admin" }) => Promise<unknown>;
+  onInvite: (input: {
+    email: string;
+    role: "member" | "admin";
+  }) => Promise<unknown>;
 }
 
 export function InviteMemberDialog({
@@ -61,7 +64,7 @@ export function InviteMemberDialog({
     setIsPending(true);
     try {
       const result = await onInvite(values);
-      if (result && typeof result === 'object' && 'serverError' in result) {
+      if (result && typeof result === "object" && "serverError" in result) {
         toast.error(result.serverError as string);
       } else {
         toast.success(`Invitation sent to ${values.email}`);
@@ -87,8 +90,8 @@ export function InviteMemberDialog({
         <DialogHeader>
           <DialogTitle>Invite a new member</DialogTitle>
           <DialogDescription>
-            Send an invitation to join your organization. They&apos;ll receive an
-            email with instructions.
+            Send an invitation to join your organization. They&apos;ll receive
+            an email with instructions.
           </DialogDescription>
         </DialogHeader>
 
@@ -187,4 +190,3 @@ export function InviteMemberDialog({
     </Dialog>
   );
 }
-

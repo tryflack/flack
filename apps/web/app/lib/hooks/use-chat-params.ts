@@ -37,7 +37,7 @@ export function useChatParams() {
         setChannel(slug);
       }
     },
-    [setChannel, setDm, setThread, isOnSubPage, getOrgSlug, router]
+    [setChannel, setDm, setThread, isOnSubPage, getOrgSlug, router],
   );
 
   const navigateToDm = useCallback(
@@ -53,14 +53,14 @@ export function useChatParams() {
         setDm(conversationId);
       }
     },
-    [setChannel, setDm, setThread, isOnSubPage, getOrgSlug, router]
+    [setChannel, setDm, setThread, isOnSubPage, getOrgSlug, router],
   );
 
   const openThread = useCallback(
     (messageId: string) => {
       setThread(messageId);
     },
-    [setThread]
+    [setThread],
   );
 
   const closeThread = useCallback(() => {

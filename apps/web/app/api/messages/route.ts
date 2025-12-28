@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   if (!channelId && !conversationId && !parentId) {
     return NextResponse.json(
       { error: "channelId, conversationId, or parentId is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     if (!conversation) {
       return NextResponse.json(
         { error: "Conversation not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
   }

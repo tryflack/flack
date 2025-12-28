@@ -45,7 +45,7 @@ export function PresenceIndicator({
         "block rounded-full ring-2 ring-background",
         sizeClasses[size],
         statusColors[status],
-        className
+        className,
       )}
     />
   );
@@ -88,7 +88,7 @@ export function AvatarWithPresence({
   // Position classes for different avatar sizes
   const positionClasses = {
     sm: "bottom-0 right-0",
-    md: "bottom-0 right-0", 
+    md: "bottom-0 right-0",
     lg: "-bottom-0.5 -right-0.5",
   };
 
@@ -106,4 +106,3 @@ export function AvatarWithPresence({
     </div>
   );
 }
-

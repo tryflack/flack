@@ -22,7 +22,7 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
     (userId: string): "online" | "away" | "offline" => {
       return users.get(userId)?.status ?? "offline";
     },
-    [users]
+    [users],
   );
 
   // Check if user is online
@@ -30,12 +30,12 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
     (userId: string): boolean => {
       return getStatus(userId) === "online";
     },
-    [getStatus]
+    [getStatus],
   );
 
   // Get all online users
   const onlineUsers = Array.from(users.values()).filter(
-    (u) => u.status === "online"
+    (u) => u.status === "online",
   );
 
   useEffect(() => {
@@ -152,4 +152,3 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
     setStatus,
   };
 }
-

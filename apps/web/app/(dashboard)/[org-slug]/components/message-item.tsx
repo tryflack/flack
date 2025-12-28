@@ -1,9 +1,20 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { MessageSquare, MoreHorizontal, Pencil, Trash2, Check, X } from "lucide-react";
+import {
+  MessageSquare,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Check,
+  X,
+} from "lucide-react";
 import { QuickEmojiPicker } from "./emoji-picker";
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
 import { Button } from "@flack/ui/components/button";
 import { Textarea } from "@flack/ui/components/textarea";
 import {
@@ -39,8 +50,13 @@ interface MessageItemProps {
   message: Message;
   showAvatar?: boolean;
   currentUserId?: string;
-  onEdit?: (messageId: string, content: string) => Promise<{ serverError?: string } | undefined>;
-  onDelete?: (messageId: string) => Promise<{ serverError?: string } | undefined>;
+  onEdit?: (
+    messageId: string,
+    content: string,
+  ) => Promise<{ serverError?: string } | undefined>;
+  onDelete?: (
+    messageId: string,
+  ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
 }
 
@@ -69,7 +85,7 @@ export function MessageItem({
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length
+        textareaRef.current.value.length,
       );
     }
   }, [isEditing]);
@@ -111,7 +127,12 @@ export function MessageItem({
       }
       return acc;
     },
-    [] as { emoji: string; count: number; users: string[]; hasReacted: boolean }[]
+    [] as {
+      emoji: string;
+      count: number;
+      users: string[];
+      hasReacted: boolean;
+    }[],
   );
 
   const handleStartEdit = () => {
@@ -197,14 +218,10 @@ export function MessageItem({
       <div
         className={cn(
           "group relative flex gap-3 px-1 py-1",
-          showAvatar ? "items-start" : "items-center"
+          showAvatar ? "items-start" : "items-center",
         )}
       >
-        {showAvatar ? (
-          <div className="w-9" />
-        ) : (
-          <div className="w-9" />
-        )}
+        {showAvatar ? <div className="w-9" /> : <div className="w-9" />}
         <p className="text-sm italic text-muted-foreground">
           This message was deleted
         </p>
@@ -218,7 +235,7 @@ export function MessageItem({
         className={cn(
           "group relative flex gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/50",
           showAvatar ? "items-start" : "items-center",
-          isEditing && "bg-muted/50"
+          isEditing && "bg-muted/50",
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -241,7 +258,9 @@ export function MessageItem({
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           {showAvatar && (
             <div className="flex items-baseline gap-2">
-              <span className="font-semibold text-sm">{message.author.name}</span>
+              <span className="font-semibold text-sm">
+                {message.author.name}
+              </span>
               <span className="text-xs text-muted-foreground">
                 {formatTime(message.createdAt)}
               </span>
@@ -307,7 +326,7 @@ export function MessageItem({
                           "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs transition-colors",
                           hasReacted
                             ? "bg-primary/20 text-primary hover:bg-primary/30"
-                            : "bg-muted hover:bg-muted/80"
+                            : "bg-muted hover:bg-muted/80",
                         )}
                       >
                         <span>{emoji}</span>
@@ -330,7 +349,8 @@ export function MessageItem({
               className="mt-1 flex items-center gap-1 text-xs text-primary hover:underline"
             >
               <MessageSquare className="h-3 w-3" />
-              {message.replyCount} {message.replyCount === 1 ? "reply" : "replies"}
+              {message.replyCount}{" "}
+              {message.replyCount === 1 ? "reply" : "replies"}
             </button>
           )}
         </div>
@@ -396,11 +416,14 @@ export function MessageItem({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete message</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this message? This action cannot be undone.
+              Are you sure you want to delete this message? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isSubmitting}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isSubmitting}

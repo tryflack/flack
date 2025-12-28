@@ -51,7 +51,7 @@ export const resendInvitation = orgActionClient
         },
       });
 
-      return { 
+      return {
         success: true,
         invitation: result,
       };
@@ -62,4 +62,3 @@ export const resendInvitation = orgActionClient
       throw new ActionError("Failed to resend invitation");
     }
   });
-

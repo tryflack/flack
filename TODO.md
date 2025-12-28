@@ -4,28 +4,28 @@ This file tracks the remaining UI features that need to be implemented based on 
 
 ## Recently Completed (Current Session)
 
-| Feature | Description | Files |
-|---------|-------------|-------|
-| Default Channels | Auto-create general + announcements on org creation | `actions/channels/create-default-channels.ts` |
-| Start DM Dialog | Member picker to start new conversations | `components/start-dm-dialog.tsx` |
-| Message Edit/Delete | Inline editing and delete confirmation | `components/message-item.tsx` |
-| Emoji Picker | Quick reaction picker with toggle support | `components/emoji-picker.tsx` |
-| Channel Settings | Settings dialog with edit, delete, leave, members view | `components/channel-settings-dialog.tsx` |
-| Browse Channels | Discover and join public channels | `components/browse-channels-dialog.tsx` |
-| Group DM | Multi-select member picker for group conversations | `components/create-group-dm-dialog.tsx` |
-| User Presence | Online status indicators on avatars | `components/presence-indicator.tsx`, `use-presence.ts` |
-| Channel Member Management | Invite/remove members from channels | `actions/channels/invite-to-channel.ts`, `remove-from-channel.ts` |
-| Channel Info Dialog | Click channel name in header for details | `components/channel-info-dialog.tsx` |
-| Unread Messages | Unread counts in sidebar, mark as read on view | `actions/messages/mark-as-read.ts`, API updates |
+| Feature                   | Description                                            | Files                                                             |
+| ------------------------- | ------------------------------------------------------ | ----------------------------------------------------------------- |
+| Default Channels          | Auto-create general + announcements on org creation    | `actions/channels/create-default-channels.ts`                     |
+| Start DM Dialog           | Member picker to start new conversations               | `components/start-dm-dialog.tsx`                                  |
+| Message Edit/Delete       | Inline editing and delete confirmation                 | `components/message-item.tsx`                                     |
+| Emoji Picker              | Quick reaction picker with toggle support              | `components/emoji-picker.tsx`                                     |
+| Channel Settings          | Settings dialog with edit, delete, leave, members view | `components/channel-settings-dialog.tsx`                          |
+| Browse Channels           | Discover and join public channels                      | `components/browse-channels-dialog.tsx`                           |
+| Group DM                  | Multi-select member picker for group conversations     | `components/create-group-dm-dialog.tsx`                           |
+| User Presence             | Online status indicators on avatars                    | `components/presence-indicator.tsx`, `use-presence.ts`            |
+| Channel Member Management | Invite/remove members from channels                    | `actions/channels/invite-to-channel.ts`, `remove-from-channel.ts` |
+| Channel Info Dialog       | Click channel name in header for details               | `components/channel-info-dialog.tsx`                              |
+| Unread Messages           | Unread counts in sidebar, mark as read on view         | `actions/messages/mark-as-read.ts`, API updates                   |
 
 ## Summary of Ready Actions
 
-| Category | Actions |
-|----------|---------|
-| **Channels** | createChannel, updateChannel, deleteChannel, joinChannel, leaveChannel, inviteToChannel, removeFromChannel |
-| **Conversations** | createDm, createGroupDm, addParticipant, removeParticipant, updateConversation |
-| **Messages** | sendMessage, editMessage, deleteMessage, addReaction, removeReaction, markAsRead |
-| **Members** | inviteMember, resendInvitation, cancelInvitation, removeMember, updateRole |
+| Category          | Actions                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Channels**      | createChannel, updateChannel, deleteChannel, joinChannel, leaveChannel, inviteToChannel, removeFromChannel |
+| **Conversations** | createDm, createGroupDm, addParticipant, removeParticipant, updateConversation                             |
+| **Messages**      | sendMessage, editMessage, deleteMessage, addReaction, removeReaction, markAsRead                           |
+| **Members**       | inviteMember, resendInvitation, cancelInvitation, removeMember, updateRole                                 |
 
 ---
 
@@ -127,4 +127,3 @@ This file tracks the remaining UI features that need to be implemented based on 
 - UI components are in `apps/web/app/(dashboard)/[org-slug]/components/`
 - SWR hooks are in `apps/web/app/lib/hooks/`
 - Real-time is handled via PartyKit in `packages/realtime/`
-

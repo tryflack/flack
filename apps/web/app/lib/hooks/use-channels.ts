@@ -65,7 +65,7 @@ export function useChannels() {
       name?: string;
       description?: string;
       isPrivate?: boolean;
-    }
+    },
   ) => {
     const result = await updateChannel({ channelId, ...input });
     if (result?.data?.channel) {

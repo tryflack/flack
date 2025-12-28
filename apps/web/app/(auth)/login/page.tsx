@@ -9,5 +9,5 @@ export default async function LoginPage() {
         <LoginForm />
       </div>
     </div>
-  )
+  );
 }

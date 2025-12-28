@@ -15,10 +15,10 @@ import {
 } from "@flack/ui/components/card";
 import { Badge } from "@flack/ui/components/badge";
 import { Spinner } from "@flack/ui/components/spinner";
-import { 
-  AlertCircle, 
-  CheckCircle2, 
-  Clock, 
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
   Building2,
   UserPlus,
   XCircle,
@@ -65,7 +65,9 @@ export function AcceptInvitationForm({
   const [result, setResult] = useState<"accepted" | "rejected" | null>(null);
 
   // Check if the current user email matches the invitation email
-  const emailMismatch = isAuthenticated && currentUserEmail && 
+  const emailMismatch =
+    isAuthenticated &&
+    currentUserEmail &&
     currentUserEmail.toLowerCase() !== invitation.email.toLowerCase();
 
   const handleAccept = async () => {
@@ -82,7 +84,7 @@ export function AcceptInvitationForm({
 
       setResult("accepted");
       toast.success(`You've joined ${invitation.organization.name}!`);
-      
+
       // Redirect to the organization after a brief delay
       setTimeout(() => {
         router.push(`/${invitation.organization.slug}`);
@@ -125,7 +127,8 @@ export function AcceptInvitationForm({
           </div>
           <CardTitle>Welcome to {invitation.organization.name}!</CardTitle>
           <CardDescription>
-            You&apos;ve successfully joined the organization. Redirecting you now...
+            You&apos;ve successfully joined the organization. Redirecting you
+            now...
           </CardDescription>
         </CardHeader>
         <CardContent className="flex justify-center">
@@ -145,7 +148,8 @@ export function AcceptInvitationForm({
           </div>
           <CardTitle>Invitation Declined</CardTitle>
           <CardDescription>
-            You&apos;ve declined the invitation to join {invitation.organization.name}.
+            You&apos;ve declined the invitation to join{" "}
+            {invitation.organization.name}.
           </CardDescription>
         </CardHeader>
         <CardFooter className="justify-center">
@@ -225,25 +229,31 @@ export function AcceptInvitationForm({
               <div>
                 <p className="font-medium">{invitation.organization.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  You&apos;ll join as: <Badge variant="secondary">{invitation.role}</Badge>
+                  You&apos;ll join as:{" "}
+                  <Badge variant="secondary">{invitation.role}</Badge>
                 </p>
               </div>
             </div>
           </div>
           <p className="text-center text-sm text-muted-foreground">
             Please sign in or create an account with{" "}
-            <span className="font-medium">{invitation.email}</span> to accept this invitation.
+            <span className="font-medium">{invitation.email}</span> to accept
+            this invitation.
           </p>
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button asChild className="w-full">
-            <Link href={`/login?email=${encodeURIComponent(invitation.email)}&redirect=/accept-invitation/${invitation.id}`}>
+            <Link
+              href={`/login?email=${encodeURIComponent(invitation.email)}&redirect=/accept-invitation/${invitation.id}`}
+            >
               <LogIn className="mr-2 h-4 w-4" />
               Sign In to Accept
             </Link>
           </Button>
           <Button asChild variant="outline" className="w-full">
-            <Link href={`/register?email=${encodeURIComponent(invitation.email)}&redirect=/accept-invitation/${invitation.id}`}>
+            <Link
+              href={`/register?email=${encodeURIComponent(invitation.email)}&redirect=/accept-invitation/${invitation.id}`}
+            >
               Create Account
             </Link>
           </Button>
@@ -263,18 +273,22 @@ export function AcceptInvitationForm({
           <CardTitle>Email Mismatch</CardTitle>
           <CardDescription>
             This invitation was sent to{" "}
-            <span className="font-medium">{invitation.email}</span>, but you&apos;re
-            signed in as <span className="font-medium">{currentUserEmail}</span>.
+            <span className="font-medium">{invitation.email}</span>, but
+            you&apos;re signed in as{" "}
+            <span className="font-medium">{currentUserEmail}</span>.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-center text-sm text-muted-foreground">
-            Please sign in with the correct email address to accept this invitation.
+            Please sign in with the correct email address to accept this
+            invitation.
           </p>
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button asChild variant="outline" className="w-full">
-            <Link href={`/login?email=${encodeURIComponent(invitation.email)}&redirect=/accept-invitation/${invitation.id}`}>
+            <Link
+              href={`/login?email=${encodeURIComponent(invitation.email)}&redirect=/accept-invitation/${invitation.id}`}
+            >
               Sign In with {invitation.email}
             </Link>
           </Button>
@@ -304,7 +318,8 @@ export function AcceptInvitationForm({
             <div>
               <p className="font-medium">{invitation.organization.name}</p>
               <p className="text-sm text-muted-foreground">
-                You&apos;ll join as: <Badge variant="secondary">{invitation.role}</Badge>
+                You&apos;ll join as:{" "}
+                <Badge variant="secondary">{invitation.role}</Badge>
               </p>
             </div>
           </div>
@@ -347,4 +362,3 @@ export function AcceptInvitationForm({
     </Card>
   );
 }
-

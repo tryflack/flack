@@ -37,8 +37,8 @@ export const inviteMember = orgActionClient
         },
       });
 
-      return { 
-        success: true, 
+      return {
+        success: true,
         invitation: result,
       };
     } catch (error) {
@@ -48,4 +48,3 @@ export const inviteMember = orgActionClient
       throw new ActionError("Failed to send invitation");
     }
   });
-

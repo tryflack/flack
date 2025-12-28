@@ -18,11 +18,116 @@ import { cn } from "@flack/ui/lib/utils";
 
 // Common emoji categories
 const EMOJI_CATEGORIES = {
-  "Smileys": ["😀", "😃", "😄", "😁", "😅", "😂", "🤣", "😊", "😇", "🙂", "😉", "😍", "🥰", "😘", "😋", "😜", "🤪", "😎", "🤩", "🥳"],
-  "Gestures": ["👍", "👎", "👏", "🙌", "🤝", "✌️", "🤞", "🤟", "🤘", "👌", "🤙", "💪", "🙏", "👋", "🖐️", "✋", "🤚", "👊", "✊", "🫡"],
-  "Hearts": ["❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "💕", "💞", "💓", "💗", "💖", "💝", "💘", "💔", "❣️", "💟", "♥️", "🩷"],
-  "Objects": ["🎉", "🎊", "🎁", "🏆", "🥇", "⭐", "🌟", "✨", "💫", "🔥", "💯", "✅", "❌", "⚡", "💡", "🎯", "🚀", "💎", "🎵", "📌"],
-  "Faces": ["🤔", "😐", "😑", "😶", "🙄", "😏", "😒", "🤨", "🧐", "🤓", "😤", "😠", "😡", "🤬", "😈", "👿", "💀", "☠️", "😱", "😰"],
+  Smileys: [
+    "😀",
+    "😃",
+    "😄",
+    "😁",
+    "😅",
+    "😂",
+    "🤣",
+    "😊",
+    "😇",
+    "🙂",
+    "😉",
+    "😍",
+    "🥰",
+    "😘",
+    "😋",
+    "😜",
+    "🤪",
+    "😎",
+    "🤩",
+    "🥳",
+  ],
+  Gestures: [
+    "👍",
+    "👎",
+    "👏",
+    "🙌",
+    "🤝",
+    "✌️",
+    "🤞",
+    "🤟",
+    "🤘",
+    "👌",
+    "🤙",
+    "💪",
+    "🙏",
+    "👋",
+    "🖐️",
+    "✋",
+    "🤚",
+    "👊",
+    "✊",
+    "🫡",
+  ],
+  Hearts: [
+    "❤️",
+    "🧡",
+    "💛",
+    "💚",
+    "💙",
+    "💜",
+    "🖤",
+    "🤍",
+    "💕",
+    "💞",
+    "💓",
+    "💗",
+    "💖",
+    "💝",
+    "💘",
+    "💔",
+    "❣️",
+    "💟",
+    "♥️",
+    "🩷",
+  ],
+  Objects: [
+    "🎉",
+    "🎊",
+    "🎁",
+    "🏆",
+    "🥇",
+    "⭐",
+    "🌟",
+    "✨",
+    "💫",
+    "🔥",
+    "💯",
+    "✅",
+    "❌",
+    "⚡",
+    "💡",
+    "🎯",
+    "🚀",
+    "💎",
+    "🎵",
+    "📌",
+  ],
+  Faces: [
+    "🤔",
+    "😐",
+    "😑",
+    "😶",
+    "🙄",
+    "😏",
+    "😒",
+    "🤨",
+    "🧐",
+    "🤓",
+    "😤",
+    "😠",
+    "😡",
+    "🤬",
+    "😈",
+    "👿",
+    "💀",
+    "☠️",
+    "😱",
+    "😰",
+  ],
 };
 
 interface EmojiPickerProps {
@@ -31,9 +136,14 @@ interface EmojiPickerProps {
   className?: string;
 }
 
-export function EmojiPicker({ onEmojiSelect, disabled, className }: EmojiPickerProps) {
+export function EmojiPicker({
+  onEmojiSelect,
+  disabled,
+  className,
+}: EmojiPickerProps) {
   const [open, setOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState<keyof typeof EMOJI_CATEGORIES>("Smileys");
+  const [activeCategory, setActiveCategory] =
+    useState<keyof typeof EMOJI_CATEGORIES>("Smileys");
 
   const handleEmojiClick = (emoji: string) => {
     onEmojiSelect(emoji);
@@ -68,13 +178,15 @@ export function EmojiPicker({ onEmojiSelect, disabled, className }: EmojiPickerP
               variant={activeCategory === category ? "secondary" : "ghost"}
               size="sm"
               className="h-7 px-2 text-xs"
-              onClick={() => setActiveCategory(category as keyof typeof EMOJI_CATEGORIES)}
+              onClick={() =>
+                setActiveCategory(category as keyof typeof EMOJI_CATEGORIES)
+              }
             >
               {category}
             </Button>
           ))}
         </div>
-        
+
         {/* Emoji grid */}
         <div className="grid grid-cols-10 gap-1 p-2">
           {EMOJI_CATEGORIES[activeCategory].map((emoji) => (
@@ -100,7 +212,10 @@ interface QuickEmojiPickerProps {
   disabled?: boolean;
 }
 
-export function QuickEmojiPicker({ onEmojiSelect, disabled }: QuickEmojiPickerProps) {
+export function QuickEmojiPicker({
+  onEmojiSelect,
+  disabled,
+}: QuickEmojiPickerProps) {
   const [open, setOpen] = useState(false);
 
   const handleEmojiClick = (emoji: string) => {
@@ -143,4 +258,3 @@ export function QuickEmojiPicker({ onEmojiSelect, disabled }: QuickEmojiPickerPr
     </Popover>
   );
 }
-

@@ -23,7 +23,12 @@ export type ServerMessage =
   | { type: "connected"; userId: string }
   | { type: "error"; message: string }
   | { type: "message:new"; message: ChatMessage }
-  | { type: "message:edit"; messageId: string; content: string; updatedAt: string }
+  | {
+      type: "message:edit";
+      messageId: string;
+      content: string;
+      updatedAt: string;
+    }
   | { type: "message:delete"; messageId: string }
   | { type: "reaction:add"; messageId: string; reaction: Reaction }
   | { type: "reaction:remove"; messageId: string; reactionId: string }
@@ -69,4 +74,3 @@ export interface ConnectionState {
   userImage: string | null;
   authenticated: boolean;
 }
-

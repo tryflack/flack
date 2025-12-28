@@ -41,7 +41,7 @@ const slugSchema = z.object({
     .max(100, "Slug must be less than 100 characters")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug must be lowercase alphanumeric with hyphens only"
+      "Slug must be lowercase alphanumeric with hyphens only",
     ),
 });
 
@@ -117,7 +117,7 @@ export function OrganizationSettingsForm({
 
       if (result.error) {
         toast.error(
-          result.error.message ?? "Failed to update organization name"
+          result.error.message ?? "Failed to update organization name",
         );
         return;
       }
@@ -187,7 +187,7 @@ export function OrganizationSettingsForm({
 
       if (result.error) {
         toast.error(
-          result.error.message ?? "Failed to update organization slug"
+          result.error.message ?? "Failed to update organization slug",
         );
         return;
       }

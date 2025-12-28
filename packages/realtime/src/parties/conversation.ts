@@ -1,5 +1,11 @@
 import type { PartyKitServer, Connection, Room } from "partykit/server";
-import type { ClientMessage, ServerMessage, ConnectionState, ChatMessage, Reaction } from "../lib/types.js";
+import type {
+  ClientMessage,
+  ServerMessage,
+  ConnectionState,
+  ChatMessage,
+  Reaction,
+} from "../lib/types.js";
 import { validateToken } from "../lib/auth.js";
 
 // Conversation party - handles real-time messaging for DMs and group DMs
@@ -14,18 +20,28 @@ export default class ConversationParty implements PartyKitServer {
     // Client will send { type: "auth", token: "..." } on connect
   }
 
-  async onMessage(message: string | ArrayBuffer | ArrayBufferView, sender: Connection) {
+  async onMessage(
+    message: string | ArrayBuffer | ArrayBufferView,
+    sender: Connection,
+  ) {
     if (typeof message !== "string") {
-      sender.send(JSON.stringify({ type: "error", message: "Binary messages not supported" }));
+      sender.send(
+        JSON.stringify({
+          type: "error",
+          message: "Binary messages not supported",
+        }),
+      );
       return;
     }
-    
+
     let parsed: ClientMessage;
-    
+
     try {
       parsed = JSON.parse(message);
     } catch {
-      sender.send(JSON.stringify({ type: "error", message: "Invalid message format" }));
+      sender.send(
+        JSON.stringify({ type: "error", message: "Invalid message format" }),
+      );
       return;
     }
 
@@ -35,19 +51,25 @@ export default class ConversationParty implements PartyKitServer {
       case "auth": {
         const authUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
         const state = await validateToken(parsed.token, authUrl);
-        
+
         if (state) {
           this.connections.set(sender.id, state);
-          sender.send(JSON.stringify({ type: "connected", userId: state.userId }));
+          sender.send(
+            JSON.stringify({ type: "connected", userId: state.userId }),
+          );
         } else {
-          sender.send(JSON.stringify({ type: "error", message: "Invalid token" }));
+          sender.send(
+            JSON.stringify({ type: "error", message: "Invalid token" }),
+          );
         }
         break;
       }
 
       case "typing": {
         if (!connectionState?.authenticated) {
-          sender.send(JSON.stringify({ type: "error", message: "Not authenticated" }));
+          sender.send(
+            JSON.stringify({ type: "error", message: "Not authenticated" }),
+          );
           return;
         }
 
@@ -58,10 +80,15 @@ export default class ConversationParty implements PartyKitServer {
 
         if (parsed.isTyping) {
           const timeout = setTimeout(() => {
-            this.broadcastTyping(connectionState.userId, connectionState.userName, false, sender.id);
+            this.broadcastTyping(
+              connectionState.userId,
+              connectionState.userName,
+              false,
+              sender.id,
+            );
             this.typingUsers.delete(connectionState.userId);
           }, 5000);
-          
+
           this.typingUsers.set(connectionState.userId, timeout);
         } else {
           this.typingUsers.delete(connectionState.userId);
@@ -71,7 +98,7 @@ export default class ConversationParty implements PartyKitServer {
           connectionState.userId,
           connectionState.userName,
           parsed.isTyping,
-          sender.id
+          sender.id,
         );
         break;
       }
@@ -85,7 +112,7 @@ export default class ConversationParty implements PartyKitServer {
 
   onClose(conn: Connection) {
     const state = this.connections.get(conn.id);
-    
+
     if (state) {
       const timeout = this.typingUsers.get(state.userId);
       if (timeout) {
@@ -94,56 +121,68 @@ export default class ConversationParty implements PartyKitServer {
         this.broadcastTyping(state.userId, state.userName, false, conn.id);
       }
     }
-    
+
     this.connections.delete(conn.id);
   }
 
-  async onRequest(req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0]): Promise<Response> {
+  async onRequest(
+    req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0],
+  ): Promise<Response> {
     if (req.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
 
     try {
       const body = await req.json();
-      
+
       switch ((body as { type: string }).type) {
         case "message:new":
-          this.broadcast(JSON.stringify({
-            type: "message:new",
-            message: (body as { message: ChatMessage }).message,
-          } satisfies ServerMessage));
+          this.broadcast(
+            JSON.stringify({
+              type: "message:new",
+              message: (body as { message: ChatMessage }).message,
+            } satisfies ServerMessage),
+          );
           break;
 
         case "message:edit":
-          this.broadcast(JSON.stringify({
-            type: "message:edit",
-            messageId: (body as { messageId: string }).messageId,
-            content: (body as { content: string }).content,
-            updatedAt: (body as { updatedAt: string }).updatedAt,
-          } satisfies ServerMessage));
+          this.broadcast(
+            JSON.stringify({
+              type: "message:edit",
+              messageId: (body as { messageId: string }).messageId,
+              content: (body as { content: string }).content,
+              updatedAt: (body as { updatedAt: string }).updatedAt,
+            } satisfies ServerMessage),
+          );
           break;
 
         case "message:delete":
-          this.broadcast(JSON.stringify({
-            type: "message:delete",
-            messageId: (body as { messageId: string }).messageId,
-          } satisfies ServerMessage));
+          this.broadcast(
+            JSON.stringify({
+              type: "message:delete",
+              messageId: (body as { messageId: string }).messageId,
+            } satisfies ServerMessage),
+          );
           break;
 
         case "reaction:add":
-          this.broadcast(JSON.stringify({
-            type: "reaction:add",
-            messageId: (body as { messageId: string }).messageId,
-            reaction: (body as { reaction: Reaction }).reaction,
-          } satisfies ServerMessage));
+          this.broadcast(
+            JSON.stringify({
+              type: "reaction:add",
+              messageId: (body as { messageId: string }).messageId,
+              reaction: (body as { reaction: Reaction }).reaction,
+            } satisfies ServerMessage),
+          );
           break;
 
         case "reaction:remove":
-          this.broadcast(JSON.stringify({
-            type: "reaction:remove",
-            messageId: (body as { messageId: string })  .messageId,
-            reactionId: (body as { reactionId: string }).reactionId,
-          } satisfies ServerMessage));
+          this.broadcast(
+            JSON.stringify({
+              type: "reaction:remove",
+              messageId: (body as { messageId: string }).messageId,
+              reactionId: (body as { reactionId: string }).reactionId,
+            } satisfies ServerMessage),
+          );
           break;
 
         default:
@@ -160,7 +199,7 @@ export default class ConversationParty implements PartyKitServer {
   private broadcast(message: string, excludeConnectionId?: string) {
     for (const conn of this.room.getConnections()) {
       if (excludeConnectionId && conn.id === excludeConnectionId) continue;
-      
+
       const state = this.connections.get(conn.id);
       if (state?.authenticated) {
         conn.send(message);
@@ -168,15 +207,19 @@ export default class ConversationParty implements PartyKitServer {
     }
   }
 
-  private broadcastTyping(userId: string, userName: string, isTyping: boolean, excludeConnectionId: string) {
+  private broadcastTyping(
+    userId: string,
+    userName: string,
+    isTyping: boolean,
+    excludeConnectionId: string,
+  ) {
     const message: ServerMessage = {
       type: "typing",
       userId,
       userName,
       isTyping,
     };
-    
+
     this.broadcast(JSON.stringify(message), excludeConnectionId);
   }
 }
-

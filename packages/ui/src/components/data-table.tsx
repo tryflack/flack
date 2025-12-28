@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -13,7 +13,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table"
+} from "@tanstack/react-table";
 
 import {
   Table,
@@ -22,25 +22,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@flack/ui/components/table"
-import { DataTablePagination } from "@flack/ui/components/data-table-pagination"
-import { DataTableToolbar } from "@flack/ui/components/data-table-toolbar"
+} from "@flack/ui/components/table";
+import { DataTablePagination } from "@flack/ui/components/data-table-pagination";
+import { DataTableToolbar } from "@flack/ui/components/data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
-  searchKey?: string
-  searchPlaceholder?: string
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  searchKey?: string;
+  searchPlaceholder?: string;
   /** Additional filter controls (renders on the left side of toolbar) */
-  toolbar?: React.ReactNode
+  toolbar?: React.ReactNode;
   /** Action buttons like "Add Item" (renders on the right side of toolbar) */
-  actions?: React.ReactNode
+  actions?: React.ReactNode;
   /** Total page count for server-side pagination */
-  pageCount?: number
+  pageCount?: number;
   /** Current pagination state for server-side pagination */
-  pagination?: PaginationState
+  pagination?: PaginationState;
   /** Callback when pagination changes (for server-side pagination) */
-  onPaginationChange?: (pagination: PaginationState) => void
+  onPaginationChange?: (pagination: PaginationState) => void;
 }
 
 function DataTable<TData, TValue>({
@@ -54,33 +54,38 @@ function DataTable<TData, TValue>({
   pagination: controlledPagination,
   onPaginationChange,
 }: DataTableProps<TData, TValue>) {
-  const isServerSide = pageCount !== undefined && onPaginationChange !== undefined
+  const isServerSide =
+    pageCount !== undefined && onPaginationChange !== undefined;
 
-  const [internalPagination, setInternalPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [internalPagination, setInternalPagination] =
+    React.useState<PaginationState>({
+      pageIndex: 0,
+      pageSize: 10,
+    });
+  const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
+    [],
+  );
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
-  const pagination = controlledPagination ?? internalPagination
+  const pagination = controlledPagination ?? internalPagination;
 
   const handlePaginationChange = React.useCallback(
-    (updater: PaginationState | ((old: PaginationState) => PaginationState)) => {
-      const newPagination = typeof updater === "function" ? updater(pagination) : updater
+    (
+      updater: PaginationState | ((old: PaginationState) => PaginationState),
+    ) => {
+      const newPagination =
+        typeof updater === "function" ? updater(pagination) : updater;
       if (onPaginationChange) {
-        onPaginationChange(newPagination)
+        onPaginationChange(newPagination);
       } else {
-        setInternalPagination(newPagination)
+        setInternalPagination(newPagination);
       }
     },
-    [pagination, onPaginationChange]
-  )
+    [pagination, onPaginationChange],
+  );
 
   const table = useReactTable({
     data,
@@ -89,8 +94,7 @@ function DataTable<TData, TValue>({
     // Only use client-side pagination if not in server-side mode
     ...(isServerSide
       ? { manualPagination: true, pageCount }
-      : { getPaginationRowModel: getPaginationRowModel() }
-    ),
+      : { getPaginationRowModel: getPaginationRowModel() }),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
@@ -105,7 +109,7 @@ function DataTable<TData, TValue>({
       rowSelection,
       pagination,
     },
-  })
+  });
 
   return (
     <div className="space-y-4">
@@ -129,10 +133,10 @@ function DataTable<TData, TValue>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
-                  )
+                  );
                 })}
               </TableRow>
             ))}
@@ -148,7 +152,7 @@ function DataTable<TData, TValue>({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -169,9 +173,8 @@ function DataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
-  )
+  );
 }
 
-export { DataTable }
-export type { DataTableProps }
-
+export { DataTable };
+export type { DataTableProps };

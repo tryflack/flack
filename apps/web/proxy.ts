@@ -1,18 +1,16 @@
-import { headers } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@flack/auth';
+import { headers } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@flack/auth";
 
 const auth_routes = [
-  '/login',
-  '/register',
-  '/forgot-password',
-  '/verify-email',
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/verify-email",
 ];
 
 // Routes that unauthenticated users can access (prefix matching)
-const public_route_prefixes = [
-  '/accept-invitation',
-];
+const public_route_prefixes = ["/accept-invitation"];
 
 function isPublicRoute(pathname: string) {
   if (auth_routes.includes(pathname)) return true;
@@ -23,45 +21,35 @@ export async function proxy(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
   });
-  
+
   const pathname = request.nextUrl.pathname;
 
   // Redirect unauthenticated users to login (except auth/public routes)
   if (!session && !isPublicRoute(pathname)) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL("/login", request.url));
   }
 
   // Redirect unverified users to verify email
-  if (
-    session &&
-    !session.user.emailVerified &&
-    pathname !== '/verify-email'
-  ) {
-    return NextResponse.redirect(
-      new URL('/verify-email', request.url)
-    );
+  if (session && !session.user.emailVerified && pathname !== "/verify-email") {
+    return NextResponse.redirect(new URL("/verify-email", request.url));
   }
 
   // Redirect verified users away from auth routes (but allow accept-invitation)
-  if (
-    session &&
-    session.user.emailVerified &&
-    auth_routes.includes(pathname)
-  ) {
-    return NextResponse.redirect(new URL('/', request.url));
+  if (session && session.user.emailVerified && auth_routes.includes(pathname)) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // Allow accept-invitation for unverified users too (they can accept, then verify)
   if (
     session &&
     !session.user.emailVerified &&
-    pathname.startsWith('/accept-invitation')
+    pathname.startsWith("/accept-invitation")
   ) {
     return NextResponse.next();
   }
 
   // Handle root path routing for verified users
-  if (session && session.user.emailVerified && pathname === '/') {
+  if (session && session.user.emailVerified && pathname === "/") {
     // If user has an active organization, redirect to it
     if (session.session.activeOrganizationId) {
       const activeOrganization = await auth.api.getFullOrganization({
@@ -70,7 +58,7 @@ export async function proxy(request: NextRequest) {
 
       if (activeOrganization?.slug) {
         return NextResponse.redirect(
-          new URL(`/${activeOrganization.slug}`, request.url)
+          new URL(`/${activeOrganization.slug}`, request.url),
         );
       }
     }
@@ -90,17 +78,17 @@ export async function proxy(request: NextRequest) {
       });
 
       return NextResponse.redirect(
-        new URL(`/${organizations[0].slug}`, request.url)
+        new URL(`/${organizations[0].slug}`, request.url),
       );
     }
 
     // No organizations at all - redirect to onboarding
-    return NextResponse.redirect(new URL('/setup', request.url));
+    return NextResponse.redirect(new URL("/setup", request.url));
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: '/((?!_next/static|_next/image|favicon.ico|api/auth|.*\\.svg$).*)',
+  matcher: "/((?!_next/static|_next/image|favicon.ico|api/auth|.*\\.svg$).*)",
 };

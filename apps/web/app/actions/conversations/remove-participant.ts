@@ -41,13 +41,15 @@ export const removeParticipant = orgActionClient
 
     // Users can only remove themselves, unless we add admin roles later
     if (targetUserId !== userId) {
-      throw new ActionError("You can only remove yourself from the conversation");
+      throw new ActionError(
+        "You can only remove yourself from the conversation",
+      );
     }
 
     // Cannot leave if you're the last participant (would orphan the conversation)
     if (conversation.participants.length <= 2) {
       throw new ActionError(
-        "Cannot leave a group with only 2 participants. The conversation will remain."
+        "Cannot leave a group with only 2 participants. The conversation will remain.",
       );
     }
 
@@ -69,4 +71,3 @@ export const removeParticipant = orgActionClient
 
     return { success: true };
   });
-

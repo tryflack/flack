@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ messageId: string }> }
+  { params }: { params: Promise<{ messageId: string }> },
 ) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -21,7 +21,7 @@ export async function GET(
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -106,7 +106,7 @@ export async function GET(
     if (!channel) {
       return NextResponse.json(
         { error: "You don't have access to this message" },
-        { status: 403 }
+        { status: 403 },
       );
     }
   }
@@ -123,7 +123,7 @@ export async function GET(
     if (!conversation) {
       return NextResponse.json(
         { error: "You don't have access to this message" },
-        { status: 403 }
+        { status: 403 },
       );
     }
   }

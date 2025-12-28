@@ -60,7 +60,7 @@ export const deleteMessage = orgActionClient
     await broadcastMessageDelete(
       messageId,
       message.channelId,
-      message.conversationId
+      message.conversationId,
     );
 
     return { success: true };

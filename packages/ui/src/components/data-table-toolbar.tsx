@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import type { Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
+import type { Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
 
-import { Button } from "@flack/ui/components/button"
-import { Input } from "@flack/ui/components/input"
-import { DataTableViewOptions } from "@flack/ui/components/data-table-view-options"
+import { Button } from "@flack/ui/components/button";
+import { Input } from "@flack/ui/components/input";
+import { DataTableViewOptions } from "@flack/ui/components/data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
-  table: Table<TData>
-  searchKey?: string
-  searchPlaceholder?: string
+  table: Table<TData>;
+  searchKey?: string;
+  searchPlaceholder?: string;
   /** Additional filter controls (renders on the left side) */
-  children?: React.ReactNode
+  children?: React.ReactNode;
   /** Action buttons like "Add Item" (renders on the right side) */
-  actions?: React.ReactNode
+  actions?: React.ReactNode;
 }
 
 function DataTableToolbar<TData>({
@@ -24,7 +24,7 @@ function DataTableToolbar<TData>({
   children,
   actions,
 }: DataTableToolbarProps<TData>) {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0;
 
   return (
     <div className="flex items-center justify-between">
@@ -58,8 +58,7 @@ function DataTableToolbar<TData>({
         {actions}
       </div>
     </div>
-  )
+  );
 }
 
-export { DataTableToolbar }
-
+export { DataTableToolbar };

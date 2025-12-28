@@ -32,7 +32,7 @@ export const updateMemberRole = orgActionClient
         },
       });
 
-      return { 
+      return {
         success: true,
         member: result,
       };
@@ -43,4 +43,3 @@ export const updateMemberRole = orgActionClient
       throw new ActionError("Failed to update member role");
     }
   });
-

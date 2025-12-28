@@ -2,13 +2,11 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 
-function Typewriter({ text, className }: { text: string, className?: string }) {
+function Typewriter({ text, className }: { text: string; className?: string }) {
   const shouldReduceMotion = useReducedMotion();
 
   if (shouldReduceMotion) {
-    return (
-      <span className={className}>{text}</span>
-    );
+    return <span className={className}>{text}</span>;
   }
 
   const container = {
@@ -44,5 +42,4 @@ function Typewriter({ text, className }: { text: string, className?: string }) {
   );
 }
 
-
-export default Typewriter
+export default Typewriter;
