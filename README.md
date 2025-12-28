@@ -111,6 +111,23 @@ turbo deploy:partykit
 
 Your PartyKit server will be available at `your-project.partykit.dev`.
 
+#### Configure PartyKit Environment
+
+PartyKit needs to know your app's URL to validate authentication tokens:
+
+```bash
+cd packages/realtime
+
+# Set the auth URL (your production domain)
+npx partykit env add BETTER_AUTH_URL
+# Enter: https://your-domain.com
+
+# Redeploy to apply
+npx partykit deploy
+```
+
+You can also manage environment variables at https://partykit.io in the project dashboard.
+
 #### Deploy Web App
 
 Deploy to Vercel, Railway, or any Node.js host:
@@ -168,7 +185,16 @@ Or add to `packages/realtime/partykit.json`:
 
 Add a CNAME record pointing `realtime.yourdomain.com` to Cloudflare Workers.
 
-#### 4. Deploy Web App
+#### 4. Configure PartyKit Environment
+
+```bash
+cd packages/realtime
+bunx partykit env add BETTER_AUTH_URL
+# Enter: https://your-domain.com
+bunx partykit deploy
+```
+
+#### 5. Deploy Web App
 
 Same as Option 1, but update:
 
@@ -312,6 +338,17 @@ This means the server-side broadcast isn't reaching PartyKit. Check that:
 1. `NEXT_PUBLIC_PARTYKIT_HOST` is set correctly on your hosting platform
 2. The host matches your deployed PartyKit server exactly (e.g., `your-project.partykit.dev`)
 3. Your PartyKit server is deployed and running
+
+### PartyKit shows "Invalid token" or "Not authenticated"
+
+PartyKit validates tokens by calling your Next.js app. Set the auth URL on PartyKit:
+
+```bash
+cd packages/realtime
+npx partykit env add BETTER_AUTH_URL
+# Enter your production URL: https://your-domain.com
+npx partykit deploy
+```
 
 ### Database migration errors
 
