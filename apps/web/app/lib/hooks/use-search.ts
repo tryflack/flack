@@ -68,7 +68,7 @@ export function useSearch(options: UseSearchOptions = {}): UseSearchResult {
         debounceTimerRef.current = null;
       }, DEBOUNCE_DELAY);
     },
-    [] // No dependencies - refs don't cause stale closures
+    [], // No dependencies - refs don't cause stale closures
   );
 
   // Build search URL

@@ -50,10 +50,9 @@ export const updateProfile = authActionClient
 
     await Promise.all(
       memberships.map((m) =>
-        broadcastUserUpdated(m.organizationId, userId, { name: displayedName })
-      )
+        broadcastUserUpdated(m.organizationId, userId, { name: displayedName }),
+      ),
     );
 
     return { user: updatedUser };
   });
-

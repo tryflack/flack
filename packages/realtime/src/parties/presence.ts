@@ -138,7 +138,7 @@ export default class PresenceParty implements PartyKitServer {
         // User updated their profile - broadcast to all other users
         if (!connectionState?.authenticated) {
           sender.send(
-            JSON.stringify({ type: "error", message: "Not authenticated" })
+            JSON.stringify({ type: "error", message: "Not authenticated" }),
           );
           return;
         }

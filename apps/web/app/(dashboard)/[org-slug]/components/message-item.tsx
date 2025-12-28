@@ -102,7 +102,10 @@ export function MessageItem({
   };
 
   // Get display name, preferring displayName over name
-  const getDisplayName = (user: { name: string; displayName?: string | null }) => {
+  const getDisplayName = (user: {
+    name: string;
+    displayName?: string | null;
+  }) => {
     return user.displayName || user.name;
   };
 

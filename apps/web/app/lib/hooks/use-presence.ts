@@ -126,7 +126,7 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
                   (key) =>
                     typeof key === "string" && key.startsWith("/api/messages"),
                   undefined,
-                  { revalidate: true }
+                  { revalidate: true },
                 );
               }
               break;

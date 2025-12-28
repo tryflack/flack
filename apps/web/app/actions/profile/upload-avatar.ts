@@ -85,8 +85,8 @@ export const uploadAvatar = authActionClient
 
     await Promise.all(
       memberships.map((m) =>
-        broadcastUserUpdated(m.organizationId, userId, { image: blob.url })
-      )
+        broadcastUserUpdated(m.organizationId, userId, { image: blob.url }),
+      ),
     );
 
     return { user: updatedUser, url: blob.url };

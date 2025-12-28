@@ -48,4 +48,3 @@ export function useUserProfile() {
   }
   return context;
 }
-

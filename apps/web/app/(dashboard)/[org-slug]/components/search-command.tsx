@@ -61,7 +61,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       onOpenChange(newOpen);
     },
-    [clear, onOpenChange]
+    [clear, onOpenChange],
   );
 
   // Navigate to a channel
@@ -70,7 +70,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       navigateToChannel(slug);
       handleOpenChange(false);
     },
-    [navigateToChannel, handleOpenChange]
+    [navigateToChannel, handleOpenChange],
   );
 
   // Navigate to a message (in its channel/conversation)
@@ -87,7 +87,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       handleOpenChange(false);
     },
-    [navigateToChannel, navigateToDm, handleOpenChange]
+    [navigateToChannel, navigateToDm, handleOpenChange],
   );
 
   // Navigate to or start DM with a member
@@ -96,7 +96,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       // Check if we already have a DM with this user
       const existingDm = conversations.find(
         (c) =>
-          c.type === "dm" && c.participants.some((p) => p.userId === userId)
+          c.type === "dm" && c.participants.some((p) => p.userId === userId),
       );
 
       if (existingDm) {
@@ -110,7 +110,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       handleOpenChange(false);
     },
-    [conversations, navigateToDm, startDm, handleOpenChange]
+    [conversations, navigateToDm, startDm, handleOpenChange],
   );
 
   // Truncate message content for display

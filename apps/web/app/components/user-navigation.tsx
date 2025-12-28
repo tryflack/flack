@@ -1,13 +1,7 @@
 "use client";
 
 import { useRouter, usePathname } from "next/navigation";
-import {
-  ChevronsUpDown,
-  LogOut,
-  Settings,
-  Users,
-  User,
-} from "lucide-react";
+import { ChevronsUpDown, LogOut, Settings, Users, User } from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@flack/auth/auth-client";
 import { useUserProfile } from "@/app/(dashboard)/[org-slug]/components/user-profile-provider";
