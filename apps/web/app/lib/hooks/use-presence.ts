@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import PartySocket from "partysocket";
+import { useSWRConfig } from "swr";
 import { getBearerToken, fetchBearerToken } from "@flack/auth/auth-client";
 import type { PresenceUser } from "@flack/realtime";
 
@@ -14,6 +15,7 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
   const [isConnected, setIsConnected] = useState(false);
   const socketRef = useRef<PartySocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { mutate } = useSWRConfig();
 
   // Get user's online status
   const getStatus = useCallback(
@@ -81,6 +83,19 @@ export function usePresence({ organizationId }: UsePresenceOptions) {
                 newUsers.set(user.id, user);
               }
               setUsers(newUsers);
+              break;
+
+            case "unread":
+              // A new message was sent - refresh channel/conversation lists
+              // Small delay to ensure database has committed the message
+              setTimeout(() => {
+                if (data.channelId) {
+                  mutate("/api/channels");
+                }
+                if (data.conversationId) {
+                  mutate("/api/conversations");
+                }
+              }, 300);
               break;
 
             case "error":

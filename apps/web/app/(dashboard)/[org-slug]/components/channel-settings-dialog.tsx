@@ -5,14 +5,25 @@ import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Settings, Trash2, LogOut, Users, UserPlus, X, Search } from "lucide-react";
+import {
+  Settings,
+  Trash2,
+  LogOut,
+  Users,
+  UserPlus,
+  X,
+  Search,
+} from "lucide-react";
 import { Button } from "@flack/ui/components/button";
 import { Input } from "@flack/ui/components/input";
 import { Textarea } from "@flack/ui/components/textarea";
 import { Switch } from "@flack/ui/components/switch";
 import { Spinner } from "@flack/ui/components/spinner";
-import { Label } from "@flack/ui/components/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
 import { ScrollArea } from "@flack/ui/components/scroll-area";
 import { Separator } from "@flack/ui/components/separator";
 import {
@@ -52,7 +63,10 @@ import {
   TooltipTrigger,
 } from "@flack/ui/components/tooltip";
 import { toast } from "sonner";
-import { useChannels, type ChannelListItem } from "@/app/lib/hooks/use-channels";
+import {
+  useChannels,
+  type ChannelListItem,
+} from "@/app/lib/hooks/use-channels";
 import { useChannel } from "@/app/lib/hooks/use-channel";
 import { useMembers } from "@/app/lib/hooks/use-members";
 import { useActiveMember } from "@/app/lib/hooks/use-active-member";
@@ -64,7 +78,10 @@ const channelSettingsSchema = z.object({
     .string()
     .min(1, "Channel name is required")
     .max(80, "Channel name must be 80 characters or less"),
-  description: z.string().max(250, "Description must be 250 characters or less").optional(),
+  description: z
+    .string()
+    .max(250, "Description must be 250 characters or less")
+    .optional(),
   isPrivate: z.boolean(),
 });
 
@@ -92,15 +109,22 @@ export function ChannelSettingsDialog({
 }: ChannelSettingsDialogProps) {
   const router = useRouter();
   const { update, remove, leave, invite, removeMember } = useChannels();
-  const { channel: channelDetails, isLoading: isLoadingDetails, mutate: mutateChannel } = useChannel(channel.id);
+  const {
+    channel: channelDetails,
+    isLoading: isLoadingDetails,
+    mutate: mutateChannel,
+  } = useChannel(channel.id);
   const { members: orgMembers, isLoading: isLoadingMembers } = useMembers();
   const { member, isOwner, isAdmin } = useActiveMember();
   const { navigateToChannel } = useChatParams();
-  
+
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [showInvitePanel, setShowInvitePanel] = useState(false);
-  const [showRemoveDialog, setShowRemoveDialog] = useState<{ userId: string; userName: string } | null>(null);
+  const [showRemoveDialog, setShowRemoveDialog] = useState<{
+    userId: string;
+    userName: string;
+  } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
   const [isInviting, setIsInviting] = useState<string | null>(null);
@@ -218,9 +242,12 @@ export function ChannelSettingsDialog({
   };
 
   // Get members not already in the channel
-  const channelMemberIds = new Set(channelDetails?.members.map((m) => m.user.id) ?? []);
+  const channelMemberIds = new Set(
+    channelDetails?.members.map((m) => m.user.id) ?? []
+  );
   const availableMembers = orgMembers.filter(
-    (m) => !channelMemberIds.has(m.userId) &&
+    (m) =>
+      !channelMemberIds.has(m.userId) &&
       (memberSearch === "" ||
         m.user.name.toLowerCase().includes(memberSearch.toLowerCase()) ||
         m.user.email.toLowerCase().includes(memberSearch.toLowerCase()))
@@ -254,7 +281,9 @@ export function ChannelSettingsDialog({
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor={field.name}>Channel name</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>
+                          Channel name
+                        </FieldLabel>
                         <Input
                           {...field}
                           id={field.name}
@@ -272,7 +301,9 @@ export function ChannelSettingsDialog({
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor={field.name}>Description</FieldLabel>
+                        <FieldLabel htmlFor={field.name}>
+                          Description
+                        </FieldLabel>
                         <Textarea
                           {...field}
                           id={field.name}
@@ -282,7 +313,7 @@ export function ChannelSettingsDialog({
                           rows={3}
                         />
                         <FieldDescription>
-                          {(field.value?.length || 0)}/250 characters
+                          {field.value?.length || 0}/250 characters
                         </FieldDescription>
                         {fieldState.invalid && (
                           <FieldError errors={[fieldState.error]} />
@@ -315,7 +346,11 @@ export function ChannelSettingsDialog({
 
                   {canEdit && (
                     <Field className="pt-2">
-                      <Button type="submit" disabled={isSubmitting} className="w-full">
+                      <Button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full"
+                      >
                         {isSubmitting ? (
                           <span className="flex items-center gap-2">
                             <Spinner className="h-4 w-4" /> Saving...
@@ -333,8 +368,10 @@ export function ChannelSettingsDialog({
 
               {/* Danger zone */}
               <div className="space-y-3">
-                <h4 className="text-sm font-medium text-muted-foreground">Danger zone</h4>
-                
+                <h4 className="text-sm font-medium text-muted-foreground">
+                  Danger zone
+                </h4>
+
                 {channel.membership && (
                   <Button
                     variant="outline"
@@ -379,7 +416,7 @@ export function ChannelSettingsDialog({
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
-                  
+
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -390,7 +427,7 @@ export function ChannelSettingsDialog({
                       autoFocus
                     />
                   </div>
-                  
+
                   <ScrollArea className="h-[200px]">
                     {isLoadingMembers ? (
                       <div className="flex items-center justify-center py-8">
@@ -399,7 +436,9 @@ export function ChannelSettingsDialog({
                     ) : availableMembers.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         <p className="text-sm text-muted-foreground">
-                          {memberSearch ? "No members found" : "All members are already in this channel"}
+                          {memberSearch
+                            ? "No members found"
+                            : "All members are already in this channel"}
                         </p>
                       </div>
                     ) : (
@@ -416,7 +455,9 @@ export function ChannelSettingsDialog({
                           >
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={m.user.image ?? undefined} />
-                              <AvatarFallback>{getInitials(m.user.name)}</AvatarFallback>
+                              <AvatarFallback>
+                                {getInitials(m.user.name)}
+                              </AvatarFallback>
                             </Avatar>
                             <div className="flex min-w-0 flex-1 flex-col">
                               <span className="truncate text-sm font-medium">
@@ -455,14 +496,18 @@ export function ChannelSettingsDialog({
                       </Button>
                     )}
                   </div>
-                  
+
                   <ScrollArea className="h-[250px]">
                     <div className="space-y-2">
                       {channelDetails?.members.map((m) => {
-                        const isChannelCreator = channelDetails.createdBy.id === m.user.id;
+                        const isChannelCreator =
+                          channelDetails.createdBy.id === m.user.id;
                         const isCurrentUser = m.user.id === member?.userId;
-                        const canRemove = canManageMembers && !isChannelCreator && !isCurrentUser;
-                        
+                        const canRemove =
+                          canManageMembers &&
+                          !isChannelCreator &&
+                          !isCurrentUser;
+
                         return (
                           <div
                             key={m.id}
@@ -471,13 +516,17 @@ export function ChannelSettingsDialog({
                             <div className="flex items-center gap-3">
                               <Avatar className="h-8 w-8">
                                 <AvatarImage src={m.user.image ?? undefined} />
-                                <AvatarFallback>{getInitials(m.user.name)}</AvatarFallback>
+                                <AvatarFallback>
+                                  {getInitials(m.user.name)}
+                                </AvatarFallback>
                               </Avatar>
                               <div>
                                 <p className="text-sm font-medium">
                                   {m.user.name}
                                   {isCurrentUser && (
-                                    <span className="ml-1.5 text-xs text-muted-foreground">(you)</span>
+                                    <span className="ml-1.5 text-xs text-muted-foreground">
+                                      (you)
+                                    </span>
                                   )}
                                 </p>
                                 <p className="text-xs text-muted-foreground capitalize">
@@ -493,12 +542,19 @@ export function ChannelSettingsDialog({
                                       variant="ghost"
                                       size="icon"
                                       className="h-7 w-7 opacity-0 group-hover:opacity-100"
-                                      onClick={() => setShowRemoveDialog({ userId: m.user.id, userName: m.user.name })}
+                                      onClick={() =>
+                                        setShowRemoveDialog({
+                                          userId: m.user.id,
+                                          userName: m.user.name,
+                                        })
+                                      }
                                     >
                                       <X className="h-4 w-4 text-muted-foreground" />
                                     </Button>
                                   </TooltipTrigger>
-                                  <TooltipContent>Remove from channel</TooltipContent>
+                                  <TooltipContent>
+                                    Remove from channel
+                                  </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
                             )}
@@ -520,7 +576,8 @@ export function ChannelSettingsDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete #{channel.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the channel and all its messages. This action cannot be undone.
+              This will permanently delete the channel and all its messages.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -548,15 +605,13 @@ export function ChannelSettingsDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Leave #{channel.name}?</AlertDialogTitle>
             <AlertDialogDescription>
-              You will no longer receive messages from this channel. You can rejoin anytime if it's a public channel.
+              You will no longer receive messages from this channel. You can
+              rejoin anytime if it's a public channel.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLeaving}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleLeave}
-              disabled={isLeaving}
-            >
+            <AlertDialogAction onClick={handleLeave} disabled={isLeaving}>
               {isLeaving ? (
                 <span className="flex items-center gap-2">
                   <Spinner className="h-4 w-4" /> Leaving...
@@ -570,12 +625,18 @@ export function ChannelSettingsDialog({
       </AlertDialog>
 
       {/* Remove member confirmation */}
-      <AlertDialog open={!!showRemoveDialog} onOpenChange={(open) => !open && setShowRemoveDialog(null)}>
+      <AlertDialog
+        open={!!showRemoveDialog}
+        onOpenChange={(open) => !open && setShowRemoveDialog(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove {showRemoveDialog?.userName}?</AlertDialogTitle>
+            <AlertDialogTitle>
+              Remove {showRemoveDialog?.userName}?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              This member will be removed from #{channel.name} and will no longer receive messages from this channel.
+              This member will be removed from #{channel.name} and will no
+              longer receive messages from this channel.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -599,4 +660,3 @@ export function ChannelSettingsDialog({
     </>
   );
 }
-

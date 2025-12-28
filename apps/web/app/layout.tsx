@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@flack/ui/components/sonner";
 import { Provider } from "react-wrap-balancer";
-import { ThemeProvider } from "./components/theme-provider"
+import { ThemeProvider } from "./components/theme-provider";
 import "@flack/ui/globals.css";
 
 const geistSans = Geist({
@@ -33,11 +33,10 @@ export default function RootLayout({
         <ThemeProvider
           attribute="class"
           forcedTheme="light"
-          disableTransitionOnChange>
+          disableTransitionOnChange
+        >
           <Provider>
-            <main>
-              {children}
-            </main>
+            <main>{children}</main>
           </Provider>
         </ThemeProvider>
         <Toaster richColors />
@@ -45,4 +44,3 @@ export default function RootLayout({
     </html>
   );
 }
-

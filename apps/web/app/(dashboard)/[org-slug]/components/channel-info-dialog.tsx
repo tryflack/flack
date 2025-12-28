@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { Hash, Users, Settings, LogOut, Lock, Calendar } from "lucide-react";
 import { Button } from "@flack/ui/components/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
 import { ScrollArea } from "@flack/ui/components/scroll-area";
 import { Separator } from "@flack/ui/components/separator";
 import { Spinner } from "@flack/ui/components/spinner";
@@ -26,7 +30,10 @@ import {
 } from "@flack/ui/components/alert-dialog";
 import { toast } from "sonner";
 import { useChannel } from "@/app/lib/hooks/use-channel";
-import { useChannels, type ChannelListItem } from "@/app/lib/hooks/use-channels";
+import {
+  useChannels,
+  type ChannelListItem,
+} from "@/app/lib/hooks/use-channels";
 import { useActiveMember } from "@/app/lib/hooks/use-active-member";
 import { useRouter } from "next/navigation";
 import { ChannelSettingsDialog } from "./channel-settings-dialog";
@@ -64,7 +71,7 @@ export function ChannelInfoDialog({
   const { channel: channelDetails, isLoading } = useChannel(channel.id);
   const { leave } = useChannels();
   const { member, isOwner, isAdmin } = useActiveMember();
-  
+
   const [showSettings, setShowSettings] = useState(false);
   const [showLeaveDialog, setShowLeaveDialog] = useState(false);
   const [isLeaving, setIsLeaving] = useState(false);
@@ -155,7 +162,8 @@ export function ChannelInfoDialog({
                 <ScrollArea className="h-[160px]">
                   <div className="space-y-1">
                     {channelDetails?.members.map((m) => {
-                      const isCreator = channelDetails.createdBy.id === m.user.id;
+                      const isCreator =
+                        channelDetails.createdBy.id === m.user.id;
                       return (
                         <div
                           key={m.id}
@@ -171,7 +179,9 @@ export function ChannelInfoDialog({
                             <span className="truncate text-sm font-medium">
                               {m.user.name}
                               {m.user.id === member?.userId && (
-                                <span className="ml-1 text-xs text-muted-foreground">(you)</span>
+                                <span className="ml-1 text-xs text-muted-foreground">
+                                  (you)
+                                </span>
                               )}
                             </span>
                             <span className="text-xs capitalize text-muted-foreground">
@@ -199,7 +209,7 @@ export function ChannelInfoDialog({
                     Settings
                   </Button>
                 )}
-                
+
                 {channel.membership && (
                   <Button
                     variant="outline"
@@ -250,4 +260,3 @@ export function ChannelInfoDialog({
     </>
   );
 }
-

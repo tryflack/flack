@@ -1,10 +1,11 @@
 import useSWRInfinite from "swr/infinite";
-import useSWR from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import { sendMessage } from "@/app/actions/messages/send-message";
 import { editMessage } from "@/app/actions/messages/edit-message";
 import { deleteMessage } from "@/app/actions/messages/delete-message";
 import { addReaction } from "@/app/actions/messages/add-reaction";
 import { removeReaction } from "@/app/actions/messages/remove-reaction";
+import { markAsRead } from "@/app/actions/messages/mark-as-read";
 
 export interface MessageAuthor {
   id: string;
@@ -70,7 +71,10 @@ export function useMessages(
   roomId: string | null,
   roomType: "channel" | "conversation"
 ) {
-  const getKey = (pageIndex: number, previousPageData: MessagesResponse | null) => {
+  const getKey = (
+    pageIndex: number,
+    previousPageData: MessagesResponse | null
+  ) => {
     if (!roomId) return null;
     if (previousPageData && !previousPageData.hasMore) return null;
 
@@ -107,7 +111,9 @@ export function useMessages(
 
     const result = await sendMessage({
       content,
-      ...(roomType === "channel" ? { channelId: roomId } : { conversationId: roomId }),
+      ...(roomType === "channel"
+        ? { channelId: roomId }
+        : { conversationId: roomId }),
       parentId,
     });
 
@@ -205,6 +211,71 @@ export function useMessages(
     return result;
   };
 
+  // Get the global mutate to update channels/conversations cache
+  const { mutate: globalMutate } = useSWRConfig();
+
+  // Mark the current room as read
+  const markRead = async () => {
+    if (!roomId) return;
+
+    // Optimistically update the cache BEFORE the server action
+    // This prevents race conditions with dedupingInterval and revalidateOnFocus
+    if (roomType === "channel") {
+      globalMutate(
+        "/api/channels",
+        (
+          current:
+            | { channels: Array<{ id: string; unreadCount: number }> }
+            | undefined
+        ) => {
+          if (!current) return current;
+          return {
+            ...current,
+            channels: current.channels.map((ch) =>
+              ch.id === roomId ? { ...ch, unreadCount: 0 } : ch
+            ),
+          };
+        },
+        { revalidate: false } // Don't refetch yet, we'll do it after the server action
+      );
+    } else {
+      globalMutate(
+        "/api/conversations",
+        (
+          current:
+            | { conversations: Array<{ id: string; unreadCount: number }> }
+            | undefined
+        ) => {
+          if (!current) return current;
+          return {
+            ...current,
+            conversations: current.conversations.map((conv) =>
+              conv.id === roomId ? { ...conv, unreadCount: 0 } : conv
+            ),
+          };
+        },
+        { revalidate: false }
+      );
+    }
+
+    const result = await markAsRead(
+      roomType === "channel"
+        ? { channelId: roomId }
+        : { conversationId: roomId }
+    );
+
+    // If the server action failed, revalidate to get the true state
+    if (!result?.data?.success) {
+      if (roomType === "channel") {
+        globalMutate("/api/channels");
+      } else {
+        globalMutate("/api/conversations");
+      }
+    }
+
+    return result;
+  };
+
   return {
     messages,
     isLoading,
@@ -219,6 +290,7 @@ export function useMessages(
     remove,
     react,
     unreact,
+    markRead,
     // Real-time helpers
     addMessage,
     updateMessage,
@@ -249,4 +321,3 @@ export function useThread(parentId: string | null) {
     mutate,
   };
 }
-

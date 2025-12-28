@@ -16,6 +16,7 @@ This file tracks the remaining UI features that need to be implemented based on 
 | User Presence | Online status indicators on avatars | `components/presence-indicator.tsx`, `use-presence.ts` |
 | Channel Member Management | Invite/remove members from channels | `actions/channels/invite-to-channel.ts`, `remove-from-channel.ts` |
 | Channel Info Dialog | Click channel name in header for details | `components/channel-info-dialog.tsx` |
+| Unread Messages | Unread counts in sidebar, mark as read on view | `actions/messages/mark-as-read.ts`, API updates |
 
 ## Summary of Ready Actions
 
@@ -23,7 +24,7 @@ This file tracks the remaining UI features that need to be implemented based on 
 |----------|---------|
 | **Channels** | createChannel, updateChannel, deleteChannel, joinChannel, leaveChannel, inviteToChannel, removeFromChannel |
 | **Conversations** | createDm, createGroupDm, addParticipant, removeParticipant, updateConversation |
-| **Messages** | sendMessage, editMessage, deleteMessage, addReaction, removeReaction |
+| **Messages** | sendMessage, editMessage, deleteMessage, addReaction, removeReaction, markAsRead |
 | **Members** | inviteMember, resendInvitation, cancelInvitation, removeMember, updateRole |
 
 ---
@@ -95,12 +96,13 @@ This file tracks the remaining UI features that need to be implemented based on 
 
 ### Priority 4: Larger Features
 
-- [ ] **Unread Messages**
+- [x] **Unread Messages** ✓
+  - Added `lastReadAt` field to `ChannelMember` model
   - Track last read message per channel/conversation
-  - Show unread count badges in sidebar
-  - Bold/highlight channels with unread messages
-  - "Jump to first unread" functionality
-  - Mark as read when scrolled into view
+  - Show unread count badges in sidebar with bold text for unread rooms
+  - Mark as read automatically when viewing channel/conversation
+  - New action: `actions/messages/mark-as-read.ts`
+  - Updated API routes to include unread counts
 
 - [ ] **Search**
   - Global search modal (Cmd+K)

@@ -95,7 +95,8 @@ export const leaveChannel = orgActionClient
         replyCount: 0,
       },
       channelId,
-      null
+      null,
+      organizationId
     );
 
     // Remove membership

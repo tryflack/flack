@@ -7,4 +7,3 @@ export const chatSearchParams = {
 };
 
 export const chatSearchParamsCache = createSearchParamsCache(chatSearchParams);
-

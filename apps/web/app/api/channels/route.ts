@@ -57,24 +57,76 @@ export async function GET(req: NextRequest) {
       },
       members: {
         where: { userId: session.user.id },
-        select: { role: true, joinedAt: true },
+        select: { role: true, joinedAt: true, lastReadAt: true },
+      },
+      messages: {
+        where: { deletedAt: null },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: {
+          id: true,
+          content: true,
+          createdAt: true,
+          type: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
       },
     },
     orderBy: { name: "asc" },
   });
 
-  // Transform to include membership status
-  const transformedChannels = channels.map((channel) => ({
-    id: channel.id,
-    name: channel.name,
-    slug: channel.slug,
-    description: channel.description,
-    isPrivate: channel.isPrivate,
-    memberCount: channel._count.members,
-    isMember: channel.members.length > 0,
-    membership: channel.members[0] ?? null,
-    createdAt: channel.createdAt,
-  }));
+  // Transform to include membership status and unread count
+  const transformedChannels = await Promise.all(
+    channels.map(async (channel) => {
+      const membership = channel.members[0] ?? null;
+      const lastMessage = channel.messages[0] ?? null;
+      
+      // Calculate unread count if user is a member
+      let unreadCount = 0;
+      if (membership && membership.lastReadAt) {
+        unreadCount = await db.message.count({
+          where: {
+            channelId: channel.id,
+            createdAt: { gt: membership.lastReadAt },
+            deletedAt: null,
+            // Don't count user's own messages as unread
+            NOT: { authorId: session.user.id },
+          },
+        });
+      } else if (membership && !membership.lastReadAt) {
+        // If never read, count all messages since joining
+        unreadCount = await db.message.count({
+          where: {
+            channelId: channel.id,
+            createdAt: { gt: membership.joinedAt },
+            deletedAt: null,
+            NOT: { authorId: session.user.id },
+          },
+        });
+      }
+
+      return {
+        id: channel.id,
+        name: channel.name,
+        slug: channel.slug,
+        description: channel.description,
+        isPrivate: channel.isPrivate,
+        memberCount: channel._count.members,
+        isMember: channel.members.length > 0,
+        membership: membership
+          ? { role: membership.role, joinedAt: membership.joinedAt, lastReadAt: membership.lastReadAt }
+          : null,
+        lastMessage,
+        unreadCount,
+        createdAt: channel.createdAt,
+      };
+    })
+  );
 
   return NextResponse.json({ channels: transformedChannels });
 }

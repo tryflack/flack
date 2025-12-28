@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect, useRef } from "react";
 import { Hash, MessageSquare, Settings, ChevronDown, Lock } from "lucide-react";
 import { MessageList } from "./message-list";
 import { MessageInput } from "./message-input";
@@ -67,10 +67,17 @@ function reactionToMessageReaction(reaction: Reaction) {
   };
 }
 
-export function MessageArea({ roomId, roomType, roomName, channel }: MessageAreaProps) {
+export function MessageArea({
+  roomId,
+  roomType,
+  roomName,
+  channel,
+}: MessageAreaProps) {
   const { member } = useActiveMember();
   const [showChannelSettings, setShowChannelSettings] = useState(false);
   const [showChannelInfo, setShowChannelInfo] = useState(false);
+  const lastMarkedRoomRef = useRef<string | null>(null);
+
   const {
     messages,
     isLoading,
@@ -81,10 +88,22 @@ export function MessageArea({ roomId, roomType, roomName, channel }: MessageArea
     remove,
     react,
     unreact,
+    markRead,
     addMessage,
     updateMessage,
     removeFromCache,
   } = useMessages(roomId, roomType ?? "channel");
+
+  // Mark as read when entering a room
+  useEffect(() => {
+    if (!roomId || !roomType || isLoading) return;
+
+    // Only mark as read if we haven't already for this room
+    if (lastMarkedRoomRef.current !== roomId) {
+      lastMarkedRoomRef.current = roomId;
+      markRead();
+    }
+  }, [roomId, roomType, isLoading, markRead]);
 
   const handleNewMessage = useCallback(
     (chatMessage: ChatMessage) => {
@@ -105,7 +124,10 @@ export function MessageArea({ roomId, roomType, roomName, channel }: MessageArea
       const message = messages.find((m) => m.id === messageId);
       if (message) {
         updateMessage(messageId, {
-          reactions: [...message.reactions, reactionToMessageReaction(reaction)],
+          reactions: [
+            ...message.reactions,
+            reactionToMessageReaction(reaction),
+          ],
         });
       }
     },
@@ -180,98 +202,97 @@ export function MessageArea({ roomId, roomType, roomName, channel }: MessageArea
 
   return (
     <>
-    <div className="flex h-full flex-col">
-      {/* Header */}
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
-        {roomType === "channel" && channel ? (
-          <button
-            onClick={() => setShowChannelInfo(true)}
-            className="group flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-muted"
-          >
-            {channel.isPrivate ? (
-              <Lock className="h-4 w-4 text-muted-foreground" />
-            ) : (
+      <div className="flex h-full flex-col">
+        {/* Header */}
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+          {roomType === "channel" && channel ? (
+            <button
+              onClick={() => setShowChannelInfo(true)}
+              className="group flex items-center gap-2 rounded-md px-1.5 py-1 transition-colors hover:bg-muted"
+            >
+              {channel.isPrivate ? (
+                <Lock className="h-4 w-4 text-muted-foreground" />
+              ) : (
+                <Hash className="h-5 w-5 text-muted-foreground" />
+              )}
+              <h1 className="font-semibold">{roomName || "Channel"}</h1>
+              <ChevronDown className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+            </button>
+          ) : roomType === "channel" ? (
+            <>
               <Hash className="h-5 w-5 text-muted-foreground" />
+              <h1 className="font-semibold">{roomName || "Channel"}</h1>
+            </>
+          ) : (
+            <>
+              <MessageSquare className="h-5 w-5 text-muted-foreground" />
+              <h1 className="font-semibold">Direct Message</h1>
+            </>
+          )}
+
+          <div className="ml-auto flex items-center gap-2">
+            {!isConnected && (
+              <span className="text-xs text-muted-foreground">
+                Reconnecting...
+              </span>
             )}
-            <h1 className="font-semibold">{roomName || "Channel"}</h1>
-            <ChevronDown className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
-          </button>
-        ) : roomType === "channel" ? (
-          <>
-            <Hash className="h-5 w-5 text-muted-foreground" />
-            <h1 className="font-semibold">{roomName || "Channel"}</h1>
-          </>
-        ) : (
-          <>
-            <MessageSquare className="h-5 w-5 text-muted-foreground" />
-            <h1 className="font-semibold">Direct Message</h1>
-          </>
-        )}
-        
-        <div className="ml-auto flex items-center gap-2">
-          {!isConnected && (
-            <span className="text-xs text-muted-foreground">
-              Reconnecting...
-            </span>
-          )}
-          
-          {roomType === "channel" && channel && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => setShowChannelSettings(true)}
-                  >
-                    <Settings className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Channel settings</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-      </header>
 
-      {/* Messages */}
-      <MessageList
-        messages={messages}
-        isLoading={isLoading}
-        hasMore={hasMore}
-        onLoadMore={loadMore}
-        currentUserId={member?.userId}
-        onEditMessage={handleEdit}
-        onDeleteMessage={handleDelete}
-        onReact={handleReact}
-      />
+            {roomType === "channel" && channel && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8"
+                      onClick={() => setShowChannelSettings(true)}
+                    >
+                      <Settings className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Channel settings</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+          </div>
+        </header>
 
-      {/* Typing Indicator */}
-      <TypingIndicator users={typingUsers} />
+        {/* Messages */}
+        <MessageList
+          messages={messages}
+          isLoading={isLoading}
+          hasMore={hasMore}
+          onLoadMore={loadMore}
+          currentUserId={member?.userId}
+          onEditMessage={handleEdit}
+          onDeleteMessage={handleDelete}
+          onReact={handleReact}
+        />
 
-      {/* Input */}
-      <MessageInput onSend={handleSend} onTyping={sendTyping} />
-    </div>
+        {/* Typing Indicator */}
+        <TypingIndicator users={typingUsers} />
 
-    {/* Channel Settings Dialog */}
-    {channel && (
-      <ChannelSettingsDialog
-        open={showChannelSettings}
-        onOpenChange={setShowChannelSettings}
-        channel={channel}
-      />
-    )}
+        {/* Input */}
+        <MessageInput onSend={handleSend} onTyping={sendTyping} />
+      </div>
 
-    {/* Channel Info Dialog */}
-    {channel && (
-      <ChannelInfoDialog
-        open={showChannelInfo}
-        onOpenChange={setShowChannelInfo}
-        channel={channel}
-      />
-    )}
+      {/* Channel Settings Dialog */}
+      {channel && (
+        <ChannelSettingsDialog
+          open={showChannelSettings}
+          onOpenChange={setShowChannelSettings}
+          channel={channel}
+        />
+      )}
+
+      {/* Channel Info Dialog */}
+      {channel && (
+        <ChannelInfoDialog
+          open={showChannelInfo}
+          onOpenChange={setShowChannelInfo}
+          channel={channel}
+        />
+      )}
     </>
   );
 }
-

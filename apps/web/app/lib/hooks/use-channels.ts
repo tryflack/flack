@@ -18,7 +18,16 @@ export interface ChannelListItem {
   membership: {
     role: string;
     joinedAt: string;
+    lastReadAt: string | null;
   } | null;
+  lastMessage: {
+    id: string;
+    content: string;
+    createdAt: string;
+    type: string;
+    author: { id: string; name: string };
+  } | null;
+  unreadCount: number;
   createdAt: string;
 }
 
@@ -27,7 +36,14 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export function useChannels() {
   const { data, error, isLoading, mutate } = useSWR<{
     channels: ChannelListItem[];
-  }>("/api/channels", fetcher);
+  }>("/api/channels", fetcher, {
+    // Keep showing previous data while revalidating (prevents flash)
+    keepPreviousData: true,
+    // Also refresh when window regains focus
+    revalidateOnFocus: true,
+    // Dedupe requests within 2 seconds
+    dedupingInterval: 2000,
+  });
 
   // Create a new channel
   const create = async (input: {
@@ -118,4 +134,3 @@ export function useChannels() {
     removeMember,
   };
 }
-

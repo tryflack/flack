@@ -13,10 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@flack/ui/components/card";
-import {
-  Field,
-  FieldError,
-} from "@flack/ui/components/field";
+import { Field, FieldError } from "@flack/ui/components/field";
 import { Input } from "@flack/ui/components/input";
 import { Spinner } from "@flack/ui/components/spinner";
 import { toast } from "sonner";
@@ -119,7 +116,9 @@ export function OrganizationSettingsForm({
       });
 
       if (result.error) {
-        toast.error(result.error.message ?? "Failed to update organization name");
+        toast.error(
+          result.error.message ?? "Failed to update organization name"
+        );
         return;
       }
 
@@ -151,7 +150,10 @@ export function OrganizationSettingsForm({
       const result = await authClient.organization.update({
         organizationId: organization.id,
         data: {
-          metadata: Object.keys(updatedMetadata).length > 0 ? updatedMetadata : undefined,
+          metadata:
+            Object.keys(updatedMetadata).length > 0
+              ? updatedMetadata
+              : undefined,
         },
       });
 
@@ -184,7 +186,9 @@ export function OrganizationSettingsForm({
       });
 
       if (result.error) {
-        toast.error(result.error.message ?? "Failed to update organization slug");
+        toast.error(
+          result.error.message ?? "Failed to update organization slug"
+        );
         return;
       }
 
@@ -348,4 +352,3 @@ export function OrganizationSettingsForm({
     </div>
   );
 }
-

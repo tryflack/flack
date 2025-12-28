@@ -28,6 +28,7 @@ export interface ConversationListItem {
     };
   } | null;
   messageCount: number;
+  unreadCount: number;
   lastReadAt: string | null;
   createdAt: string;
   updatedAt: string;
@@ -40,7 +41,14 @@ export function useConversations(type?: "dm" | "group_dm") {
 
   const { data, error, isLoading, mutate } = useSWR<{
     conversations: ConversationListItem[];
-  }>(url, fetcher);
+  }>(url, fetcher, {
+    // Keep showing previous data while revalidating (prevents flash)
+    keepPreviousData: true,
+    // Also refresh when window regains focus
+    revalidateOnFocus: true,
+    // Dedupe requests within 2 seconds
+    dedupingInterval: 2000,
+  });
 
   // Start a new DM conversation
   const startDm = async (targetUserId: string) => {

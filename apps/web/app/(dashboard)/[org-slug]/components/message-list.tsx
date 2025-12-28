@@ -11,8 +11,13 @@ interface MessageListProps {
   hasMore: boolean;
   onLoadMore: () => void;
   currentUserId?: string;
-  onEditMessage?: (messageId: string, content: string) => Promise<{ serverError?: string } | undefined>;
-  onDeleteMessage?: (messageId: string) => Promise<{ serverError?: string } | undefined>;
+  onEditMessage?: (
+    messageId: string,
+    content: string
+  ) => Promise<{ serverError?: string } | undefined>;
+  onDeleteMessage?: (
+    messageId: string
+  ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
 }
 
@@ -70,10 +75,17 @@ export function MessageList({
         <div key={date} className="flex flex-col-reverse gap-1">
           {dateMessages.map((message, index) => {
             const prevMessage = dateMessages[index + 1];
+            // Always show avatar for first message, different authors, time gaps,
+            // or when either message is a system message (join/leave notifications)
             const showAvatar =
               !prevMessage ||
               prevMessage.authorId !== message.authorId ||
-              isMoreThan5MinutesApart(prevMessage.createdAt, message.createdAt);
+              isMoreThan5MinutesApart(
+                prevMessage.createdAt,
+                message.createdAt
+              ) ||
+              message.type === "system" ||
+              prevMessage.type === "system";
 
             return (
               <MessageItem
@@ -167,4 +179,3 @@ function isMoreThan5MinutesApart(date1: string, date2: string): boolean {
   const diff = Math.abs(new Date(date1).getTime() - new Date(date2).getTime());
   return diff > 5 * 60 * 1000;
 }
-

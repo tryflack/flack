@@ -2,7 +2,12 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import PartySocket from "partysocket";
-import type { ServerMessage, ChatMessage, PresenceUser, Reaction } from "@flack/realtime";
+import type {
+  ServerMessage,
+  ChatMessage,
+  PresenceUser,
+  Reaction,
+} from "@flack/realtime";
 import { getBearerToken, fetchBearerToken } from "@flack/auth/auth-client";
 
 const PARTYKIT_HOST = process.env.NEXT_PUBLIC_PARTYKIT_HOST || "localhost:1999";
@@ -11,7 +16,11 @@ interface UsePartyKitOptions {
   roomId: string;
   roomType: "channel" | "conversation" | "presence";
   onMessage?: (message: ChatMessage) => void;
-  onMessageEdit?: (messageId: string, content: string, updatedAt: string) => void;
+  onMessageEdit?: (
+    messageId: string,
+    content: string,
+    updatedAt: string
+  ) => void;
   onMessageDelete?: (messageId: string) => void;
   onReactionAdd?: (messageId: string, reaction: Reaction) => void;
   onReactionRemove?: (messageId: string, reactionId: string) => void;
@@ -32,7 +41,9 @@ export function usePartyKit({
 }: UsePartyKitOptions) {
   const socketRef = useRef<PartySocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
+  const [typingUsers, setTypingUsers] = useState<Map<string, string>>(
+    new Map()
+  );
 
   // Use refs to store callbacks so they don't cause socket reconnection
   const callbacksRef = useRef({
@@ -72,12 +83,12 @@ export function usePartyKit({
     socket.addEventListener("open", async () => {
       // Send authentication message with bearer token
       let token = getBearerToken();
-      
+
       // If no token in localStorage, try to fetch one
       if (!token) {
         token = await fetchBearerToken();
       }
-      
+
       if (token) {
         socket.send(JSON.stringify({ type: "auth", token }));
       } else {
@@ -101,7 +112,11 @@ export function usePartyKit({
             break;
 
           case "message:edit":
-            callbacks.onMessageEdit?.(message.messageId, message.content, message.updatedAt);
+            callbacks.onMessageEdit?.(
+              message.messageId,
+              message.content,
+              message.updatedAt
+            );
             break;
 
           case "message:delete":
@@ -118,7 +133,9 @@ export function usePartyKit({
 
           case "typing":
             if (message.isTyping) {
-              setTypingUsers((prev) => new Map(prev).set(message.userId, message.userName));
+              setTypingUsers((prev) =>
+                new Map(prev).set(message.userId, message.userName)
+              );
             } else {
               setTypingUsers((prev) => {
                 const next = new Map(prev);
@@ -126,7 +143,11 @@ export function usePartyKit({
                 return next;
               });
             }
-            callbacks.onTyping?.(message.userId, message.userName, message.isTyping);
+            callbacks.onTyping?.(
+              message.userId,
+              message.userName,
+              message.isTyping
+            );
             break;
 
           case "presence":
@@ -195,4 +216,3 @@ export function usePresence(organizationId: string | null) {
     onlineCount: onlineUsers.length,
   };
 }
-

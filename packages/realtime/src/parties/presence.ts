@@ -1,4 +1,4 @@
-import type { PartyKitServer, Connection, Room } from "partykit/server";
+import type { PartyKitServer, Connection, Room, Request } from "partykit/server";
 import type { ServerMessage, ConnectionState, PresenceUser } from "../lib/types.js";
 import { validateToken } from "../lib/auth.js";
 
@@ -79,6 +79,25 @@ export default class PresenceParty implements PartyKitServer {
         sender.send(JSON.stringify({ type: "pong" }));
         break;
       }
+
+      case "unread": {
+        // Broadcast unread notification to all users except sender
+        // This is used to notify other users that there's a new message in a channel/conversation
+        const notification = parsed as { type: "unread"; channelId?: string; conversationId?: string; senderId?: string };
+        
+        for (const conn of this.room.getConnections()) {
+          const state = this.connections.get(conn.id);
+          // Send to all authenticated users except the message sender
+          if (state?.authenticated && state.userId !== notification.senderId) {
+            conn.send(JSON.stringify({
+              type: "unread",
+              channelId: notification.channelId,
+              conversationId: notification.conversationId,
+            }));
+          }
+        }
+        break;
+      }
     }
   }
 
@@ -150,6 +169,46 @@ export default class PresenceParty implements PartyKitServer {
       if (state?.authenticated) {
         conn.send(messageStr);
       }
+    }
+  }
+
+  // Handle HTTP POST requests from server (for broadcasting unread notifications)
+  async onRequest(req: Request): Promise<Response> {
+    if (req.method !== "POST") {
+      return new Response("Method not allowed", { status: 405 });
+    }
+
+    try {
+      const body = (await req.json()) as {
+        type: string;
+        channelId?: string;
+        conversationId?: string;
+        senderId?: string;
+      };
+      
+      switch (body.type) {
+        case "unread":
+          // Broadcast to all authenticated users except the sender
+          for (const conn of this.room.getConnections()) {
+            const state = this.connections.get(conn.id);
+            if (state?.authenticated && state.userId !== body.senderId) {
+              conn.send(JSON.stringify({
+                type: "unread",
+                channelId: body.channelId,
+                conversationId: body.conversationId,
+              } satisfies ServerMessage));
+            }
+          }
+          break;
+
+        default:
+          return new Response("Unknown message type", { status: 400 });
+      }
+
+      return new Response("OK", { status: 200 });
+    } catch (error) {
+      console.error("Presence request error:", error);
+      return new Response("Internal error", { status: 500 });
     }
   }
 }

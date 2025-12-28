@@ -36,13 +36,13 @@ export function useActiveMember() {
   const isOwner = role === "owner";
   const isAdmin = role === "admin";
   const isMember = role === "member";
-  
+
   // Can manage members (invite, remove, update roles)
   const canManageMembers = isOwner || isAdmin;
-  
+
   // Can manage organization settings
   const canManageOrganization = isOwner;
-  
+
   // Can delete the organization
   const canDeleteOrganization = isOwner;
 
@@ -62,4 +62,3 @@ export function useActiveMember() {
     canDeleteOrganization,
   };
 }
-

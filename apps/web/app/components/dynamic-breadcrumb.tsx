@@ -23,7 +23,9 @@ export function DynamicBreadcrumb({ orgSlug }: { orgSlug: string }) {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbPage className="text-lg font-semibold">{label}</BreadcrumbPage>
+            <BreadcrumbPage className="text-lg font-semibold">
+              {label}
+            </BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
@@ -32,7 +34,10 @@ export function DynamicBreadcrumb({ orgSlug }: { orgSlug: string }) {
 }
 
 // Find the breadcrumb label by checking the current path, then walking up parent paths
-function findBreadcrumbLabel(pathname: string, breadcrumbMap: Record<string, string>): string {
+function findBreadcrumbLabel(
+  pathname: string,
+  breadcrumbMap: Record<string, string>
+): string {
   // First, check if the exact path exists in the map
   if (breadcrumbMap[pathname]) {
     return breadcrumbMap[pathname];

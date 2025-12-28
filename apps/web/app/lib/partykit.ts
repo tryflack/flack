@@ -80,12 +80,20 @@ export interface BroadcastRemoveReactionPayload {
   reactionId: string;
 }
 
+export interface BroadcastUnreadPayload {
+  type: "unread";
+  channelId?: string;
+  conversationId?: string;
+  senderId?: string;
+}
+
 type BroadcastPayload =
   | BroadcastNewMessagePayload
   | BroadcastEditMessagePayload
   | BroadcastDeleteMessagePayload
   | BroadcastAddReactionPayload
-  | BroadcastRemoveReactionPayload;
+  | BroadcastRemoveReactionPayload
+  | BroadcastUnreadPayload;
 
 /**
  * Broadcast a message to a PartyKit room
@@ -125,11 +133,13 @@ export async function broadcastToRoom(
 
 /**
  * Broadcast a new message to a channel or conversation
+ * Also sends an unread notification to the presence party for the organization
  */
 export async function broadcastNewMessage(
   message: BroadcastNewMessagePayload["message"],
   channelId: string | null,
-  conversationId: string | null
+  conversationId: string | null,
+  organizationId?: string
 ): Promise<boolean> {
   const roomId = channelId || conversationId;
   const partyType = channelId ? "channel" : "conversation";
@@ -139,10 +149,24 @@ export async function broadcastNewMessage(
     return false;
   }
 
-  return broadcastToRoom(partyType, roomId, {
+  // Broadcast the message to the channel/conversation
+  const messageResult = await broadcastToRoom(partyType, roomId, {
     type: "message:new",
     message,
   });
+
+  // Also broadcast an unread notification to the presence party
+  // This notifies all users in the organization that there's a new message
+  if (organizationId) {
+    await broadcastToRoom("presence", organizationId, {
+      type: "unread",
+      channelId: channelId ?? undefined,
+      conversationId: conversationId ?? undefined,
+      senderId: message.authorId,
+    });
+  }
+
+  return messageResult;
 }
 
 /**

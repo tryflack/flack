@@ -138,7 +138,8 @@ export const removeFromChannel = orgActionClient
         replyCount: 0,
       },
       channelId,
-      null
+      null,
+      organizationId
     );
 
     return { success: true };

@@ -15,7 +15,10 @@ import {
   DialogTitle,
 } from "@flack/ui/components/dialog";
 import { toast } from "sonner";
-import { useChannels, type ChannelListItem } from "@/app/lib/hooks/use-channels";
+import {
+  useChannels,
+  type ChannelListItem,
+} from "@/app/lib/hooks/use-channels";
 import { useChatParams } from "@/app/lib/hooks/use-chat-params";
 import { cn } from "@flack/ui/lib/utils";
 
@@ -24,7 +27,10 @@ interface BrowseChannelsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function BrowseChannelsDialog({ open, onOpenChange }: BrowseChannelsDialogProps) {
+export function BrowseChannelsDialog({
+  open,
+  onOpenChange,
+}: BrowseChannelsDialogProps) {
   const { channels, isLoading, join } = useChannels();
   const { navigateToChannel } = useChatParams();
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,7 +48,9 @@ export function BrowseChannelsDialog({ open, onOpenChange }: BrowseChannelsDialo
 
   // Separate joined and not-joined channels
   const joinedChannels = filteredChannels.filter((c) => c.isMember);
-  const availableChannels = filteredChannels.filter((c) => !c.isMember && !c.isPrivate);
+  const availableChannels = filteredChannels.filter(
+    (c) => !c.isMember && !c.isPrivate
+  );
 
   const handleJoin = async (channel: ChannelListItem) => {
     setJoiningChannelId(channel.id);
@@ -94,7 +102,9 @@ export function BrowseChannelsDialog({ open, onOpenChange }: BrowseChannelsDialo
             ) : filteredChannels.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <p className="text-sm text-muted-foreground">
-                  {searchQuery ? "No channels match your search" : "No channels in this workspace"}
+                  {searchQuery
+                    ? "No channels match your search"
+                    : "No channels in this workspace"}
                 </p>
               </div>
             ) : (
@@ -140,11 +150,13 @@ export function BrowseChannelsDialog({ open, onOpenChange }: BrowseChannelsDialo
                 )}
 
                 {/* No available channels message */}
-                {availableChannels.length === 0 && joinedChannels.length > 0 && !searchQuery && (
-                  <p className="text-center text-sm text-muted-foreground">
-                    You've joined all available channels!
-                  </p>
-                )}
+                {availableChannels.length === 0 &&
+                  joinedChannels.length > 0 &&
+                  !searchQuery && (
+                    <p className="text-center text-sm text-muted-foreground">
+                      You've joined all available channels!
+                    </p>
+                  )}
               </div>
             )}
           </ScrollArea>
@@ -162,7 +174,13 @@ interface ChannelRowProps {
   isLoading?: boolean;
 }
 
-function ChannelRow({ channel, onAction, actionLabel, isJoined, isLoading }: ChannelRowProps) {
+function ChannelRow({
+  channel,
+  onAction,
+  actionLabel,
+  isJoined,
+  isLoading,
+}: ChannelRowProps) {
   return (
     <div
       className={cn(
@@ -210,4 +228,3 @@ function ChannelRow({ channel, onAction, actionLabel, isJoined, isLoading }: Cha
     </div>
   );
 }
-

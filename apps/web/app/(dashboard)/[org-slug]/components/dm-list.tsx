@@ -1,7 +1,12 @@
 "use client";
 
 import { MessageSquare } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
+import { Badge } from "@flack/ui/components/badge";
 import { useChatParams } from "@/app/lib/hooks/use-chat-params";
 import { useConversations } from "@/app/lib/hooks/use-conversations";
 import { cn } from "@flack/ui/lib/utils";
@@ -47,10 +52,7 @@ export function DmList() {
       {isLoading ? (
         <div className="flex flex-col gap-1 px-2">
           {[1, 2].map((i) => (
-            <div
-              key={i}
-              className="h-8 animate-pulse rounded bg-muted"
-            />
+            <div key={i} className="h-8 animate-pulse rounded bg-muted" />
           ))}
         </div>
       ) : conversations.length === 0 ? (
@@ -62,6 +64,8 @@ export function DmList() {
           {conversations.map((conversation) => {
             const displayName = getDisplayName(conversation);
             const avatarUrl = getAvatarUrl(conversation);
+            const hasUnread = conversation.unreadCount > 0;
+            const isActive = activeDm === conversation.id;
 
             return (
               <button
@@ -69,8 +73,8 @@ export function DmList() {
                 onClick={() => navigateToDm(conversation.id)}
                 className={cn(
                   "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent",
-                  activeDm === conversation.id &&
-                    "bg-accent font-medium text-accent-foreground"
+                  isActive && "bg-accent text-accent-foreground",
+                  hasUnread && !isActive && "font-semibold"
                 )}
               >
                 {conversation.type === "dm" ? (
@@ -81,9 +85,26 @@ export function DmList() {
                     </AvatarFallback>
                   </Avatar>
                 ) : (
-                  <MessageSquare className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <MessageSquare
+                    className={cn(
+                      "h-4 w-4 shrink-0",
+                      hasUnread && !isActive
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    )}
+                  />
                 )}
-                <span className="truncate">{displayName}</span>
+                <span className="flex-1 truncate text-left">{displayName}</span>
+                {hasUnread && !isActive && (
+                  <Badge
+                    variant="default"
+                    className="h-5 min-w-5 justify-center rounded-full px-1.5 text-[10px] font-bold"
+                  >
+                    {conversation.unreadCount > 99
+                      ? "99+"
+                      : conversation.unreadCount}
+                  </Badge>
+                )}
               </button>
             );
           })}
@@ -92,4 +113,3 @@ export function DmList() {
     </div>
   );
 }
-

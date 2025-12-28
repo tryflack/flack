@@ -10,4 +10,3 @@ export function PageLoading() {
     </div>
   );
 }
-

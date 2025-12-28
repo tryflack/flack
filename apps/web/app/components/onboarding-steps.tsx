@@ -49,11 +49,11 @@ export function OnboardingSteps({
             onKeyDown={
               isClickable
                 ? (e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    onStepClick(stepNumber);
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onStepClick(stepNumber);
+                    }
                   }
-                }
                 : undefined
             }
           >
@@ -64,12 +64,12 @@ export function OnboardingSteps({
                   className="w-full bg-emerald-500 origin-top"
                   initial={{ scaleY: 0 }}
                   animate={{
-                    scaleY: isCompleted ? 1 : isCurrent ? 0.5 : 0
+                    scaleY: isCompleted ? 1 : isCurrent ? 0.5 : 0,
                   }}
                   transition={{
                     duration: 0.5,
                     ease: "easeOut",
-                    delay: isCompleted ? 0 : 0.2
+                    delay: isCompleted ? 0 : 0.2,
                   }}
                   style={{ height: "100%" }}
                 />
@@ -82,11 +82,11 @@ export function OnboardingSteps({
                 className={cn(
                   "flex h-9 w-9 items-center justify-center rounded-full border-2 text-sm font-medium",
                   isCompleted &&
-                  "border-emerald-500 bg-emerald-500 text-white group-hover:bg-emerald-600 group-hover:border-emerald-600",
+                    "border-emerald-500 bg-emerald-500 text-white group-hover:bg-emerald-600 group-hover:border-emerald-600",
                   isCurrent &&
-                  "border-primary bg-primary text-primary-foreground",
+                    "border-primary bg-primary text-primary-foreground",
                   isFuture &&
-                  "border-muted-foreground/30 bg-background text-muted-foreground/50"
+                    "border-muted-foreground/30 bg-background text-muted-foreground/50"
                 )}
                 initial={false}
                 animate={{
@@ -106,7 +106,11 @@ export function OnboardingSteps({
                       initial={{ scale: 0, rotate: -180 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 180 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     >
                       <CheckIcon className="h-4 w-4" strokeWidth={3} />
                     </motion.div>
@@ -116,7 +120,11 @@ export function OnboardingSteps({
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       exit={{ scale: 0 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     >
                       {stepNumber}
                     </motion.span>

@@ -129,6 +129,7 @@ export const sendMessage = orgActionClient
     }
 
     // Broadcast via PartyKit for real-time updates
+    // Also sends unread notification to presence party
     await broadcastNewMessage(
       {
         id: message.id,
@@ -149,9 +150,9 @@ export const sendMessage = orgActionClient
         replyCount: message._count.replies,
       },
       channelId ?? null,
-      conversationId ?? null
+      conversationId ?? null,
+      organizationId
     );
 
     return { message };
   });
-

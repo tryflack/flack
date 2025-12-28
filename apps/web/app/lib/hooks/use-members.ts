@@ -49,7 +49,10 @@ export function useMembers() {
   );
 
   // Invite a new member
-  const invite = async (input: { email: string; role?: "member" | "admin" }) => {
+  const invite = async (input: {
+    email: string;
+    role?: "member" | "admin";
+  }) => {
     const result = await inviteMember(input);
     if (result?.data?.success) {
       mutate(); // Revalidate the members list
@@ -67,7 +70,10 @@ export function useMembers() {
   };
 
   // Update a member's role
-  const updateRole = async (memberId: string, role: "member" | "admin" | "owner") => {
+  const updateRole = async (
+    memberId: string,
+    role: "member" | "admin" | "owner"
+  ) => {
     const result = await updateMemberRole({ memberId, role });
     if (result?.data?.success) {
       mutate();
@@ -108,4 +114,3 @@ export function useMembers() {
     resend,
   };
 }
-

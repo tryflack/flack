@@ -1,5 +1,5 @@
-import type { LucideIcon } from 'lucide-react';
-import { Settings, Users } from 'lucide-react';
+import type { LucideIcon } from "lucide-react";
+import { Settings, Users } from "lucide-react";
 
 export interface SettingsMenuItem {
   title: string;
@@ -13,12 +13,12 @@ export interface SettingsMenuItem {
 export function getSettingsMenuItems(orgSlug: string): SettingsMenuItem[] {
   return [
     {
-      title: 'Settings',
+      title: "Settings",
       url: `/${orgSlug}/settings`,
       icon: Settings,
     },
     {
-      title: 'Team',
+      title: "Team",
       url: `/${orgSlug}/settings/team`,
       icon: Users,
     },
@@ -26,14 +26,12 @@ export function getSettingsMenuItems(orgSlug: string): SettingsMenuItem[] {
 }
 
 // Build a flat map of URL paths to breadcrumb labels
-export function getBreadcrumbMap(
-  orgSlug: string
-): Record<string, string> {
+export function getBreadcrumbMap(orgSlug: string): Record<string, string> {
   const settingsItems = getSettingsMenuItems(orgSlug);
   const map: Record<string, string> = {
-    [`/${orgSlug}`]: 'Chat',
-    [`/${orgSlug}/settings`]: 'Settings',
-    [`/${orgSlug}/settings/team`]: 'Team',
+    [`/${orgSlug}`]: "Chat",
+    [`/${orgSlug}/settings`]: "Settings",
+    [`/${orgSlug}/settings/team`]: "Team",
   };
 
   // Add settings menu items

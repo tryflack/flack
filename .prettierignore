@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+dist
+build
+out
+
+# Generated files
+packages/db/generated
+bun.lock
+pnpm-lock.yaml
+package-lock.json
+
+# Database
+*.db
+*.sqlite
+
+# Misc
+.turbo
+.vercel
+.env*
+

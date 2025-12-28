@@ -35,14 +35,16 @@ export default function WelcomePage() {
         <h1 className="font-bold tracking-tight">Welcome to Flack</h1>
 
         <p className="text-muted-foreground text-sm">
-          <Balancer>
-            The modern, open source Slack alternative.
-          </Balancer>
+          <Balancer>The modern, open source Slack alternative.</Balancer>
         </p>
       </div>
 
       <div className="mt-4">
-        <Button className="w-full" onClick={handleGetStarted} disabled={isPending}>
+        <Button
+          className="w-full"
+          onClick={handleGetStarted}
+          disabled={isPending}
+        >
           {isPending ? (
             <span className="flex items-center gap-2">
               <Spinner /> Loading...

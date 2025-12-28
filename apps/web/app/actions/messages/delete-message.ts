@@ -41,8 +41,7 @@ export const deleteMessage = orgActionClient
     // Check deletion permission
     const isAuthor = message.authorId === userId;
     const isOrgAdmin = memberRole === "owner" || memberRole === "admin";
-    const isChannelAdmin =
-      message.channel?.members[0]?.role === "admin";
+    const isChannelAdmin = message.channel?.members[0]?.role === "admin";
 
     if (!isAuthor && !isOrgAdmin && !isChannelAdmin) {
       throw new ActionError("You don't have permission to delete this message");
@@ -66,4 +65,3 @@ export const deleteMessage = orgActionClient
 
     return { success: true };
   });
-

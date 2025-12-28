@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { useState } from "react"
-import { ChevronRight, Hash, Lock, MessageSquare, Plus } from "lucide-react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import Image from "next/image"
+import * as React from "react";
+import { useState } from "react";
+import { ChevronRight, Hash, Lock, MessageSquare, Plus } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import Image from "next/image";
 
-import { NavUser } from "./user-navigation"
+import { NavUser } from "./user-navigation";
 import {
   Sidebar,
   SidebarContent,
@@ -19,20 +19,28 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@flack/ui/components/sidebar"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@flack/ui/components/collapsible"
-import { Avatar, AvatarFallback, AvatarImage } from "@flack/ui/components/avatar"
-import { Skeleton } from "@flack/ui/components/skeleton"
-import { useChatParams } from "@/app/lib/hooks/use-chat-params"
-import { useChannels } from "@/app/lib/hooks/use-channels"
-import { useConversations } from "@/app/lib/hooks/use-conversations"
-import { authClient } from "@flack/auth/auth-client"
-import { CreateChannelDialog } from "@/app/(dashboard)/[org-slug]/components/create-channel-dialog"
-import { StartDmDialog } from "@/app/(dashboard)/[org-slug]/components/start-dm-dialog"
-import { BrowseChannelsDialog } from "@/app/(dashboard)/[org-slug]/components/browse-channels-dialog"
-import { AvatarWithPresence } from "@/app/(dashboard)/[org-slug]/components/presence-indicator"
-import { usePresenceContext } from "@/app/(dashboard)/[org-slug]/components/presence-provider"
-import { cn } from "@flack/ui/lib/utils"
+} from "@flack/ui/components/sidebar";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@flack/ui/components/collapsible";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@flack/ui/components/avatar";
+import { Skeleton } from "@flack/ui/components/skeleton";
+import { useChatParams } from "@/app/lib/hooks/use-chat-params";
+import { useChannels } from "@/app/lib/hooks/use-channels";
+import { useConversations } from "@/app/lib/hooks/use-conversations";
+import { authClient } from "@flack/auth/auth-client";
+import { CreateChannelDialog } from "@/app/(dashboard)/[org-slug]/components/create-channel-dialog";
+import { StartDmDialog } from "@/app/(dashboard)/[org-slug]/components/start-dm-dialog";
+import { BrowseChannelsDialog } from "@/app/(dashboard)/[org-slug]/components/browse-channels-dialog";
+import { AvatarWithPresence } from "@/app/(dashboard)/[org-slug]/components/presence-indicator";
+import { usePresenceContext } from "@/app/(dashboard)/[org-slug]/components/presence-provider";
+import { cn } from "@flack/ui/lib/utils";
 
 interface Organization {
   id: string;
@@ -41,7 +49,9 @@ interface Organization {
   domain?: string;
 }
 
-interface OrganizationSidebarProps extends React.ComponentProps<typeof Sidebar> {
+interface OrganizationSidebarProps extends React.ComponentProps<
+  typeof Sidebar
+> {
   organization: Organization;
 }
 
@@ -66,7 +76,11 @@ function ChannelSection() {
 
   return (
     <>
-      <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
+      <Collapsible
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="group/collapsible"
+      >
         <SidebarGroup>
           <SidebarGroupLabel asChild>
             <CollapsibleTrigger className="flex w-full items-center">
@@ -74,7 +88,10 @@ function ChannelSection() {
               Channels
             </CollapsibleTrigger>
           </SidebarGroupLabel>
-          <SidebarGroupAction onClick={() => setShowCreateDialog(true)} title="Create Channel">
+          <SidebarGroupAction
+            onClick={() => setShowCreateDialog(true)}
+            title="Create Channel"
+          >
             <Plus className="h-4 w-4" />
           </SidebarGroupAction>
           <CollapsibleContent>
@@ -96,38 +113,53 @@ function ChannelSection() {
                       </span>
                     </SidebarMenuItem>
                   ) : (
-                    memberChannels.map((channel) => (
-                      <SidebarMenuItem key={channel.id}>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={activeChannel === channel.slug}
-                          tooltip={channel.name}
-                        >
-                          <button onClick={() => navigateToChannel(channel.slug)}>
+                    memberChannels.map((channel) => {
+                      const hasUnread = channel.unreadCount > 0;
+                      const isActive = activeChannel === channel.slug;
+
+                      return (
+                        <SidebarMenuItem key={channel.id}>
+                          <SidebarMenuButton
+                            isActive={isActive}
+                            tooltip={channel.name}
+                            className={cn(
+                              hasUnread && !isActive && "font-medium"
+                            )}
+                            onClick={() => navigateToChannel(channel.slug)}
+                          >
                             {channel.isPrivate ? (
-                              <Lock className="h-4 w-4" />
+                              <Lock
+                                className={cn(
+                                  "h-4 w-4",
+                                  hasUnread && !isActive && "text-foreground"
+                                )}
+                              />
                             ) : (
-                              <Hash className="h-4 w-4" />
+                              <Hash
+                                className={cn(
+                                  "h-4 w-4",
+                                  hasUnread && !isActive && "text-foreground"
+                                )}
+                              />
                             )}
                             <span className="truncate">{channel.name}</span>
-                          </button>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))
+                            {hasUnread && !isActive && (
+                              <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-primary" />
+                            )}
+                          </SidebarMenuButton>
+                        </SidebarMenuItem>
+                      );
+                    })
                   )}
                   {/* Browse channels button */}
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      asChild
                       tooltip="Browse all channels"
+                      onClick={() => setShowBrowseDialog(true)}
+                      className="text-muted-foreground hover:text-foreground"
                     >
-                      <button
-                        onClick={() => setShowBrowseDialog(true)}
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        <Plus className="h-4 w-4" />
-                        <span className="truncate">Browse channels</span>
-                      </button>
+                      <Plus className="h-4 w-4" />
+                      <span className="truncate">Browse channels</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </>
@@ -141,7 +173,7 @@ function ChannelSection() {
         open={showCreateDialog}
         onOpenChange={setShowCreateDialog}
       />
-      
+
       <BrowseChannelsDialog
         open={showBrowseDialog}
         onOpenChange={setShowBrowseDialog}
@@ -170,7 +202,10 @@ function DirectMessagesSection() {
   // The current user is also in the participants array, so we need to filter them out
   const getOtherParticipant = (conversation: (typeof conversations)[0]) => {
     if (!currentUserId) return conversation.participants[0];
-    return conversation.participants.find((p) => p.userId !== currentUserId) ?? conversation.participants[0];
+    return (
+      conversation.participants.find((p) => p.userId !== currentUserId) ??
+      conversation.participants[0]
+    );
   };
 
   const getAvatarUrl = (conversation: (typeof conversations)[0]) => {
@@ -191,49 +226,59 @@ function DirectMessagesSection() {
 
   return (
     <>
-    <Collapsible open={isOpen} onOpenChange={setIsOpen} className="group/collapsible">
-      <SidebarGroup>
-        <SidebarGroupLabel asChild>
-          <CollapsibleTrigger className="flex w-full items-center">
-            <ChevronRight className="mr-1 h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
-            Direct Messages
-          </CollapsibleTrigger>
-        </SidebarGroupLabel>
-        <SidebarGroupAction onClick={() => setShowStartDmDialog(true)} title="Start DM">
-          <Plus className="h-4 w-4" />
-        </SidebarGroupAction>
-        <CollapsibleContent>
-          <SidebarMenu>
-            {isLoading ? (
-              <>
-                {[1, 2].map((i) => (
-                  <SidebarMenuItem key={i}>
-                    <Skeleton className="h-8 w-full" />
-                  </SidebarMenuItem>
-                ))}
-              </>
-            ) : conversations.length === 0 ? (
-              <SidebarMenuItem>
-                <span className="px-2 py-1 text-xs text-muted-foreground">
-                  No conversations yet
-                </span>
-              </SidebarMenuItem>
-            ) : (
-              conversations.map((conversation) => {
-                const displayName = getDisplayName(conversation);
-                const avatarUrl = getAvatarUrl(conversation);
-                const otherUserId = getOtherUserId(conversation);
-                const userStatus = otherUserId ? getStatus(otherUserId) : undefined;
-                // Note: getAvatarUrl and getOtherUserId now use currentUserId from scope
+      <Collapsible
+        open={isOpen}
+        onOpenChange={setIsOpen}
+        className="group/collapsible"
+      >
+        <SidebarGroup>
+          <SidebarGroupLabel asChild>
+            <CollapsibleTrigger className="flex w-full items-center">
+              <ChevronRight className="mr-1 h-3.5 w-3.5 transition-transform group-data-[state=open]/collapsible:rotate-90" />
+              Direct Messages
+            </CollapsibleTrigger>
+          </SidebarGroupLabel>
+          <SidebarGroupAction
+            onClick={() => setShowStartDmDialog(true)}
+            title="Start DM"
+          >
+            <Plus className="h-4 w-4" />
+          </SidebarGroupAction>
+          <CollapsibleContent>
+            <SidebarMenu>
+              {isLoading ? (
+                <>
+                  {[1, 2].map((i) => (
+                    <SidebarMenuItem key={i}>
+                      <Skeleton className="h-8 w-full" />
+                    </SidebarMenuItem>
+                  ))}
+                </>
+              ) : conversations.length === 0 ? (
+                <SidebarMenuItem>
+                  <span className="px-2 py-1 text-xs text-muted-foreground">
+                    No conversations yet
+                  </span>
+                </SidebarMenuItem>
+              ) : (
+                conversations.map((conversation) => {
+                  const displayName = getDisplayName(conversation);
+                  const avatarUrl = getAvatarUrl(conversation);
+                  const otherUserId = getOtherUserId(conversation);
+                  const userStatus = otherUserId
+                    ? getStatus(otherUserId)
+                    : undefined;
+                  const hasUnread = conversation.unreadCount > 0;
+                  const isActive = activeDm === conversation.id;
 
-                return (
-                  <SidebarMenuItem key={conversation.id}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={activeDm === conversation.id}
-                      tooltip={displayName}
-                    >
-                      <button onClick={() => navigateToDm(conversation.id)}>
+                  return (
+                    <SidebarMenuItem key={conversation.id}>
+                      <SidebarMenuButton
+                        isActive={isActive}
+                        tooltip={displayName}
+                        className={cn(hasUnread && !isActive && "font-medium")}
+                        onClick={() => navigateToDm(conversation.id)}
+                      >
                         {conversation.type === "dm" ? (
                           <AvatarWithPresence status={userStatus} size="sm">
                             <Avatar className="h-5 w-5">
@@ -244,29 +289,39 @@ function DirectMessagesSection() {
                             </Avatar>
                           </AvatarWithPresence>
                         ) : (
-                          <MessageSquare className="h-4 w-4" />
+                          <MessageSquare
+                            className={cn(
+                              "h-4 w-4",
+                              hasUnread && !isActive && "text-foreground"
+                            )}
+                          />
                         )}
                         <span className="truncate">{displayName}</span>
-                      </button>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })
-            )}
-          </SidebarMenu>
-        </CollapsibleContent>
-      </SidebarGroup>
-    </Collapsible>
+                        {hasUnread && !isActive && (
+                          <span className="ml-auto h-2 w-2 shrink-0 rounded-full bg-primary" />
+                        )}
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })
+              )}
+            </SidebarMenu>
+          </CollapsibleContent>
+        </SidebarGroup>
+      </Collapsible>
 
-    <StartDmDialog
-      open={showStartDmDialog}
-      onOpenChange={setShowStartDmDialog}
-    />
+      <StartDmDialog
+        open={showStartDmDialog}
+        onOpenChange={setShowStartDmDialog}
+      />
     </>
   );
 }
 
-export function OrganizationSidebar({ organization, ...props }: OrganizationSidebarProps) {
+export function OrganizationSidebar({
+  organization,
+  ...props
+}: OrganizationSidebarProps) {
   const logoDomain = organization.domain ?? `${organization.slug}.com`;
 
   return (
@@ -277,10 +332,17 @@ export function OrganizationSidebar({ organization, ...props }: OrganizationSide
             <SidebarMenuButton size="lg" asChild>
               <a href={`/${organization.slug}`}>
                 <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-lg">
-                  <Image src={`https://img.logo.dev/${logoDomain}?token=${process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY}`} alt={organization.name} width={32} height={32} />
+                  <Image
+                    src={`https://img.logo.dev/${logoDomain}?token=${process.env.NEXT_PUBLIC_LOGO_DEV_PUBLISHABLE_KEY}`}
+                    alt={organization.name}
+                    width={32}
+                    height={32}
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{organization.name}</span>
+                  <span className="truncate font-medium">
+                    {organization.name}
+                  </span>
                   <span className="truncate text-xs">{organization.slug}</span>
                 </div>
               </a>
@@ -296,5 +358,5 @@ export function OrganizationSidebar({ organization, ...props }: OrganizationSide
         <NavUser />
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

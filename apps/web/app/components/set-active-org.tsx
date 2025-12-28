@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { authClient } from "@flack/auth/auth-client"; 
+import { authClient } from "@flack/auth/auth-client";
 
 interface SetActiveOrgProps {
   organizationId: string;
@@ -13,7 +13,10 @@ interface SetActiveOrgProps {
  * This ensures the session's activeOrganizationId is updated when
  * a user navigates to an organization page.
  */
-export function SetActiveOrg({ organizationId, currentActiveOrgId }: SetActiveOrgProps) {
+export function SetActiveOrg({
+  organizationId,
+  currentActiveOrgId,
+}: SetActiveOrgProps) {
   const hasSet = useRef(false);
 
   useEffect(() => {
@@ -28,9 +31,3 @@ export function SetActiveOrg({ organizationId, currentActiveOrgId }: SetActiveOr
 
   return null;
 }
-
-
-
-
-
-

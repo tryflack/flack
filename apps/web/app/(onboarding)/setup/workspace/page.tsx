@@ -127,7 +127,10 @@ export default function WorkspacePage() {
       });
 
       if (channelsResult?.serverError) {
-        console.error("Failed to create default channels:", channelsResult.serverError);
+        console.error(
+          "Failed to create default channels:",
+          channelsResult.serverError
+        );
         // Don't block navigation, just log the error
       }
 

@@ -107,7 +107,8 @@ export const joinChannel = orgActionClient
         replyCount: 0,
       },
       channelId,
-      null
+      null,
+      organizationId
     );
 
     return { membership };

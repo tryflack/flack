@@ -139,7 +139,8 @@ export const inviteToChannel = orgActionClient
         replyCount: 0,
       },
       channelId,
-      null
+      null,
+      organizationId
     );
 
     return { success: true, membership };

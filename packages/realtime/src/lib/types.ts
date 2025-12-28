@@ -28,11 +28,13 @@ export type ServerMessage =
   | { type: "reaction:add"; messageId: string; reaction: Reaction }
   | { type: "reaction:remove"; messageId: string; reactionId: string }
   | { type: "typing"; userId: string; userName: string; isTyping: boolean }
-  | { type: "presence"; users: PresenceUser[] };
+  | { type: "presence"; users: PresenceUser[] }
+  | { type: "unread"; channelId?: string; conversationId?: string };
 
 export interface ChatMessage {
   id: string;
   content: string;
+  type?: "message" | "system"; // Message type: regular message or system notification
   authorId: string;
   author: MessageAuthor;
   channelId: string | null;

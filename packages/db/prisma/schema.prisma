@@ -43,15 +43,15 @@ model User {
 }
 
 model Organization {
-  id           String        @id
-  name         String
-  slug         String
-  logo         String?
-  website      String?       // Company website for domain scans
-  createdAt    DateTime
-  metadata     String?
-  members      Member[]
-  invitations  Invitation[]
+  id          String       @id
+  name        String
+  slug        String
+  logo        String?
+  website     String? // Company website for domain scans
+  createdAt   DateTime
+  metadata    String?
+  members     Member[]
+  invitations Invitation[]
 
   // Messaging relations
   channels      Channel[]
@@ -187,8 +187,8 @@ model Conversation {
   id             String                    @id @default(cuid())
   organizationId String
   organization   Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  type           String                    // "dm" | "group_dm"
-  name           String?                   // Only for group DMs
+  type           String // "dm" | "group_dm"
+  name           String? // Only for group DMs
   participants   ConversationParticipant[]
   messages       Message[]
   createdAt      DateTime                  @default(now())

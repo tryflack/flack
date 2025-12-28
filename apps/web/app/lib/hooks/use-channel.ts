@@ -43,4 +43,3 @@ export function useChannel(channelId: string | null) {
     mutate,
   };
 }
-

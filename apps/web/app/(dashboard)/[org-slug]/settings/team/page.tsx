@@ -39,7 +39,7 @@ export default async function OrganizationTeamPage({
   }
 
   return (
-    <TeamManagement 
+    <TeamManagement
       organizationName={organization.name}
       currentUserId={session.user.id}
     />
