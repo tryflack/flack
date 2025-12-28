@@ -7,7 +7,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().default("file:./dev.db"),
   DATABASE_AUTH_TOKEN: z.string().optional(),
   // Local SQLite URL for Prisma CLI migrations (required when using Turso)
-  LOCAL_DATABASE_URL: z.string().optional(),
+  LOCAL_DATABASE_URL: z.string().optional().default("file:./dev.db"),
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
