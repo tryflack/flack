@@ -6,7 +6,7 @@ import type { ConnectionState } from "./types.js";
  */
 export async function validateToken(
   token: string,
-  authUrl: string
+  authUrl: string,
 ): Promise<ConnectionState | null> {
   // Remove trailing slash if present
   const baseUrl = authUrl.endsWith("/") ? authUrl.slice(0, -1) : authUrl;
