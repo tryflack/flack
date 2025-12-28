@@ -21,7 +21,7 @@ export default class ChannelParty implements PartyKitServer {
 
   async onMessage(
     message: string | ArrayBuffer | ArrayBufferView<ArrayBufferLike>,
-    sender: Connection<unknown>,
+    sender: Connection<unknown>
   ) {
     let parsed: ClientMessage;
 
@@ -29,7 +29,7 @@ export default class ChannelParty implements PartyKitServer {
       parsed = JSON.parse(message as string);
     } catch {
       sender.send(
-        JSON.stringify({ type: "error", message: "Invalid message format" }),
+        JSON.stringify({ type: "error", message: "Invalid message format" })
       );
       return;
     }
@@ -38,17 +38,19 @@ export default class ChannelParty implements PartyKitServer {
 
     switch (parsed.type) {
       case "auth": {
-        const authUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+        // TODO: Remove hardcoded URL after fixing env vars
+        const authUrl =
+          process.env.BETTER_AUTH_URL || "https://flack-web.vercel.app";
         const state = await validateToken(parsed.token, authUrl);
 
         if (state) {
           this.connections.set(sender.id, state);
           sender.send(
-            JSON.stringify({ type: "connected", userId: state.userId }),
+            JSON.stringify({ type: "connected", userId: state.userId })
           );
         } else {
           sender.send(
-            JSON.stringify({ type: "error", message: "Invalid token" }),
+            JSON.stringify({ type: "error", message: "Invalid token" })
           );
         }
         break;
@@ -57,7 +59,7 @@ export default class ChannelParty implements PartyKitServer {
       case "typing": {
         if (!connectionState?.authenticated) {
           sender.send(
-            JSON.stringify({ type: "error", message: "Not authenticated" }),
+            JSON.stringify({ type: "error", message: "Not authenticated" })
           );
           return;
         }
@@ -75,7 +77,7 @@ export default class ChannelParty implements PartyKitServer {
               connectionState.userId,
               connectionState.userName,
               false,
-              sender.id,
+              sender.id
             );
             this.typingUsers.delete(connectionState.userId);
           }, 5000);
@@ -89,7 +91,7 @@ export default class ChannelParty implements PartyKitServer {
           connectionState.userId,
           connectionState.userName,
           parsed.isTyping,
-          sender.id,
+          sender.id
         );
         break;
       }
@@ -119,7 +121,7 @@ export default class ChannelParty implements PartyKitServer {
 
   // Broadcast a new message (called from server action via HTTP)
   async onRequest(
-    req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0],
+    req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0]
   ): Promise<Response> {
     if (req.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
@@ -149,7 +151,7 @@ export default class ChannelParty implements PartyKitServer {
               JSON.stringify({
                 type: "message:new",
                 message: body.message,
-              } satisfies ServerMessage),
+              } satisfies ServerMessage)
             );
           }
           break;
@@ -162,7 +164,7 @@ export default class ChannelParty implements PartyKitServer {
                 messageId: body.messageId,
                 content: body.content,
                 updatedAt: body.updatedAt,
-              } satisfies ServerMessage),
+              } satisfies ServerMessage)
             );
           }
           break;
@@ -173,7 +175,7 @@ export default class ChannelParty implements PartyKitServer {
               JSON.stringify({
                 type: "message:delete",
                 messageId: body.messageId,
-              } satisfies ServerMessage),
+              } satisfies ServerMessage)
             );
           }
           break;
@@ -185,7 +187,7 @@ export default class ChannelParty implements PartyKitServer {
                 type: "reaction:add",
                 messageId: body.messageId,
                 reaction: body.reaction,
-              } satisfies ServerMessage),
+              } satisfies ServerMessage)
             );
           }
           break;
@@ -197,7 +199,7 @@ export default class ChannelParty implements PartyKitServer {
                 type: "reaction:remove",
                 messageId: body.messageId,
                 reactionId: body.reactionId,
-              } satisfies ServerMessage),
+              } satisfies ServerMessage)
             );
           }
           break;
@@ -228,7 +230,7 @@ export default class ChannelParty implements PartyKitServer {
     userId: string,
     userName: string,
     isTyping: boolean,
-    excludeConnectionId: string,
+    excludeConnectionId: string
   ) {
     const message: ServerMessage = {
       type: "typing",
