@@ -31,11 +31,40 @@ jobs:
 
           DB_NAME="${{ secrets.TURSO_DB_NAME }}"
 
+          # Create migrations tracking table if it doesn't exist
+          turso db shell "$DB_NAME" <<EOF
+          CREATE TABLE IF NOT EXISTS _migrations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL UNIQUE,
+            applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+          );
+          EOF
+
           # Loop through and apply all migration SQL files in order
           for migration_file in packages/db/prisma/migrations/*/migration.sql; do
-            echo "Applying migration: $migration_file"
-            turso db shell "$DB_NAME" < "$migration_file"
+            # Extract just the migration folder name (e.g., 20251228004440_better_auth)
+            migration_name=$(basename $(dirname "$migration_file"))
+            
+            # Check if this migration has already been applied
+            already_applied=$(turso db shell "$DB_NAME" --output csv "SELECT COUNT(*) FROM _migrations WHERE name = '$migration_name';" | tail -1)
+            
+            if [ "$already_applied" = "0" ]; then
+              echo "Applying migration: $migration_name"
+              if turso db shell "$DB_NAME" < "$migration_file"; then
+                # Record the migration as applied
+                turso db shell "$DB_NAME" "INSERT INTO _migrations (name) VALUES ('$migration_name');"
+                echo "✓ Migration applied successfully: $migration_name"
+              else
+                echo "✗ Migration failed: $migration_name"
+                exit 1
+              fi
+            else
+              echo "⊘ Skipping already applied migration: $migration_name"
+            fi
           done
+
+          echo ""
+          echo "All migrations complete!"
         env:
           # TURSO_API_TOKEN is used by the CLI for authentication in CI
           TURSO_API_TOKEN: ${{ secrets.TURSO_API_TOKEN }}
