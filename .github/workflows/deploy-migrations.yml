@@ -12,10 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: "20"
+          bun-version: "1.3.5"
 
       - name: Install Turso CLI
         run: |
@@ -23,7 +23,7 @@ jobs:
           echo "$HOME/.turso/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       - name: Apply Turso database migrations
         run: |
