@@ -67,26 +67,20 @@ export const authClient = createAuthClient({
 
 /**
  * Fetch a bearer token for PartyKit authentication.
- * This calls the token endpoint to get the session token.
+ * This triggers a session check which returns the set-auth-token header,
+ * which is then captured by the onSuccess callback and stored in localStorage.
  */
 export async function fetchBearerToken(): Promise<string | null> {
   if (typeof window === "undefined") return null;
 
   try {
-    // Use relative URL since we're on the same origin
-    const response = await fetch("/api/auth/token", {
-      method: "GET",
-      credentials: "include",
-    });
+    // Trigger a session check - the onSuccess callback will capture the set-auth-token header
+    const session = await authClient.getSession();
 
-    if (!response.ok) return null;
+    if (!session.data?.user) return null;
 
-    const data = await response.json();
-    if (data.token) {
-      localStorage.setItem(BEARER_TOKEN_KEY, data.token);
-      return data.token;
-    }
-    return null;
+    // The token should now be in localStorage from the onSuccess callback
+    return localStorage.getItem(BEARER_TOKEN_KEY);
   } catch {
     return null;
   }
