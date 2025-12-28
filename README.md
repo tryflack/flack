@@ -309,9 +309,9 @@ openssl rand -base64 32
 
 This means the server-side broadcast isn't reaching PartyKit. Check that:
 
-1. `PARTYKIT_URL` is set on your hosting platform (e.g., `https://your-project.partykit.dev`)
-2. The URL uses `https://` protocol (not just the hostname)
-3. The URL matches your deployed PartyKit server exactly
+1. `NEXT_PUBLIC_PARTYKIT_HOST` is set correctly on your hosting platform
+2. The host matches your deployed PartyKit server exactly (e.g., `your-project.partykit.dev`)
+3. Your PartyKit server is deployed and running
 
 ### Database migration errors
 
