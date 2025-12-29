@@ -42,7 +42,7 @@ const slugSchema = z.object({
     .max(100, "Slug must be less than 100 characters")
     .regex(
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-      "Slug must be lowercase alphanumeric with hyphens only",
+      "Slug must be lowercase alphanumeric with hyphens only"
     ),
 });
 
@@ -118,7 +118,7 @@ export function OrganizationSettingsForm({
 
       if (result.error) {
         toast.error(
-          result.error.message ?? "Failed to update organization name",
+          result.error.message ?? "Failed to update organization name"
         );
         return;
       }
@@ -188,7 +188,7 @@ export function OrganizationSettingsForm({
 
       if (result.error) {
         toast.error(
-          result.error.message ?? "Failed to update organization slug",
+          result.error.message ?? "Failed to update organization slug"
         );
         return;
       }
@@ -225,138 +225,138 @@ export function OrganizationSettingsForm({
         <Card>
           <CardHeader>
             <CardTitle>Organization Name</CardTitle>
-          <CardDescription>
-            The display name of your organization.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Controller
-            name="name"
-            control={nameForm.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  id={field.name}
-                  placeholder="Acme Inc."
-                  aria-invalid={fieldState.invalid}
-                  disabled={!isOwner || isSaving}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </CardContent>
-        <CardFooter>
-          <Button
-            type="button"
-            onClick={nameForm.handleSubmit(onNameSubmit)}
-            disabled={isSaving || !isNameDirty}
-          >
-            {savingField === "name" ? (
-              <>
-                <Spinner />
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
+            <CardDescription>
+              The display name of your organization.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Controller
+              name="name"
+              control={nameForm.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    placeholder="Acme Inc."
+                    aria-invalid={fieldState.invalid}
+                    disabled={!isOwner || isSaving}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button
+              type="button"
+              onClick={nameForm.handleSubmit(onNameSubmit)}
+              disabled={isSaving || !isNameDirty}
+            >
+              {savingField === "name" ? (
+                <>
+                  <Spinner />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Website</CardTitle>
-          <CardDescription>
-            Your organization&apos;s website URL.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Controller
-            name="website"
-            control={websiteForm.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  id={field.name}
-                  type="url"
-                  placeholder="https://acme.com"
-                  aria-invalid={fieldState.invalid}
-                  disabled={!isOwner || isSaving}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </CardContent>
-        <CardFooter>
-          <Button
-            type="button"
-            onClick={websiteForm.handleSubmit(onWebsiteSubmit)}
-            disabled={isSaving || !isWebsiteDirty}
-          >
-            {savingField === "website" ? (
-              <>
-                <Spinner />
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Website</CardTitle>
+            <CardDescription>
+              Your organization&apos;s website URL.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Controller
+              name="website"
+              control={websiteForm.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    type="url"
+                    placeholder="https://acme.com"
+                    aria-invalid={fieldState.invalid}
+                    disabled={!isOwner || isSaving}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button
+              type="button"
+              onClick={websiteForm.handleSubmit(onWebsiteSubmit)}
+              disabled={isSaving || !isWebsiteDirty}
+            >
+              {savingField === "website" ? (
+                <>
+                  <Spinner />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Organization Slug</CardTitle>
-          <CardDescription>
-            Your organization&apos;s unique identifier.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Controller
-            name="slug"
-            control={slugForm.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <Input
-                  {...field}
-                  id={field.name}
-                  placeholder="acme-inc"
-                  aria-invalid={fieldState.invalid}
-                  disabled={!isOwner || isSaving}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-        </CardContent>
-        <CardFooter>
-          <Button
-            type="button"
-            onClick={slugForm.handleSubmit(onSlugSubmit)}
-            disabled={isSaving || !isSlugDirty}
-          >
-            {savingField === "slug" ? (
-              <>
-                <Spinner />
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </CardFooter>
-      </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Organization Slug</CardTitle>
+            <CardDescription>
+              Your organization&apos;s unique identifier.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Controller
+              name="slug"
+              control={slugForm.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <Input
+                    {...field}
+                    id={field.name}
+                    placeholder="acme-inc"
+                    aria-invalid={fieldState.invalid}
+                    disabled={!isOwner || isSaving}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </CardContent>
+          <CardFooter>
+            <Button
+              type="button"
+              onClick={slugForm.handleSubmit(onSlugSubmit)}
+              disabled={isSaving || !isSlugDirty}
+            >
+              {savingField === "slug" ? (
+                <>
+                  <Spinner />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );
