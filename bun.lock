@@ -81,6 +81,7 @@
         "dotenv": "^17.2.3",
         "react": "^19.2.3",
         "resend": "^6.6.0",
+        "zod": "^4.2.1",
       },
       "devDependencies": {
         "@flack/typescript-config": "*",
