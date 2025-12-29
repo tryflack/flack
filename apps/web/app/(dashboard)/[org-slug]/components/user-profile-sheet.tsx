@@ -279,7 +279,10 @@ export function UserProfileSheet({
                 )}
                 <div className="mt-1 flex items-center justify-center gap-2">
                   {user.isDeactivated ? (
-                    <Badge variant="outline" className="text-xs text-muted-foreground">
+                    <Badge
+                      variant="outline"
+                      className="text-xs text-muted-foreground"
+                    >
                       Deactivated
                     </Badge>
                   ) : (

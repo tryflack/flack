@@ -69,7 +69,9 @@ export async function GET(req: NextRequest) {
 
   // Get all participant user IDs to check membership status
   const allParticipantUserIds = [
-    ...new Set(conversations.flatMap((conv) => conv.participants.map((p) => p.userId))),
+    ...new Set(
+      conversations.flatMap((conv) => conv.participants.map((p) => p.userId)),
+    ),
   ];
 
   // Check which participants are still active members

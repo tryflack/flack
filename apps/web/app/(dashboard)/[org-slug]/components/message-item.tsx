@@ -282,13 +282,15 @@ export function MessageItem({
                 onClick={() => onAuthorClick?.(message.authorId)}
                 className={cn(
                   "font-semibold text-sm hover:underline",
-                  message.author.isDeactivated && "text-muted-foreground"
+                  message.author.isDeactivated && "text-muted-foreground",
                 )}
               >
                 {authorDisplayName}
               </button>
               {message.author.isDeactivated && (
-                <span className="text-xs text-muted-foreground">(Deactivated)</span>
+                <span className="text-xs text-muted-foreground">
+                  (Deactivated)
+                </span>
               )}
               <span className="text-xs text-muted-foreground">
                 {formatTime(message.createdAt)}

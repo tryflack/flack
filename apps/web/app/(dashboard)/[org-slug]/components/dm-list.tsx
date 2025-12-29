@@ -85,7 +85,9 @@ export function DmList() {
                 )}
               >
                 {conversation.type === "dm" ? (
-                  <Avatar className={cn("h-5 w-5", deactivated && "opacity-50")}>
+                  <Avatar
+                    className={cn("h-5 w-5", deactivated && "opacity-50")}
+                  >
                     <AvatarImage src={avatarUrl || undefined} />
                     <AvatarFallback className="text-[10px]">
                       {getInitials(displayName)}
@@ -101,10 +103,12 @@ export function DmList() {
                     )}
                   />
                 )}
-                <span className={cn(
-                  "flex-1 truncate text-left",
-                  deactivated && "text-muted-foreground"
-                )}>
+                <span
+                  className={cn(
+                    "flex-1 truncate text-left",
+                    deactivated && "text-muted-foreground",
+                  )}
+                >
                   {displayName}
                   {deactivated && " (Deactivated)"}
                 </span>
