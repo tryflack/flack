@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@flack/ui/components/card";
 import { Skeleton } from "@flack/ui/components/skeleton";
+import { SidebarTrigger } from "@flack/ui/components/sidebar";
 import { Users } from "lucide-react";
 
 interface TeamManagementProps {
@@ -40,76 +41,91 @@ export function TeamManagement({
 
   if (isLoading) {
     return (
-      <div className="flex flex-1 flex-col gap-6 p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <Skeleton className="h-8 w-48" />
-            <Skeleton className="mt-2 h-4 w-72" />
+      <div className="flex h-full flex-col">
+        {/* Header */}
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
+          <SidebarTrigger className="-ml-2 md:hidden" />
+          <h1 className="font-semibold">Team</h1>
+        </header>
+        <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="mt-2 h-4 w-72" />
+            </div>
+            <Skeleton className="h-10 w-32" />
           </div>
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-24" />
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-3 w-48" />
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-24" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
-      <div className="flex items-center justify-between">
-        {canManageMembers && (
-          <InviteMemberDialog
-            currentUserRole={currentUserRole}
-            onInvite={invite}
+    <div className="flex h-full flex-col">
+      {/* Header */}
+      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
+        <SidebarTrigger className="-ml-2 md:hidden" />
+        <h1 className="font-semibold">Team</h1>
+      </header>
+
+      <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
+        <div className="flex items-center justify-between">
+          {canManageMembers && (
+            <InviteMemberDialog
+              currentUserRole={currentUserRole}
+              onInvite={invite}
+            />
+          )}
+        </div>
+
+        {canManageMembers && invitations.length > 0 && (
+          <PendingInvitations
+            invitations={invitations}
+            onCancel={cancel}
+            onResend={resend}
           />
         )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Members
+              <span className="text-muted-foreground font-normal">
+                ({members.length})
+              </span>
+            </CardTitle>
+            <CardDescription>
+              People who have access to this organization
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <MemberList
+              members={members}
+              currentUserRole={currentUserRole}
+              currentUserId={currentUserId}
+              onRemove={remove}
+              onUpdateRole={updateRole}
+            />
+          </CardContent>
+        </Card>
       </div>
-
-      {canManageMembers && invitations.length > 0 && (
-        <PendingInvitations
-          invitations={invitations}
-          onCancel={cancel}
-          onResend={resend}
-        />
-      )}
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="h-5 w-5" />
-            Members
-            <span className="text-muted-foreground font-normal">
-              ({members.length})
-            </span>
-          </CardTitle>
-          <CardDescription>
-            People who have access to this organization
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <MemberList
-            members={members}
-            currentUserRole={currentUserRole}
-            currentUserId={currentUserId}
-            onRemove={remove}
-            onUpdateRole={updateRole}
-          />
-        </CardContent>
-      </Card>
     </div>
   );
 }

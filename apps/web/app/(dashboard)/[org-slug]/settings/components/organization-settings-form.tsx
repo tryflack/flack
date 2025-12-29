@@ -19,6 +19,7 @@ import { Spinner } from "@flack/ui/components/spinner";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { authClient } from "@flack/auth/auth-client";
+import { SidebarTrigger } from "@flack/ui/components/sidebar";
 
 const nameSchema = z.object({
   name: z
@@ -213,10 +214,17 @@ export function OrganizationSettingsForm({
   const { isDirty: isSlugDirty } = slugForm.formState;
 
   return (
-    <div className="space-y-8 p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Organization Name</CardTitle>
+    <div className="flex h-full flex-col">
+      {/* Header */}
+      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
+        <SidebarTrigger className="-ml-2 md:hidden" />
+        <h1 className="font-semibold">Settings</h1>
+      </header>
+
+      <div className="flex-1 space-y-8 overflow-y-auto p-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Organization Name</CardTitle>
           <CardDescription>
             The display name of your organization.
           </CardDescription>
@@ -349,6 +357,7 @@ export function OrganizationSettingsForm({
           </Button>
         </CardFooter>
       </Card>
+      </div>
     </div>
   );
 }

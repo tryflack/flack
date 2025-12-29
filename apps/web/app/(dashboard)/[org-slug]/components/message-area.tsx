@@ -18,6 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@flack/ui/components/tooltip";
+import { SidebarTrigger } from "@flack/ui/components/sidebar";
 import {
   Empty,
   EmptyHeader,
@@ -160,18 +161,24 @@ export function MessageArea({
 
   if (!roomId || !roomType) {
     return (
-      <div className="flex h-full items-center justify-center p-8">
-        <Empty>
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <MessageSquare className="h-6 w-6" />
-            </EmptyMedia>
-            <EmptyTitle>Select a channel or conversation</EmptyTitle>
-            <EmptyDescription>
-              Choose from the sidebar to start chatting
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+      <div className="flex h-full flex-col">
+        {/* Mobile header with sidebar trigger */}
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4 md:hidden">
+          <SidebarTrigger className="-ml-2" />
+        </header>
+        <div className="flex flex-1 items-center justify-center p-8">
+          <Empty>
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <MessageSquare className="h-6 w-6" />
+              </EmptyMedia>
+              <EmptyTitle>Select a channel or conversation</EmptyTitle>
+              <EmptyDescription>
+                Choose from the sidebar to start chatting
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        </div>
       </div>
     );
   }
@@ -207,6 +214,7 @@ export function MessageArea({
       <div className="flex h-full flex-col">
         {/* Header */}
         <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
+          <SidebarTrigger className="-ml-2 md:hidden" />
           {roomType === "channel" && channel ? (
             <button
               onClick={() => setShowChannelInfo(true)}
