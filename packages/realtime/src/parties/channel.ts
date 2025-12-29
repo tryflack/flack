@@ -38,8 +38,7 @@ export default class ChannelParty implements PartyKitServer {
 
     switch (parsed.type) {
       case "auth": {
-        const authUrl =
-          process.env.BETTER_AUTH_URL || "https://flack-web.vercel.app";
+        const authUrl = process.env.BETTER_AUTH_URL || "https://tryflack.com";
         const state = await validateToken(parsed.token, authUrl);
 
         if (state) {

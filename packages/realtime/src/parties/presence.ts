@@ -26,14 +26,14 @@ export default class PresenceParty implements PartyKitServer {
 
   async onMessage(
     message: string | ArrayBuffer | ArrayBufferView,
-    sender: Connection,
+    sender: Connection
   ) {
     if (typeof message !== "string") {
       sender.send(
         JSON.stringify({
           type: "error",
           message: "Binary messages not supported",
-        }),
+        })
       );
       return;
     }
@@ -44,7 +44,7 @@ export default class PresenceParty implements PartyKitServer {
       parsed = JSON.parse(message);
     } catch {
       sender.send(
-        JSON.stringify({ type: "error", message: "Invalid message format" }),
+        JSON.stringify({ type: "error", message: "Invalid message format" })
       );
       return;
     }
@@ -55,25 +55,24 @@ export default class PresenceParty implements PartyKitServer {
       case "auth": {
         if (!parsed.token) {
           sender.send(
-            JSON.stringify({ type: "error", message: "Token required" }),
+            JSON.stringify({ type: "error", message: "Token required" })
           );
           return;
         }
 
-        const authUrl =
-          process.env.BETTER_AUTH_URL || "https://flack-web.vercel.app";
+        const authUrl = process.env.BETTER_AUTH_URL || "https://tryflack.com";
         const state = await validateToken(parsed.token, authUrl);
 
         if (state) {
           this.connections.set(sender.id, state);
           this.addUserConnection(state.userId, sender.id, state);
           sender.send(
-            JSON.stringify({ type: "connected", userId: state.userId }),
+            JSON.stringify({ type: "connected", userId: state.userId })
           );
           this.broadcastPresence();
         } else {
           sender.send(
-            JSON.stringify({ type: "error", message: "Invalid token" }),
+            JSON.stringify({ type: "error", message: "Invalid token" })
           );
         }
         break;
@@ -82,7 +81,7 @@ export default class PresenceParty implements PartyKitServer {
       case "status": {
         if (!connectionState?.authenticated) {
           sender.send(
-            JSON.stringify({ type: "error", message: "Not authenticated" }),
+            JSON.stringify({ type: "error", message: "Not authenticated" })
           );
           return;
         }
@@ -127,7 +126,7 @@ export default class PresenceParty implements PartyKitServer {
                 type: "unread",
                 channelId: notification.channelId,
                 conversationId: notification.conversationId,
-              }),
+              })
             );
           }
         }
@@ -138,7 +137,7 @@ export default class PresenceParty implements PartyKitServer {
         // User updated their profile - broadcast to all other users
         if (!connectionState?.authenticated) {
           sender.send(
-            JSON.stringify({ type: "error", message: "Not authenticated" }),
+            JSON.stringify({ type: "error", message: "Not authenticated" })
           );
           return;
         }
@@ -196,7 +195,7 @@ export default class PresenceParty implements PartyKitServer {
   private addUserConnection(
     userId: string,
     connectionId: string,
-    state: ConnectionState,
+    state: ConnectionState
   ) {
     // Track user connections
     let userConns = this.userConnections.get(userId);
@@ -286,7 +285,7 @@ export default class PresenceParty implements PartyKitServer {
                   type: "unread",
                   channelId: body.channelId,
                   conversationId: body.conversationId,
-                } satisfies ServerMessage),
+                } satisfies ServerMessage)
               );
             }
           }
