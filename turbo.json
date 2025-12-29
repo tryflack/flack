@@ -6,7 +6,9 @@
     "BETTER_AUTH_SECRET",
     "DATABASE_URL",
     "DATABASE_AUTH_TOKEN",
-    "NODE_ENV"
+    "NODE_ENV",
+    "RESEND_API_KEY",
+    "FROM_ADDRESS"
   ],
   "tasks": {
     "build": {
