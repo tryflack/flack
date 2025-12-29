@@ -7,7 +7,7 @@ export function Footer() {
 
       <Text className="font-regular text-[14px]">
         Open source Slack alternative -{" "}
-        <Link href="https://flack.io">Flack</Link>.
+        <Link href="https://tryflack.com">Flack</Link>.
       </Text>
 
       <Text className="text-xs text-[#B8B8B8]">

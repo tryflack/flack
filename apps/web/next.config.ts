@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "*.flack.io",
+        hostname: "*.tryflack.com",
       },
       {
         protocol: "https",
