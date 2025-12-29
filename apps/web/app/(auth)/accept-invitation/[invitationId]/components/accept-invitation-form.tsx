@@ -25,6 +25,7 @@ import {
   LogIn,
 } from "lucide-react";
 import { toast } from "sonner";
+import { joinPublicChannels } from "@/app/actions/members";
 
 interface InvitationDetails {
   id: string;
@@ -81,6 +82,9 @@ export function AcceptInvitationForm({
         toast.error(response.error.message || "Failed to accept invitation");
         return;
       }
+
+      // Automatically join all public channels in the organization
+      await joinPublicChannels({ organizationId: invitation.organization.id });
 
       setResult("accepted");
       toast.success(`You've joined ${invitation.organization.name}!`);
