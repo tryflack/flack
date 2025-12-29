@@ -26,10 +26,7 @@ function decodeHtmlEntities(text: string): string {
 }
 
 // Extract meta tag content using regex (works for SSR-rendered pages)
-function extractMetaContent(
-  html: string,
-  property: string,
-): string | null {
+function extractMetaContent(html: string, property: string): string | null {
   // Try property first (og:*, twitter:*)
   const propertyRegex = new RegExp(
     `<meta[^>]+property=["']${property}["'][^>]+content=["']([^"']+)["']`,
@@ -137,7 +134,10 @@ export async function GET(req: NextRequest) {
   try {
     parsedUrl = new URL(url);
     if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-      return NextResponse.json({ error: "Invalid URL protocol" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid URL protocol" },
+        { status: 400 },
+      );
     }
   } catch {
     return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
@@ -150,8 +150,7 @@ export async function GET(req: NextRequest) {
     const response = await fetch(url, {
       signal: controller.signal,
       headers: {
-        "User-Agent":
-          "Mozilla/5.0 (compatible; Flack/1.0; +https://flack.app)",
+        "User-Agent": "Mozilla/5.0 (compatible; Flack/1.0; +https://flack.app)",
         Accept: "text/html,application/xhtml+xml",
       },
     });
@@ -214,4 +213,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

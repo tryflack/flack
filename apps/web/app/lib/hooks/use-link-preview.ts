@@ -45,4 +45,3 @@ export function extractAllUrls(content: string): string[] {
   const matches = content.match(URL_REGEX);
   return matches || [];
 }
-
