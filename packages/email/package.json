@@ -1,0 +1,25 @@
+{
+    "name": "@flack/email",
+    "version": "0.0.0",
+    "type": "module",
+    "private": true,
+    "main": "./index.ts",
+    "types": "./index.ts",
+    "exports": {
+        ".": {
+            "types": "./index.ts",
+            "import": "./index.ts",
+            "require": "./index.ts"
+        }
+    },
+    "devDependencies": {
+        "@flack/typescript-config": "*",
+        "@types/react": "^19.2.7"
+    },
+    "dependencies": {
+        "@react-email/components": "^1.0.2",
+        "dotenv": "^17.2.3",
+        "react": "^19.2.3",
+        "resend": "^6.6.0"
+    }
+}

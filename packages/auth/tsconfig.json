@@ -1,5 +1,5 @@
 {
-  "extends": "@flack/typescript-config/base.json",
+  "extends": "@flack/typescript-config/base",
   "compilerOptions": {
     "outDir": "./dist",
     "rootDir": "./src",

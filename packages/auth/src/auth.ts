@@ -1,4 +1,8 @@
 import { db } from "@flack/db";
+import {
+  sendInvitationEmail as sendInvitation,
+  sendVerificationEmail,
+} from "@flack/email";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { bearer, emailOTP, organization } from "better-auth/plugins";
@@ -76,34 +80,21 @@ export const auth = betterAuth({
       invitationExpiresIn: 60 * 60 * 24 * 7,
       // Send invitation email callback
       async sendInvitationEmail(data) {
-        // TODO: Integrate with actual email service
-        // For now, log the invitation details
         const inviteLink = `${process.env.BETTER_AUTH_URL ?? "http://localhost:3000"}/accept-invitation/${data.id}`;
-        console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        );
-        console.log("📧 ORGANIZATION INVITATION");
-        console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        );
-        console.log(`To: ${data.email}`);
-        console.log(`Organization: ${data.organization.name}`);
-        console.log(
-          `Invited by: ${data.inviter.user.name} (${data.inviter.user.email})`,
-        );
-        console.log(`Role: ${data.role}`);
-        console.log(`Invitation Link: ${inviteLink}`);
-        console.log(
-          "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-        );
+        await sendInvitation({
+          email: data.email,
+          organizationName: data.organization.name,
+          inviterName: data.inviter.user.name ?? "A team member",
+          inviterEmail: data.inviter.user.email,
+          role: data.role,
+          inviteLink,
+        });
       },
     }),
     emailOTP({
       sendVerificationOnSignUp: true,
-      async sendVerificationOTP({ email, otp, type }) {
-        console.log(`Email OTP for ${email}`);
-        console.log(`Type: ${type}`);
-        console.log(`OTP Code: ${otp}`);
+      async sendVerificationOTP({ email, otp }) {
+        await sendVerificationEmail({ email, otp });
       },
     }),
   ],
