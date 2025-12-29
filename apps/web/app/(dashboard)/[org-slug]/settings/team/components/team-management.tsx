@@ -121,5 +121,3 @@ export function TeamManagement({
     </div>
   );
 }
-
-

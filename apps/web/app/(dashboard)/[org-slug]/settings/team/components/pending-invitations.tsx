@@ -174,5 +174,3 @@ export function PendingInvitations({
     </Card>
   );
 }
-
-

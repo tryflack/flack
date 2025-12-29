@@ -41,5 +41,3 @@ export const removeMember = orgActionClient
       throw new ActionError("Failed to remove member");
     }
   });
-
-

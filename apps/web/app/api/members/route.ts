@@ -128,5 +128,3 @@ export async function GET() {
     currentUserRole: membership.role,
   });
 }
-
-
