@@ -37,7 +37,7 @@ interface MemberListProps {
   onRemove: (memberIdOrEmail: string) => Promise<unknown>;
   onUpdateRole: (
     memberId: string,
-    role: "member" | "admin" | "owner"
+    role: "member" | "admin" | "owner",
   ) => Promise<unknown>;
 }
 
@@ -91,7 +91,7 @@ export function MemberList({
         toast.error(result.serverError as string);
       } else {
         toast.success(
-          `${member.user.name} has been removed from the organization`
+          `${member.user.name} has been removed from the organization`,
         );
       }
     } catch {
@@ -104,7 +104,7 @@ export function MemberList({
 
   const handleUpdateRole = async (
     member: Member,
-    newRole: "member" | "admin" | "owner"
+    newRole: "member" | "admin" | "owner",
   ) => {
     if (member.role === newRole) return;
 
@@ -115,7 +115,7 @@ export function MemberList({
         toast.error(result.serverError as string);
       } else {
         toast.success(
-          `${member.user.name}'s role has been updated to ${newRole}`
+          `${member.user.name}'s role has been updated to ${newRole}`,
         );
       }
     } catch {

@@ -52,10 +52,10 @@ interface MessageItemProps {
   currentUserId?: string;
   onEdit?: (
     messageId: string,
-    content: string
+    content: string,
   ) => Promise<{ serverError?: string } | undefined>;
   onDelete?: (
-    messageId: string
+    messageId: string,
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
   onAuthorClick?: (userId: string) => void;
@@ -87,7 +87,7 @@ export function MessageItem({
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length
+        textareaRef.current.value.length,
       );
     }
   }, [isEditing]);
@@ -145,7 +145,7 @@ export function MessageItem({
       count: number;
       users: string[];
       hasReacted: boolean;
-    }[]
+    }[],
   );
 
   const handleStartEdit = () => {
@@ -231,7 +231,7 @@ export function MessageItem({
       <div
         className={cn(
           "group relative flex gap-3 px-1 py-1",
-          showAvatar ? "items-start" : "items-center"
+          showAvatar ? "items-start" : "items-center",
         )}
       >
         {showAvatar ? <div className="w-9" /> : <div className="w-9" />}
@@ -248,7 +248,7 @@ export function MessageItem({
         className={cn(
           "group relative flex gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/50",
           showAvatar ? "items-start" : "items-center",
-          isEditing && "bg-muted/50"
+          isEditing && "bg-muted/50",
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -282,7 +282,7 @@ export function MessageItem({
                 onClick={() => onAuthorClick?.(message.authorId)}
                 className={cn(
                   "font-semibold text-sm hover:underline",
-                  message.author.isDeactivated && "text-muted-foreground"
+                  message.author.isDeactivated && "text-muted-foreground",
                 )}
               >
                 {authorDisplayName}
@@ -357,7 +357,7 @@ export function MessageItem({
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium transition-all border border-border hover:border-border shadow-sm",
                           hasReacted
                             ? "bg-primary/10 border-border text-primary hover:bg-primary/20"
-                            : "bg-muted/60 border-border hover:bg-muted"
+                            : "bg-muted/60 border-border hover:bg-muted",
                         )}
                       >
                         <span className="text-base leading-none">{emoji}</span>

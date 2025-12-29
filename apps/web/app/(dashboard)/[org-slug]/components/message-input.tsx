@@ -37,7 +37,7 @@ export function MessageInput({
         onTyping(false);
       }, 3000);
     },
-    [onTyping]
+    [onTyping],
   );
 
   const handleSend = useCallback(() => {
@@ -68,7 +68,7 @@ export function MessageInput({
         handleSend();
       }
     },
-    [handleSend]
+    [handleSend],
   );
 
   // Auto-resize textarea

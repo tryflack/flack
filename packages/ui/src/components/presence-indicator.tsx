@@ -39,8 +39,9 @@ const statusLabels = {
   offline: "Offline",
 };
 
-interface PresenceIndicatorProps
-  extends VariantProps<typeof presenceIndicatorVariants> {
+interface PresenceIndicatorProps extends VariantProps<
+  typeof presenceIndicatorVariants
+> {
   showTooltip?: boolean;
   className?: string;
 }
@@ -126,4 +127,3 @@ export {
   presenceIndicatorVariants,
   avatarWithPresencePositionVariants,
 };
-

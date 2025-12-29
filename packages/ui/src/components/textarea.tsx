@@ -29,8 +29,7 @@ function Textarea({
   resize,
   preset,
   ...props
-}: React.ComponentProps<"textarea"> &
-  VariantProps<typeof textareaVariants>) {
+}: React.ComponentProps<"textarea"> & VariantProps<typeof textareaVariants>) {
   return (
     <textarea
       data-slot="textarea"
