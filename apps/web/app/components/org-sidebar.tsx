@@ -345,7 +345,11 @@ function OrgLogo({ organization }: { organization: Organization }) {
   // Fallback: show initials avatar
   return (
     <Avatar size="md" shape="rounded">
-      <AvatarFallback size="md" shape="rounded" className="bg-primary text-primary-foreground font-medium">
+      <AvatarFallback
+        size="md"
+        shape="rounded"
+        className="bg-primary text-primary-foreground font-medium"
+      >
         {getInitials(organization.name)}
       </AvatarFallback>
     </Avatar>

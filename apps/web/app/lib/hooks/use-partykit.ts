@@ -46,9 +46,9 @@ export function usePartyKit({
   const socketRef = useRef<PartySocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   // Map key is `${threadId}:${userId}` or `main:${userId}` for main chat
-  const [typingUsers, setTypingUsers] = useState<Map<string, { name: string; threadId?: string | null }>>(
-    new Map(),
-  );
+  const [typingUsers, setTypingUsers] = useState<
+    Map<string, { name: string; threadId?: string | null }>
+  >(new Map());
 
   // Use refs to store callbacks so they don't cause socket reconnection
   const callbacksRef = useRef({

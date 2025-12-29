@@ -229,11 +229,7 @@ export function QuickEmojiPicker({
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                disabled={disabled}
-              >
+              <Button variant="ghost" size="icon-sm" disabled={disabled}>
                 <Smile className="h-4 w-4" />
               </Button>
             </PopoverTrigger>

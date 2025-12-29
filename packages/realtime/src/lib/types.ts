@@ -32,7 +32,13 @@ export type ServerMessage =
   | { type: "message:delete"; messageId: string }
   | { type: "reaction:add"; messageId: string; reaction: Reaction }
   | { type: "reaction:remove"; messageId: string; reactionId: string }
-  | { type: "typing"; userId: string; userName: string; isTyping: boolean; threadId?: string | null }
+  | {
+      type: "typing";
+      userId: string;
+      userName: string;
+      isTyping: boolean;
+      threadId?: string | null;
+    }
   | { type: "presence"; users: PresenceUser[] }
   | { type: "unread"; channelId?: string; conversationId?: string }
   | { type: "user:updated"; userId: string; user: Partial<PresenceUser> };
