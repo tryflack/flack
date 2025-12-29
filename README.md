@@ -48,6 +48,7 @@ Slack is great, but it's expensive and your data lives on someone else's servers
 - 🧵 **Threads** — Reply to messages in threads to keep discussions organized
 - ✏️ **Edit & delete** — Edit or delete your own messages
 - 😀 **Reactions** — React to messages with emoji
+- 🔗 **Link previews** — Rich previews with Open Graph images for shared URLs
 
 ### Organization & Discovery
 
@@ -109,7 +110,7 @@ See how Flack compares to Slack's functionality:
 | File search                    |  ✅   |  ❌   | Planned      |
 | **Advanced**                   |       |       |              |
 | Message formatting (Markdown)  |  ✅   |  ⚠️   | Basic        |
-| Link previews                  |  ✅   |  ❌   | Planned      |
+| Link previews                  |  ✅   |  ✅   | Shipped      |
 | Custom emoji                   |  ✅   |  ❌   | Planned      |
 | Integrations/Apps              |  ✅   |  ❌   | Planned      |
 | Slash commands                 |  ✅   |  ❌   | Planned      |
@@ -409,7 +410,7 @@ turbo db:generate
 
 - [ ] Desktop notifications
 - [ ] File attachments and image previews
-- [ ] Link previews (unfurling)
+- [x] Link previews (unfurling)
 - [ ] Custom emoji
 - [ ] Slash commands
 - [ ] Integration/webhook support

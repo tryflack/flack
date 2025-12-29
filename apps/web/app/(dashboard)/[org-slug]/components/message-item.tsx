@@ -42,9 +42,47 @@ import {
 } from "@flack/ui/components/tooltip";
 import { Spinner } from "@flack/ui/components/spinner";
 import { useChatParams } from "@/app/lib/hooks/use-chat-params";
+import { extractAllUrls, URL_REGEX } from "@/app/lib/hooks/use-link-preview";
 import type { Message } from "@/app/lib/hooks/use-messages";
 import { cn } from "@flack/ui/lib/utils";
 import { toast } from "sonner";
+import { LinkPreviews } from "./link-preview";
+
+// Renders message content with clickable URLs
+function MessageContent({ content }: { content: string }) {
+  // Split content by URLs while preserving the URLs
+  const parts = content.split(URL_REGEX);
+  const urls = content.match(URL_REGEX) || [];
+
+  // If no URLs, just return the content as-is
+  if (urls.length === 0) {
+    return <>{content}</>;
+  }
+
+  // Interleave text parts with URL links
+  const elements: React.ReactNode[] = [];
+  parts.forEach((part, index) => {
+    if (part) {
+      elements.push(<span key={`text-${index}`}>{part}</span>);
+    }
+    if (urls[index]) {
+      elements.push(
+        <a
+          key={`url-${index}`}
+          href={urls[index]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:text-primary/80"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {urls[index]}
+        </a>
+      );
+    }
+  });
+
+  return <>{elements}</>;
+}
 
 interface MessageItemProps {
   message: Message;
@@ -52,10 +90,10 @@ interface MessageItemProps {
   currentUserId?: string;
   onEdit?: (
     messageId: string,
-    content: string,
+    content: string
   ) => Promise<{ serverError?: string } | undefined>;
   onDelete?: (
-    messageId: string,
+    messageId: string
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
   onAuthorClick?: (userId: string) => void;
@@ -87,7 +125,7 @@ export function MessageItem({
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length,
+        textareaRef.current.value.length
       );
     }
   }, [isEditing]);
@@ -145,7 +183,7 @@ export function MessageItem({
       count: number;
       users: string[];
       hasReacted: boolean;
-    }[],
+    }[]
   );
 
   const handleStartEdit = () => {
@@ -231,7 +269,7 @@ export function MessageItem({
       <div
         className={cn(
           "group relative flex gap-3 px-1 py-1",
-          showAvatar ? "items-start" : "items-center",
+          showAvatar ? "items-start" : "items-center"
         )}
       >
         {showAvatar ? <div className="w-9" /> : <div className="w-9" />}
@@ -248,7 +286,7 @@ export function MessageItem({
         className={cn(
           "group relative flex gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/50",
           showAvatar ? "items-start" : "items-center",
-          isEditing && "bg-muted/50",
+          isEditing && "bg-muted/50"
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -258,7 +296,7 @@ export function MessageItem({
           <button
             type="button"
             onClick={() => onAuthorClick?.(message.authorId)}
-            className="shrink-0 rounded-full transition-opacity hover:opacity-80"
+            className="shrink-0 select-none rounded-full transition-opacity hover:opacity-80"
           >
             <Avatar size="lg">
               <AvatarImage src={message.author.image || undefined} />
@@ -282,7 +320,7 @@ export function MessageItem({
                 onClick={() => onAuthorClick?.(message.authorId)}
                 className={cn(
                   "font-semibold text-sm hover:underline",
-                  message.author.isDeactivated && "text-muted-foreground",
+                  message.author.isDeactivated && "text-muted-foreground"
                 )}
               >
                 {authorDisplayName}
@@ -339,9 +377,13 @@ export function MessageItem({
               </div>
             </div>
           ) : (
-            <p className="text-sm whitespace-pre-wrap break-words">
-              {message.content}
-            </p>
+            <>
+              <p className="text-sm whitespace-pre-wrap break-words">
+                <MessageContent content={message.content} />
+              </p>
+              {/* Link previews */}
+              <LinkPreviews urls={extractAllUrls(message.content)} />
+            </>
           )}
 
           {/* Reactions */}
@@ -357,7 +399,7 @@ export function MessageItem({
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium transition-all border border-border hover:border-border shadow-sm",
                           hasReacted
                             ? "bg-primary/10 border-border text-primary hover:bg-primary/20"
-                            : "bg-muted/60 border-border hover:bg-muted",
+                            : "bg-muted/60 border-border hover:bg-muted"
                         )}
                       >
                         <span className="text-base leading-none">{emoji}</span>

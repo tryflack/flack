@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { db } from "@flack/db";
 import { authActionClient, ActionError } from "@/app/lib/safe-action";
+import { broadcastNewMessage } from "@/app/lib/partykit";
 
 const joinPublicChannelsSchema = z.object({
   organizationId: z.string().min(1, "Organization ID is required"),
@@ -64,6 +65,16 @@ export const joinPublicChannels = authActionClient
       return { joined: [], count: 0 };
     }
 
+    // Get user info for system messages
+    const user = await db.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, image: true },
+    });
+
+    if (!user) {
+      throw new ActionError("User not found");
+    }
+
     // Add user to all public channels they're not already in
     await db.$transaction(
       channelsToJoin.map((channel) =>
@@ -76,6 +87,53 @@ export const joinPublicChannels = authActionClient
         }),
       ),
     );
+
+    // Create system messages and broadcast for each channel joined
+    for (const channel of channelsToJoin) {
+      const systemMessage = await db.message.create({
+        data: {
+          content: `${user.name} joined the channel`,
+          type: "system",
+          organizationId,
+          channelId: channel.id,
+          authorId: userId,
+        },
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      });
+
+      // Broadcast the system message via PartyKit
+      await broadcastNewMessage(
+        {
+          id: systemMessage.id,
+          content: systemMessage.content,
+          type: "system",
+          authorId: systemMessage.authorId,
+          author: systemMessage.author,
+          channelId: systemMessage.channelId,
+          conversationId: null,
+          parentId: null,
+          parent: null,
+          isEdited: false,
+          createdAt: systemMessage.createdAt.toISOString(),
+          updatedAt: systemMessage.updatedAt.toISOString(),
+          deletedAt: null,
+          reactions: [],
+          attachments: [],
+          replyCount: 0,
+        },
+        channel.id,
+        null,
+        organizationId,
+      );
+    }
 
     return {
       joined: channelsToJoin.map((c) => c.name),
