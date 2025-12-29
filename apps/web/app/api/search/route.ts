@@ -26,6 +26,7 @@ export interface SearchResultMessage {
     id: string;
     name: string;
     image: string | null;
+    isDeactivated: boolean;
   };
 }
 
@@ -189,7 +190,24 @@ async function searchMessages(
     take: LIMITS.messages,
   });
 
-  return messages;
+  // Check which authors are still active members
+  const authorIds = [...new Set(messages.map((msg) => msg.authorId))];
+  const activeMembers = await db.member.findMany({
+    where: {
+      organizationId,
+      userId: { in: authorIds },
+    },
+    select: { userId: true },
+  });
+  const activeMemberIds = new Set(activeMembers.map((m) => m.userId));
+
+  return messages.map((msg) => ({
+    ...msg,
+    author: {
+      ...msg.author,
+      isDeactivated: !activeMemberIds.has(msg.authorId),
+    },
+  }));
 }
 
 async function searchChannels(

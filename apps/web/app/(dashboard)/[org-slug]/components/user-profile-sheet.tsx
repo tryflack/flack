@@ -70,8 +70,9 @@ interface UserProfile {
   lastName: string | null;
   bio: string | null;
   createdAt: string;
-  role: string;
-  memberSince: string;
+  role: string | null;
+  memberSince: string | null;
+  isDeactivated: boolean;
 }
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -277,12 +278,22 @@ export function UserProfileSheet({
                   <p className="text-sm text-muted-foreground">{user.name}</p>
                 )}
                 <div className="mt-1 flex items-center justify-center gap-2">
-                  <span className="text-sm capitalize text-muted-foreground">
-                    {presenceStatus}
-                  </span>
-                  <Badge variant="secondary" className="text-xs">
-                    {user.role}
-                  </Badge>
+                  {user.isDeactivated ? (
+                    <Badge variant="outline" className="text-xs text-muted-foreground">
+                      Deactivated
+                    </Badge>
+                  ) : (
+                    <>
+                      <span className="text-sm capitalize text-muted-foreground">
+                        {presenceStatus}
+                      </span>
+                      {user.role && (
+                        <Badge variant="secondary" className="text-xs">
+                          {user.role}
+                        </Badge>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -467,7 +478,11 @@ export function UserProfileSheet({
                 {/* Member since */}
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
-                  <span>Member since {formatDate(user.memberSince)}</span>
+                  {user.isDeactivated ? (
+                    <span>No longer a member</span>
+                  ) : user.memberSince ? (
+                    <span>Member since {formatDate(user.memberSince)}</span>
+                  ) : null}
                 </div>
               </div>
             )}

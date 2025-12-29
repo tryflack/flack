@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json(
       { error: "No active organization" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
   if (!channelId && !conversationId && !parentId) {
     return NextResponse.json(
       { error: "channelId, conversationId, or parentId is required" },
-      { status: 400 },
+      { status: 400 }
     );
   }
 
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
     if (!conversation) {
       return NextResponse.json(
         { error: "Conversation not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
   }
@@ -128,6 +128,27 @@ export async function GET(req: NextRequest) {
     take: limit + 1, // Fetch one extra to determine if there are more
   });
 
+  // Get all unique author IDs (including parent message authors) to check membership status
+  const authorIds = [
+    ...new Set([
+      ...messages.map((msg) => msg.authorId),
+      ...messages
+        .filter((msg) => msg.parent)
+        .map((msg) => msg.parent!.author.id),
+    ]),
+  ];
+
+  // Check which authors are still members of the organization
+  const activeMembers = await db.member.findMany({
+    where: {
+      organizationId,
+      userId: { in: authorIds },
+    },
+    select: { userId: true },
+  });
+
+  const activeMemberIds = new Set(activeMembers.map((m) => m.userId));
+
   // Determine if there are more messages
   const hasMore = messages.length > limit;
   const messageSlice = hasMore ? messages.slice(0, limit) : messages;
@@ -141,11 +162,22 @@ export async function GET(req: NextRequest) {
     content: msg.content,
     type: msg.type as "message" | "system",
     authorId: msg.authorId,
-    author: msg.author,
+    author: {
+      ...msg.author,
+      isDeactivated: !activeMemberIds.has(msg.authorId),
+    },
     channelId: msg.channelId,
     conversationId: msg.conversationId,
     parentId: msg.parentId,
-    parent: msg.parent,
+    parent: msg.parent
+      ? {
+          ...msg.parent,
+          author: {
+            ...msg.parent.author,
+            isDeactivated: !activeMemberIds.has(msg.parent.author.id),
+          },
+        }
+      : null,
     isEdited: msg.isEdited,
     createdAt: msg.createdAt,
     updatedAt: msg.updatedAt,

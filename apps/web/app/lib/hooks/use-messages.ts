@@ -12,6 +12,7 @@ export interface MessageAuthor {
   name: string;
   displayName?: string | null;
   image: string | null;
+  isDeactivated?: boolean;
 }
 
 export interface MessageReaction {
@@ -49,6 +50,7 @@ export interface Message {
       id: string;
       name: string;
       displayName?: string | null;
+      isDeactivated?: boolean;
     };
   } | null;
   isEdited: boolean;

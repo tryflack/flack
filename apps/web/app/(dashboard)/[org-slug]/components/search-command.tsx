@@ -311,9 +311,15 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                 </Avatar>
                 <div className="flex flex-1 flex-col gap-0.5 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm">
+                    <span className={cn(
+                      "font-medium text-sm",
+                      message.author.isDeactivated && "text-muted-foreground"
+                    )}>
                       {message.author.name}
                     </span>
+                    {message.author.isDeactivated && (
+                      <span className="text-xs text-muted-foreground">(Deactivated)</span>
+                    )}
                     <span className="text-xs text-muted-foreground">
                       in{" "}
                       {message.channel ? (

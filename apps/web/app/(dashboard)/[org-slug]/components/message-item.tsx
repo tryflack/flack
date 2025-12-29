@@ -280,10 +280,16 @@ export function MessageItem({
               <button
                 type="button"
                 onClick={() => onAuthorClick?.(message.authorId)}
-                className="font-semibold text-sm hover:underline"
+                className={cn(
+                  "font-semibold text-sm hover:underline",
+                  message.author.isDeactivated && "text-muted-foreground"
+                )}
               >
                 {authorDisplayName}
               </button>
+              {message.author.isDeactivated && (
+                <span className="text-xs text-muted-foreground">(Deactivated)</span>
+              )}
               <span className="text-xs text-muted-foreground">
                 {formatTime(message.createdAt)}
               </span>
@@ -338,7 +344,7 @@ export function MessageItem({
 
           {/* Reactions */}
           {!isEditing && groupedReactions.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1">
+            <div className="flex flex-wrap gap-1.5 mt-2">
               {groupedReactions.map(({ emoji, count, users, hasReacted }) => (
                 <TooltipProvider key={emoji}>
                   <Tooltip>
@@ -346,13 +352,13 @@ export function MessageItem({
                       <button
                         onClick={() => onReact?.(message.id, emoji)}
                         className={cn(
-                          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs transition-colors",
+                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium transition-all border",
                           hasReacted
-                            ? "bg-primary/20 text-primary hover:bg-primary/30"
-                            : "bg-muted hover:bg-muted/80",
+                            ? "bg-primary/10 border-primary/60 text-primary hover:bg-primary/20 shadow-sm"
+                            : "bg-muted/60 border-border hover:bg-muted hover:border-muted-foreground/30",
                         )}
                       >
-                        <span>{emoji}</span>
+                        <span className="text-base leading-none">{emoji}</span>
                         <span>{count}</span>
                       </button>
                     </TooltipTrigger>

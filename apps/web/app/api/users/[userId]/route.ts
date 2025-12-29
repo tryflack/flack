@@ -41,7 +41,7 @@ export async function GET(
     );
   }
 
-  // Verify the target user is also a member of the organization
+  // Check if the target user is a member of the organization
   const targetMembership = await db.member.findFirst({
     where: {
       userId,
@@ -64,16 +64,59 @@ export async function GET(
     },
   });
 
-  if (!targetMembership) {
+  if (targetMembership) {
+    return NextResponse.json({
+      user: {
+        ...targetMembership.user,
+        role: targetMembership.role,
+        memberSince: targetMembership.createdAt,
+        isDeactivated: false,
+      },
+      isOwnProfile: session.user.id === userId,
+    });
+  }
+
+  // User is not a member - check if they have messages in this organization
+  // (they may be a deactivated former member)
+  const hasMessagesInOrg = await db.message.findFirst({
+    where: {
+      organizationId,
+      authorId: userId,
+    },
+    select: { id: true },
+  });
+
+  if (!hasMessagesInOrg) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
+  // Get the user data for the deactivated member
+  const deactivatedUser = await db.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      displayName: true,
+      firstName: true,
+      lastName: true,
+      bio: true,
+      createdAt: true,
+    },
+  });
+
+  if (!deactivatedUser) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   return NextResponse.json({
     user: {
-      ...targetMembership.user,
-      role: targetMembership.role,
-      memberSince: targetMembership.createdAt,
+      ...deactivatedUser,
+      role: null,
+      memberSince: null,
+      isDeactivated: true,
     },
-    isOwnProfile: session.user.id === userId,
+    isOwnProfile: false, // Deactivated users cannot be the current user viewing
   });
 }

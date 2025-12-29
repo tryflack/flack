@@ -67,6 +67,21 @@ export async function GET(req: NextRequest) {
     orderBy: { updatedAt: "desc" },
   });
 
+  // Get all participant user IDs to check membership status
+  const allParticipantUserIds = [
+    ...new Set(conversations.flatMap((conv) => conv.participants.map((p) => p.userId))),
+  ];
+
+  // Check which participants are still active members
+  const activeMembers = await db.member.findMany({
+    where: {
+      organizationId,
+      userId: { in: allParticipantUserIds },
+    },
+    select: { userId: true },
+  });
+  const activeMemberIds = new Set(activeMembers.map((m) => m.userId));
+
   // Transform conversations for the client with unread counts
   const transformedConversations = await Promise.all(
     conversations.map(async (conv) => {
@@ -116,7 +131,10 @@ export async function GET(req: NextRequest) {
         participants: conv.participants.map((p) => ({
           id: p.id,
           userId: p.userId,
-          user: p.user,
+          user: {
+            ...p.user,
+            isDeactivated: !activeMemberIds.has(p.userId),
+          },
           joinedAt: p.joinedAt,
           lastReadAt: p.lastReadAt,
         })),

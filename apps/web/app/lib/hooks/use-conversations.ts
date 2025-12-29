@@ -8,6 +8,7 @@ export interface ConversationParticipant {
     id: string;
     name: string;
     image: string | null;
+    isDeactivated?: boolean;
   };
   joinedAt: string;
   lastReadAt: string | null;

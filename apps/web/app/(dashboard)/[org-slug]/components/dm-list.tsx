@@ -25,6 +25,12 @@ export function DmList() {
     return otherParticipant?.user.name || "Unknown";
   };
 
+  // Check if the other participant in a DM is deactivated
+  const isDeactivated = (conversation: (typeof conversations)[0]) => {
+    if (conversation.type !== "dm") return false;
+    return conversation.participants[0]?.user.isDeactivated ?? false;
+  };
+
   const getAvatarUrl = (conversation: (typeof conversations)[0]) => {
     if (conversation.type === "dm") {
       return conversation.participants[0]?.user.image;
@@ -66,6 +72,7 @@ export function DmList() {
             const avatarUrl = getAvatarUrl(conversation);
             const hasUnread = conversation.unreadCount > 0;
             const isActive = activeDm === conversation.id;
+            const deactivated = isDeactivated(conversation);
 
             return (
               <button
@@ -78,7 +85,7 @@ export function DmList() {
                 )}
               >
                 {conversation.type === "dm" ? (
-                  <Avatar className="h-5 w-5">
+                  <Avatar className={cn("h-5 w-5", deactivated && "opacity-50")}>
                     <AvatarImage src={avatarUrl || undefined} />
                     <AvatarFallback className="text-[10px]">
                       {getInitials(displayName)}
@@ -94,7 +101,13 @@ export function DmList() {
                     )}
                   />
                 )}
-                <span className="flex-1 truncate text-left">{displayName}</span>
+                <span className={cn(
+                  "flex-1 truncate text-left",
+                  deactivated && "text-muted-foreground"
+                )}>
+                  {displayName}
+                  {deactivated && " (Deactivated)"}
+                </span>
                 {hasUnread && !isActive && (
                   <Badge
                     variant="default"
