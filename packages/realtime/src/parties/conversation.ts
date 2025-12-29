@@ -21,14 +21,14 @@ export default class ConversationParty implements PartyKitServer {
 
   async onMessage(
     message: string | ArrayBuffer | ArrayBufferView,
-    sender: Connection
+    sender: Connection,
   ) {
     if (typeof message !== "string") {
       sender.send(
         JSON.stringify({
           type: "error",
           message: "Binary messages not supported",
-        })
+        }),
       );
       return;
     }
@@ -39,7 +39,7 @@ export default class ConversationParty implements PartyKitServer {
       parsed = JSON.parse(message);
     } catch {
       sender.send(
-        JSON.stringify({ type: "error", message: "Invalid message format" })
+        JSON.stringify({ type: "error", message: "Invalid message format" }),
       );
       return;
     }
@@ -54,11 +54,11 @@ export default class ConversationParty implements PartyKitServer {
         if (state) {
           this.connections.set(sender.id, state);
           sender.send(
-            JSON.stringify({ type: "connected", userId: state.userId })
+            JSON.stringify({ type: "connected", userId: state.userId }),
           );
         } else {
           sender.send(
-            JSON.stringify({ type: "error", message: "Invalid token" })
+            JSON.stringify({ type: "error", message: "Invalid token" }),
           );
         }
         break;
@@ -67,7 +67,7 @@ export default class ConversationParty implements PartyKitServer {
       case "typing": {
         if (!connectionState?.authenticated) {
           sender.send(
-            JSON.stringify({ type: "error", message: "Not authenticated" })
+            JSON.stringify({ type: "error", message: "Not authenticated" }),
           );
           return;
         }
@@ -83,7 +83,7 @@ export default class ConversationParty implements PartyKitServer {
               connectionState.userId,
               connectionState.userName,
               false,
-              sender.id
+              sender.id,
             );
             this.typingUsers.delete(connectionState.userId);
           }, 5000);
@@ -97,7 +97,7 @@ export default class ConversationParty implements PartyKitServer {
           connectionState.userId,
           connectionState.userName,
           parsed.isTyping,
-          sender.id
+          sender.id,
         );
         break;
       }
@@ -125,7 +125,7 @@ export default class ConversationParty implements PartyKitServer {
   }
 
   async onRequest(
-    req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0]
+    req: Parameters<NonNullable<PartyKitServer["onRequest"]>>[0],
   ): Promise<Response> {
     if (req.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
@@ -140,7 +140,7 @@ export default class ConversationParty implements PartyKitServer {
             JSON.stringify({
               type: "message:new",
               message: (body as { message: ChatMessage }).message,
-            } satisfies ServerMessage)
+            } satisfies ServerMessage),
           );
           break;
 
@@ -151,7 +151,7 @@ export default class ConversationParty implements PartyKitServer {
               messageId: (body as { messageId: string }).messageId,
               content: (body as { content: string }).content,
               updatedAt: (body as { updatedAt: string }).updatedAt,
-            } satisfies ServerMessage)
+            } satisfies ServerMessage),
           );
           break;
 
@@ -160,7 +160,7 @@ export default class ConversationParty implements PartyKitServer {
             JSON.stringify({
               type: "message:delete",
               messageId: (body as { messageId: string }).messageId,
-            } satisfies ServerMessage)
+            } satisfies ServerMessage),
           );
           break;
 
@@ -170,7 +170,7 @@ export default class ConversationParty implements PartyKitServer {
               type: "reaction:add",
               messageId: (body as { messageId: string }).messageId,
               reaction: (body as { reaction: Reaction }).reaction,
-            } satisfies ServerMessage)
+            } satisfies ServerMessage),
           );
           break;
 
@@ -180,7 +180,7 @@ export default class ConversationParty implements PartyKitServer {
               type: "reaction:remove",
               messageId: (body as { messageId: string }).messageId,
               reactionId: (body as { reactionId: string }).reactionId,
-            } satisfies ServerMessage)
+            } satisfies ServerMessage),
           );
           break;
 
@@ -210,7 +210,7 @@ export default class ConversationParty implements PartyKitServer {
     userId: string,
     userName: string,
     isTyping: boolean,
-    excludeConnectionId: string
+    excludeConnectionId: string,
   ) {
     const message: ServerMessage = {
       type: "typing",
