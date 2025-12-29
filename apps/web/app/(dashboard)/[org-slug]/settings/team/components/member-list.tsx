@@ -264,5 +264,3 @@ export function MemberList({
     </>
   );
 }
-
-

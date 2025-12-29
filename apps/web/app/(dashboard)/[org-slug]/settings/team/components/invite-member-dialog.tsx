@@ -190,5 +190,3 @@ export function InviteMemberDialog({
     </Dialog>
   );
 }
-
-
