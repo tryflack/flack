@@ -72,7 +72,12 @@ export default class ConversationParty implements PartyKitServer {
           return;
         }
 
-        const existingTimeout = this.typingUsers.get(connectionState.userId);
+        // Create a unique key for this user+thread combination
+        const typingKey = parsed.threadId
+          ? `${connectionState.userId}:${parsed.threadId}`
+          : connectionState.userId;
+
+        const existingTimeout = this.typingUsers.get(typingKey);
         if (existingTimeout) {
           clearTimeout(existingTimeout);
         }
@@ -84,13 +89,14 @@ export default class ConversationParty implements PartyKitServer {
               connectionState.userName,
               false,
               sender.id,
+              parsed.threadId,
             );
-            this.typingUsers.delete(connectionState.userId);
+            this.typingUsers.delete(typingKey);
           }, 5000);
 
-          this.typingUsers.set(connectionState.userId, timeout);
+          this.typingUsers.set(typingKey, timeout);
         } else {
-          this.typingUsers.delete(connectionState.userId);
+          this.typingUsers.delete(typingKey);
         }
 
         this.broadcastTyping(
@@ -98,6 +104,7 @@ export default class ConversationParty implements PartyKitServer {
           connectionState.userName,
           parsed.isTyping,
           sender.id,
+          parsed.threadId,
         );
         break;
       }
@@ -211,12 +218,14 @@ export default class ConversationParty implements PartyKitServer {
     userName: string,
     isTyping: boolean,
     excludeConnectionId: string,
+    threadId?: string | null,
   ) {
     const message: ServerMessage = {
       type: "typing",
       userId,
       userName,
       isTyping,
+      threadId,
     };
 
     this.broadcast(JSON.stringify(message), excludeConnectionId);

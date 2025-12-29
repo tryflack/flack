@@ -290,9 +290,9 @@ function DirectMessagesSection() {
                       >
                         {conversation.type === "dm" ? (
                           <AvatarWithPresence status={userStatus} size="sm">
-                            <Avatar className="h-5 w-5">
+                            <Avatar size="xs">
                               <AvatarImage src={avatarUrl || undefined} />
-                              <AvatarFallback className="text-[10px]">
+                              <AvatarFallback size="xs">
                                 {getInitials(displayName)}
                               </AvatarFallback>
                             </Avatar>
@@ -344,8 +344,8 @@ function OrgLogo({ organization }: { organization: Organization }) {
 
   // Fallback: show initials avatar
   return (
-    <Avatar className="h-8 w-8 rounded-lg">
-      <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-sm font-medium">
+    <Avatar size="md" shape="rounded">
+      <AvatarFallback size="md" shape="rounded" className="bg-primary text-primary-foreground font-medium">
         {getInitials(organization.name)}
       </AvatarFallback>
     </Avatar>

@@ -96,7 +96,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader>
             <DialogTitle>Start a conversation</DialogTitle>
             <DialogDescription>
@@ -122,10 +122,10 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
               autoFocus
             />
 
-            <ScrollArea className="h-[280px] rounded-md border">
+            <ScrollArea className="h-[280px] rounded-md border border-border">
               {membersLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <Spinner className="h-5 w-5" />
+                  <Spinner size="md" />
                 </div>
               ) : filteredMembers.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -149,7 +149,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
                           "opacity-50",
                       )}
                     >
-                      <Avatar className="h-9 w-9">
+                      <Avatar size="lg">
                         <AvatarImage src={member.user.image ?? undefined} />
                         <AvatarFallback>
                           {getInitials(member.user.name)}
@@ -164,7 +164,7 @@ export function StartDmDialog({ open, onOpenChange }: StartDmDialogProps) {
                         </span>
                       </div>
                       {isStarting && selectedUserId === member.userId && (
-                        <Spinner className="h-4 w-4" />
+                        <Spinner size="sm" />
                       )}
                     </button>
                   ))}

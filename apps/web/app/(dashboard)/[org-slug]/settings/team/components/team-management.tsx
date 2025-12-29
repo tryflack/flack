@@ -71,14 +71,6 @@ export function TeamManagement({
   return (
     <div className="flex flex-1 flex-col gap-6 overflow-auto p-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Team Members
-          </h1>
-          <p className="text-muted-foreground">
-            Manage members of {organizationName}
-          </p>
-        </div>
         {canManageMembers && (
           <InviteMemberDialog
             currentUserRole={currentUserRole}

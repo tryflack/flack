@@ -256,7 +256,7 @@ export function ChannelSettingsDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent size="md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Settings className="h-5 w-5" />
@@ -309,7 +309,7 @@ export function ChannelSettingsDialog({
                           id={field.name}
                           placeholder="What's this channel about?"
                           disabled={!canEdit || isSubmitting}
-                          className="resize-none"
+                          resize="none"
                           rows={3}
                         />
                         <FieldDescription>
@@ -353,7 +353,7 @@ export function ChannelSettingsDialog({
                       >
                         {isSubmitting ? (
                           <span className="flex items-center gap-2">
-                            <Spinner className="h-4 w-4" /> Saving...
+                            <Spinner size="sm" /> Saving...
                           </span>
                         ) : (
                           "Save changes"
@@ -399,7 +399,7 @@ export function ChannelSettingsDialog({
             <TabsContent value="members" className="pt-4">
               {isLoadingDetails ? (
                 <div className="flex items-center justify-center py-8">
-                  <Spinner className="h-5 w-5" />
+                  <Spinner size="md" />
                 </div>
               ) : showInvitePanel ? (
                 <div className="space-y-4">
@@ -431,7 +431,7 @@ export function ChannelSettingsDialog({
                   <ScrollArea className="h-[200px]">
                     {isLoadingMembers ? (
                       <div className="flex items-center justify-center py-8">
-                        <Spinner className="h-5 w-5" />
+                        <Spinner size="md" />
                       </div>
                     ) : availableMembers.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -453,7 +453,7 @@ export function ChannelSettingsDialog({
                               isInviting === m.userId && "opacity-50",
                             )}
                           >
-                            <Avatar className="h-8 w-8">
+                            <Avatar size="md">
                               <AvatarImage src={m.user.image ?? undefined} />
                               <AvatarFallback>
                                 {getInitials(m.user.name)}
@@ -468,7 +468,7 @@ export function ChannelSettingsDialog({
                               </span>
                             </div>
                             {isInviting === m.userId ? (
-                              <Spinner className="h-4 w-4" />
+                              <Spinner size="sm" />
                             ) : (
                               <UserPlus className="h-4 w-4 text-muted-foreground" />
                             )}
@@ -514,7 +514,7 @@ export function ChannelSettingsDialog({
                             className="group flex items-center justify-between rounded-md p-2 hover:bg-muted"
                           >
                             <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
+                              <Avatar size="md">
                                 <AvatarImage src={m.user.image ?? undefined} />
                                 <AvatarFallback>
                                   {getInitials(m.user.name)}
@@ -589,7 +589,7 @@ export function ChannelSettingsDialog({
             >
               {isDeleting ? (
                 <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" /> Deleting...
+                  <Spinner size="sm" /> Deleting...
                 </span>
               ) : (
                 "Delete channel"
@@ -614,7 +614,7 @@ export function ChannelSettingsDialog({
             <AlertDialogAction onClick={handleLeave} disabled={isLeaving}>
               {isLeaving ? (
                 <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" /> Leaving...
+                  <Spinner size="sm" /> Leaving...
                 </span>
               ) : (
                 "Leave channel"
@@ -648,7 +648,7 @@ export function ChannelSettingsDialog({
             >
               {isRemoving ? (
                 <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" /> Removing...
+                  <Spinner size="sm" /> Removing...
                 </span>
               ) : (
                 "Remove member"

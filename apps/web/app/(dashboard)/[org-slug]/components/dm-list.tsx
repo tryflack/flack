@@ -86,10 +86,11 @@ export function DmList() {
               >
                 {conversation.type === "dm" ? (
                   <Avatar
-                    className={cn("h-5 w-5", deactivated && "opacity-50")}
+                    size="xs"
+                    className={cn(deactivated && "opacity-50")}
                   >
                     <AvatarImage src={avatarUrl || undefined} />
-                    <AvatarFallback className="text-[10px]">
+                    <AvatarFallback size="xs">
                       {getInitials(displayName)}
                     </AvatarFallback>
                   </Avatar>

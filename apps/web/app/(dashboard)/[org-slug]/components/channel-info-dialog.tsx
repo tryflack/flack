@@ -103,7 +103,7 @@ export function ChannelInfoDialog({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent>
           <DialogHeader className="pb-2">
             <DialogTitle className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted">
@@ -126,7 +126,7 @@ export function ChannelInfoDialog({
 
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Spinner className="h-5 w-5" />
+              <Spinner size="md" />
             </div>
           ) : (
             <div className="space-y-4">
@@ -170,7 +170,7 @@ export function ChannelInfoDialog({
                           className="flex items-center gap-3 rounded-md p-2 hover:bg-muted"
                         >
                           <AvatarWithPresence size="sm">
-                            <Avatar className="h-7 w-7">
+                            <Avatar size="sm">
                               <AvatarImage src={m.user.image ?? undefined} />
                               <AvatarFallback>
                                 {getInitials(m.user.name)}
@@ -250,7 +250,7 @@ export function ChannelInfoDialog({
             <AlertDialogAction onClick={handleLeave} disabled={isLeaving}>
               {isLeaving ? (
                 <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" /> Leaving...
+                  <Spinner size="sm" /> Leaving...
                 </span>
               ) : (
                 "Leave channel"

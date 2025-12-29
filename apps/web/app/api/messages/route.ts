@@ -74,14 +74,21 @@ export async function GET(req: NextRequest) {
   }
 
   // Build query conditions
+  // For thread queries, include both the parent message AND its replies
   const where = {
     organizationId,
     deletedAt: null,
     ...(channelId && !parentId ? { channelId, parentId: null } : {}),
     ...(conversationId && !parentId ? { conversationId, parentId: null } : {}),
-    ...(parentId ? { parentId } : {}),
+    ...(parentId
+      ? { OR: [{ id: parentId }, { parentId }] } // Include parent + replies
+      : {}),
     ...(cursor ? { createdAt: { lt: new Date(cursor) } } : {}),
   };
+
+  // For thread replies, order ascending (oldest first) for natural reading order
+  // For main messages, order descending (newest first) for flex-col-reverse display
+  const isThreadQuery = !!parentId;
 
   const messages = await db.message.findMany({
     where,
@@ -124,7 +131,7 @@ export async function GET(req: NextRequest) {
         select: { replies: true },
       },
     },
-    orderBy: { createdAt: "desc" },
+    orderBy: { createdAt: isThreadQuery ? "asc" : "desc" },
     take: limit + 1, // Fetch one extra to determine if there are more
   });
 

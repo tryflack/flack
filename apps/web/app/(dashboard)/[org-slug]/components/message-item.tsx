@@ -52,10 +52,10 @@ interface MessageItemProps {
   currentUserId?: string;
   onEdit?: (
     messageId: string,
-    content: string,
+    content: string
   ) => Promise<{ serverError?: string } | undefined>;
   onDelete?: (
-    messageId: string,
+    messageId: string
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
   onAuthorClick?: (userId: string) => void;
@@ -87,7 +87,7 @@ export function MessageItem({
       textareaRef.current.focus();
       textareaRef.current.setSelectionRange(
         textareaRef.current.value.length,
-        textareaRef.current.value.length,
+        textareaRef.current.value.length
       );
     }
   }, [isEditing]);
@@ -145,7 +145,7 @@ export function MessageItem({
       count: number;
       users: string[];
       hasReacted: boolean;
-    }[],
+    }[]
   );
 
   const handleStartEdit = () => {
@@ -231,7 +231,7 @@ export function MessageItem({
       <div
         className={cn(
           "group relative flex gap-3 px-1 py-1",
-          showAvatar ? "items-start" : "items-center",
+          showAvatar ? "items-start" : "items-center"
         )}
       >
         {showAvatar ? <div className="w-9" /> : <div className="w-9" />}
@@ -248,7 +248,7 @@ export function MessageItem({
         className={cn(
           "group relative flex gap-3 rounded-md px-1 py-1 transition-colors hover:bg-muted/50",
           showAvatar ? "items-start" : "items-center",
-          isEditing && "bg-muted/50",
+          isEditing && "bg-muted/50"
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -260,7 +260,7 @@ export function MessageItem({
             onClick={() => onAuthorClick?.(message.authorId)}
             className="shrink-0 rounded-full transition-opacity hover:opacity-80"
           >
-            <Avatar className="h-9 w-9">
+            <Avatar size="lg">
               <AvatarImage src={message.author.image || undefined} />
               <AvatarFallback>{getInitials(authorDisplayName)}</AvatarFallback>
             </Avatar>
@@ -282,7 +282,7 @@ export function MessageItem({
                 onClick={() => onAuthorClick?.(message.authorId)}
                 className={cn(
                   "font-semibold text-sm hover:underline",
-                  message.author.isDeactivated && "text-muted-foreground",
+                  message.author.isDeactivated && "text-muted-foreground"
                 )}
               >
                 {authorDisplayName}
@@ -308,7 +308,7 @@ export function MessageItem({
                 value={editContent}
                 onChange={(e) => setEditContent(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="min-h-[60px] resize-none"
+                preset="compact"
                 disabled={isSubmitting}
               />
               <div className="flex items-center gap-2">
@@ -318,7 +318,7 @@ export function MessageItem({
                   disabled={isSubmitting || !editContent.trim()}
                 >
                   {isSubmitting ? (
-                    <Spinner className="h-4 w-4" />
+                    <Spinner size="sm" />
                   ) : (
                     <Check className="mr-1 h-4 w-4" />
                   )}
@@ -354,10 +354,10 @@ export function MessageItem({
                       <button
                         onClick={() => onReact?.(message.id, emoji)}
                         className={cn(
-                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium transition-all border",
+                          "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium transition-all border border-border hover:border-border shadow-sm",
                           hasReacted
-                            ? "bg-primary/10 border-primary/60 text-primary hover:bg-primary/20 shadow-sm"
-                            : "bg-muted/60 border-border hover:bg-muted hover:border-muted-foreground/30",
+                            ? "bg-primary/10 border-border text-primary hover:bg-primary/20"
+                            : "bg-muted/60 border-border hover:bg-muted"
                         )}
                       >
                         <span className="text-base leading-none">{emoji}</span>
@@ -388,7 +388,7 @@ export function MessageItem({
 
         {/* Hover actions */}
         {isHovered && !isEditing && (
-          <div className="absolute -top-3 right-2 flex items-center gap-0.5 rounded-md border bg-background p-0.5 shadow-sm">
+          <div className="absolute -top-3 right-2 flex items-center gap-0.5 rounded-md border border-border bg-background p-0.5 shadow-sm">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -462,7 +462,7 @@ export function MessageItem({
             >
               {isSubmitting ? (
                 <span className="flex items-center gap-2">
-                  <Spinner className="h-4 w-4" /> Deleting...
+                  <Spinner size="sm" /> Deleting...
                 </span>
               ) : (
                 "Delete"

@@ -37,7 +37,7 @@ export function MessageInput({
         onTyping(false);
       }, 3000);
     },
-    [onTyping],
+    [onTyping]
   );
 
   const handleSend = useCallback(() => {
@@ -68,7 +68,7 @@ export function MessageInput({
         handleSend();
       }
     },
-    [handleSend],
+    [handleSend]
   );
 
   // Auto-resize textarea
@@ -81,7 +81,7 @@ export function MessageInput({
   }, []);
 
   return (
-    <div className="shrink-0 border-t px-4 py-3">
+    <div className="shrink-0 border-t border-border px-4 py-3">
       <div className="flex items-center gap-2">
         <Textarea
           ref={textareaRef}
@@ -92,7 +92,8 @@ export function MessageInput({
           placeholder={placeholder}
           disabled={disabled}
           rows={1}
-          className="min-h-[40px] max-h-[200px] flex-1 resize-none py-2"
+          preset="chat"
+          className="flex-1 py-2"
         />
         <Button
           onClick={handleSend}

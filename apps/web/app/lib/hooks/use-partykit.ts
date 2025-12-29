@@ -17,6 +17,7 @@ const PARTYKIT_HOST = RAW_HOST.replace(/^https?:\/\//, "");
 interface UsePartyKitOptions {
   roomId: string;
   roomType: "channel" | "conversation" | "presence";
+  threadId?: string | null; // Optional thread ID to scope typing indicators
   onMessage?: (message: ChatMessage) => void;
   onMessageEdit?: (
     messageId: string,
@@ -33,6 +34,7 @@ interface UsePartyKitOptions {
 export function usePartyKit({
   roomId,
   roomType,
+  threadId,
   onMessage,
   onMessageEdit,
   onMessageDelete,
@@ -43,7 +45,8 @@ export function usePartyKit({
 }: UsePartyKitOptions) {
   const socketRef = useRef<PartySocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [typingUsers, setTypingUsers] = useState<Map<string, string>>(
+  // Map key is `${threadId}:${userId}` or `main:${userId}` for main chat
+  const [typingUsers, setTypingUsers] = useState<Map<string, { name: string; threadId?: string | null }>>(
     new Map(),
   );
 
@@ -133,15 +136,23 @@ export function usePartyKit({
             callbacks.onReactionRemove?.(message.messageId, message.reactionId);
             break;
 
-          case "typing":
+          case "typing": {
+            // Use a composite key to track typing per thread
+            const typingKey = message.threadId
+              ? `${message.threadId}:${message.userId}`
+              : `main:${message.userId}`;
+
             if (message.isTyping) {
               setTypingUsers((prev) =>
-                new Map(prev).set(message.userId, message.userName),
+                new Map(prev).set(typingKey, {
+                  name: message.userName,
+                  threadId: message.threadId,
+                }),
               );
             } else {
               setTypingUsers((prev) => {
                 const next = new Map(prev);
-                next.delete(message.userId);
+                next.delete(typingKey);
                 return next;
               });
             }
@@ -151,6 +162,7 @@ export function usePartyKit({
               message.isTyping,
             );
             break;
+          }
 
           case "presence":
             callbacks.onPresence?.(message.users);
@@ -175,12 +187,17 @@ export function usePartyKit({
     };
   }, [roomId, roomType]); // Only reconnect when room changes, not when callbacks change
 
-  // Send typing indicator
-  const sendTyping = useCallback((isTyping: boolean) => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify({ type: "typing", isTyping }));
-    }
-  }, []);
+  // Send typing indicator (scoped to thread if threadId is provided)
+  const sendTyping = useCallback(
+    (isTyping: boolean) => {
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
+        socketRef.current.send(
+          JSON.stringify({ type: "typing", isTyping, threadId }),
+        );
+      }
+    },
+    [threadId],
+  );
 
   // Mark message as read
   const sendRead = useCallback((messageId: string) => {
@@ -189,9 +206,21 @@ export function usePartyKit({
     }
   }, []);
 
+  // Filter typing users based on threadId
+  // If threadId is provided, only return users typing in that thread
+  // If threadId is null/undefined, only return users typing in main chat
+  const filteredTypingUsers = Array.from(typingUsers.entries())
+    .filter(([, data]) => {
+      if (threadId) {
+        return data.threadId === threadId;
+      }
+      return !data.threadId;
+    })
+    .map(([, data]) => data.name);
+
   return {
     isConnected,
-    typingUsers: Array.from(typingUsers.values()),
+    typingUsers: filteredTypingUsers,
     sendTyping,
     sendRead,
   };

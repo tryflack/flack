@@ -158,8 +158,8 @@ export function EmojiPicker({
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className={cn("h-7 w-7", className)}
+                size="icon-sm"
+                className={className}
                 disabled={disabled}
               >
                 <Smile className="h-4 w-4" />
@@ -171,7 +171,7 @@ export function EmojiPicker({
       </TooltipProvider>
       <PopoverContent className="w-[320px] p-0" align="end">
         {/* Category tabs */}
-        <div className="flex gap-1 border-b p-2">
+        <div className="flex gap-1 border-b border-border p-2">
           {Object.keys(EMOJI_CATEGORIES).map((category) => (
             <Button
               key={category}
@@ -231,8 +231,7 @@ export function QuickEmojiPicker({
             <PopoverTrigger asChild>
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-7 w-7"
+                size="icon-sm"
                 disabled={disabled}
               >
                 <Smile className="h-4 w-4" />

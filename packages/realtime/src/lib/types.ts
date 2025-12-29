@@ -15,7 +15,7 @@ export interface MessageAuthor {
 // Inbound messages (client -> server)
 export type ClientMessage =
   | { type: "auth"; token: string }
-  | { type: "typing"; isTyping: boolean }
+  | { type: "typing"; isTyping: boolean; threadId?: string | null }
   | { type: "read"; messageId: string };
 
 // Outbound messages (server -> client)
@@ -32,7 +32,7 @@ export type ServerMessage =
   | { type: "message:delete"; messageId: string }
   | { type: "reaction:add"; messageId: string; reaction: Reaction }
   | { type: "reaction:remove"; messageId: string; reactionId: string }
-  | { type: "typing"; userId: string; userName: string; isTyping: boolean }
+  | { type: "typing"; userId: string; userName: string; isTyping: boolean; threadId?: string | null }
   | { type: "presence"; users: PresenceUser[] }
   | { type: "unread"; channelId?: string; conversationId?: string }
   | { type: "user:updated"; userId: string; user: Partial<PresenceUser> };

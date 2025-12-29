@@ -61,7 +61,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       onOpenChange(newOpen);
     },
-    [clear, onOpenChange],
+    [clear, onOpenChange]
   );
 
   // Navigate to a channel
@@ -70,7 +70,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       navigateToChannel(slug);
       handleOpenChange(false);
     },
-    [navigateToChannel, handleOpenChange],
+    [navigateToChannel, handleOpenChange]
   );
 
   // Navigate to a message (in its channel/conversation)
@@ -87,7 +87,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       handleOpenChange(false);
     },
-    [navigateToChannel, navigateToDm, handleOpenChange],
+    [navigateToChannel, navigateToDm, handleOpenChange]
   );
 
   // Navigate to or start DM with a member
@@ -96,7 +96,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       // Check if we already have a DM with this user
       const existingDm = conversations.find(
         (c) =>
-          c.type === "dm" && c.participants.some((p) => p.userId === userId),
+          c.type === "dm" && c.participants.some((p) => p.userId === userId)
       );
 
       if (existingDm) {
@@ -110,7 +110,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       }
       handleOpenChange(false);
     },
-    [conversations, navigateToDm, startDm, handleOpenChange],
+    [conversations, navigateToDm, startDm, handleOpenChange]
   );
 
   // Truncate message content for display
@@ -235,7 +235,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                   </div>
                   <div className="flex items-center gap-2">
                     {channel.isMember && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge variant="secondary" size="sm">
                         Joined
                       </Badge>
                     )}
@@ -263,7 +263,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                   onSelect={() => handleSelectMember(member.userId)}
                   className="flex items-center gap-3 py-2.5"
                 >
-                  <Avatar className="h-8 w-8">
+                  <Avatar size="md">
                     <AvatarImage src={member.user.image ?? undefined} />
                     <AvatarFallback>
                       {getInitials(member.user.name)}
@@ -280,7 +280,8 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                       variant={
                         member.role === "owner" ? "default" : "secondary"
                       }
-                      className="text-xs capitalize"
+                      size="sm"
+                      className="capitalize"
                     >
                       {member.role}
                     </Badge>
@@ -303,7 +304,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                 onSelect={() => handleSelectMessage(message)}
                 className="flex items-start gap-3 py-2.5"
               >
-                <Avatar className="h-8 w-8 mt-0.5">
+                <Avatar size="md" className="mt-0.5">
                   <AvatarImage src={message.author.image ?? undefined} />
                   <AvatarFallback>
                     {getInitials(message.author.name)}
@@ -314,7 +315,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
                     <span
                       className={cn(
                         "font-medium text-sm",
-                        message.author.isDeactivated && "text-muted-foreground",
+                        message.author.isDeactivated && "text-muted-foreground"
                       )}
                     >
                       {message.author.name}
@@ -352,7 +353,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
       </CommandList>
 
       {/* Footer with keyboard hints */}
-      <div className="flex items-center justify-between border-t px-3 py-2 text-xs text-muted-foreground">
+      <div className="flex items-center justify-between border-t border-border px-3 py-2 text-xs text-muted-foreground">
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1">
             <Kbd>↑</Kbd>

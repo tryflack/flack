@@ -111,14 +111,14 @@ export function MessageArea({
     (chatMessage: ChatMessage) => {
       addMessage(chatMessageToMessage(chatMessage));
     },
-    [addMessage],
+    [addMessage]
   );
 
   const handleMessageEdit = useCallback(
     (messageId: string, content: string, updatedAt: string) => {
       updateMessage(messageId, { content, updatedAt, isEdited: true });
     },
-    [updateMessage],
+    [updateMessage]
   );
 
   const handleReactionAdd = useCallback(
@@ -133,7 +133,7 @@ export function MessageArea({
         });
       }
     },
-    [messages, updateMessage],
+    [messages, updateMessage]
   );
 
   const handleReactionRemove = useCallback(
@@ -145,7 +145,7 @@ export function MessageArea({
         });
       }
     },
-    [messages, updateMessage],
+    [messages, updateMessage]
   );
 
   const { isConnected, typingUsers, sendTyping } = usePartyKit({
@@ -192,7 +192,7 @@ export function MessageArea({
     // Check if user already reacted with this emoji
     const message = messages.find((m) => m.id === messageId);
     const existingReaction = message?.reactions.find(
-      (r) => r.emoji === emoji && r.userId === member?.userId,
+      (r) => r.emoji === emoji && r.userId === member?.userId
     );
 
     if (existingReaction) {
@@ -206,7 +206,7 @@ export function MessageArea({
     <>
       <div className="flex h-full flex-col">
         {/* Header */}
-        <header className="flex h-12 shrink-0 items-center gap-2 border-b px-4">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-4">
           {roomType === "channel" && channel ? (
             <button
               onClick={() => setShowChannelInfo(true)}
@@ -245,8 +245,7 @@ export function MessageArea({
                   <TooltipTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
+                      size="icon-sm"
                       onClick={() => setShowChannelSettings(true)}
                     >
                       <Settings className="h-4 w-4" />

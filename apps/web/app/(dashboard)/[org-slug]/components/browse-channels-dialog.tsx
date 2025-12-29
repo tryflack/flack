@@ -75,7 +75,7 @@ export function BrowseChannelsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent size="md">
         <DialogHeader>
           <DialogTitle>Browse channels</DialogTitle>
           <DialogDescription>
@@ -97,7 +97,7 @@ export function BrowseChannelsDialog({
           <ScrollArea className="h-[400px]">
             {isLoading ? (
               <div className="flex items-center justify-center py-8">
-                <Spinner className="h-5 w-5" />
+                <Spinner size="md" />
               </div>
             ) : filteredChannels.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
@@ -200,7 +200,7 @@ function ChannelRow({
           <div className="flex items-center gap-2">
             <span className="font-medium">{channel.name}</span>
             {channel.isPrivate && (
-              <Badge variant="secondary" className="text-[10px]">
+              <Badge variant="secondary" size="sm">
                 Private
               </Badge>
             )}
@@ -223,7 +223,7 @@ function ChannelRow({
         disabled={isLoading}
         className="shrink-0"
       >
-        {isLoading ? <Spinner className="h-4 w-4" /> : actionLabel}
+        {isLoading ? <Spinner size="sm" /> : actionLabel}
       </Button>
     </div>
   );

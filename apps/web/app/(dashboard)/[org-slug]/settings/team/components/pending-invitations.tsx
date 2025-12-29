@@ -89,7 +89,7 @@ export function PendingInvitations({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="divide-y divide-border rounded-lg border">
+        <div className="divide-y divide-border rounded-lg border border-border">
           {invitations.map((invitation) => {
             const expired = isExpired(invitation.expiresAt);
             const RoleIcon = invitation.role === "admin" ? Shield : User;
@@ -138,7 +138,7 @@ export function PendingInvitations({
                     }
                   >
                     {resendingId === invitation.id ? (
-                      <Spinner className="h-4 w-4" />
+                      <Spinner size="sm" />
                     ) : (
                       <>
                         <RefreshCw className="mr-1 h-3 w-3" />
@@ -157,7 +157,7 @@ export function PendingInvitations({
                     className="text-muted-foreground hover:text-destructive"
                   >
                     {cancellingId === invitation.id ? (
-                      <Spinner className="h-4 w-4" />
+                      <Spinner size="sm" />
                     ) : (
                       <>
                         <X className="mr-1 h-3 w-3" />

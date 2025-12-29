@@ -220,14 +220,14 @@ export function UserProfileSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto p-6">
+      <SheetContent size="md" className="overflow-y-auto p-6">
         <SheetHeader className="sr-only">
           <SheetTitle>User Profile</SheetTitle>
         </SheetHeader>
 
         {isLoading ? (
           <div className="flex items-center justify-center py-24">
-            <Spinner className="h-6 w-6" />
+            <Spinner size="lg" />
           </div>
         ) : user ? (
           <div className="space-y-6">
@@ -240,16 +240,16 @@ export function UserProfileSheet({
                   disabled={!isOwnProfile || isUploading}
                   className="group relative"
                 >
-                  <Avatar className="h-24 w-24 ring-4 ring-background">
+                  <Avatar size="2xl" className="ring-4 ring-background">
                     <AvatarImage src={user.image ?? undefined} />
-                    <AvatarFallback className="text-2xl">
+                    <AvatarFallback size="2xl">
                       {getInitials(user.name)}
                     </AvatarFallback>
                   </Avatar>
                   {isOwnProfile && (
                     <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                       {isUploading ? (
-                        <Spinner className="h-6 w-6 text-white" />
+                        <Spinner size="lg" className="text-white" />
                       ) : (
                         <Camera className="h-6 w-6 text-white" />
                       )}
@@ -281,7 +281,8 @@ export function UserProfileSheet({
                   {user.isDeactivated ? (
                     <Badge
                       variant="outline"
-                      className="text-xs text-muted-foreground"
+                      size="sm"
+                      className="text-muted-foreground"
                     >
                       Deactivated
                     </Badge>
@@ -291,7 +292,7 @@ export function UserProfileSheet({
                         {presenceStatus}
                       </span>
                       {user.role && (
-                        <Badge variant="secondary" className="text-xs">
+                        <Badge variant="secondary" size="sm">
                           {user.role}
                         </Badge>
                       )}
@@ -400,7 +401,7 @@ export function UserProfileSheet({
                           placeholder="Tell others a bit about yourself"
                           maxLength={500}
                           rows={4}
-                          className="resize-none"
+                          resize="none"
                           aria-invalid={fieldState.invalid}
                         />
                         {fieldState.invalid ? (
@@ -421,7 +422,7 @@ export function UserProfileSheet({
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? (
-                        <Spinner className="mr-2 h-4 w-4" />
+                        <Spinner size="sm" className="mr-2" />
                       ) : (
                         <Check className="mr-2 h-4 w-4" />
                       )}

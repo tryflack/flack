@@ -13,7 +13,7 @@ interface ChatSidebarProps {
 
 export function ChatSidebar({ onSearchClick }: ChatSidebarProps) {
   return (
-    <aside className="flex w-60 flex-col border-r bg-muted/30">
+    <aside className="flex w-60 flex-col border-r border-border bg-muted/30">
       {/* Search Button */}
       <div className="p-3 pb-0">
         <Button

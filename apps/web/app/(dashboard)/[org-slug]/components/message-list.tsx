@@ -13,10 +13,10 @@ interface MessageListProps {
   currentUserId?: string;
   onEditMessage?: (
     messageId: string,
-    content: string,
+    content: string
   ) => Promise<{ serverError?: string } | undefined>;
   onDeleteMessage?: (
-    messageId: string,
+    messageId: string
   ) => Promise<{ serverError?: string } | undefined>;
   onReact?: (messageId: string, emoji: string) => Promise<void>;
   onAuthorClick?: (userId: string) => void;
@@ -47,7 +47,7 @@ export function MessageList({
           onLoadMore();
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     observer.observe(sentinel);
@@ -84,7 +84,7 @@ export function MessageList({
               prevMessage.authorId !== message.authorId ||
               isMoreThan5MinutesApart(
                 prevMessage.createdAt,
-                message.createdAt,
+                message.createdAt
               ) ||
               message.type === "system" ||
               prevMessage.type === "system";
@@ -104,11 +104,11 @@ export function MessageList({
           })}
           {/* Date separator */}
           <div className="relative my-4 flex items-center">
-            <div className="flex-1 border-t" />
+            <div className="flex-1 border-t border-border" />
             <span className="mx-4 text-xs font-medium text-muted-foreground">
               {formatDateHeader(date)}
             </span>
-            <div className="flex-1 border-t" />
+            <div className="flex-1 border-t border-border" />
           </div>
         </div>
       ))}

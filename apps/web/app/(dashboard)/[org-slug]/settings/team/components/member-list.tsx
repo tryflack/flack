@@ -37,7 +37,7 @@ interface MemberListProps {
   onRemove: (memberIdOrEmail: string) => Promise<unknown>;
   onUpdateRole: (
     memberId: string,
-    role: "member" | "admin" | "owner",
+    role: "member" | "admin" | "owner"
   ) => Promise<unknown>;
 }
 
@@ -91,7 +91,7 @@ export function MemberList({
         toast.error(result.serverError as string);
       } else {
         toast.success(
-          `${member.user.name} has been removed from the organization`,
+          `${member.user.name} has been removed from the organization`
         );
       }
     } catch {
@@ -104,7 +104,7 @@ export function MemberList({
 
   const handleUpdateRole = async (
     member: Member,
-    newRole: "member" | "admin" | "owner",
+    newRole: "member" | "admin" | "owner"
   ) => {
     if (member.role === newRole) return;
 
@@ -115,7 +115,7 @@ export function MemberList({
         toast.error(result.serverError as string);
       } else {
         toast.success(
-          `${member.user.name}'s role has been updated to ${newRole}`,
+          `${member.user.name}'s role has been updated to ${newRole}`
         );
       }
     } catch {
@@ -127,7 +127,7 @@ export function MemberList({
 
   return (
     <>
-      <div className="divide-y divide-border rounded-lg border">
+      <div className="divide-y divide-border rounded-lg">
         {members.map((member) => {
           const role =
             roleConfig[member.role as keyof typeof roleConfig] ??
@@ -145,7 +145,7 @@ export function MemberList({
               className="flex items-center justify-between p-4"
             >
               <div className="flex items-center gap-3">
-                <Avatar className="h-10 w-10">
+                <Avatar size="xl">
                   <AvatarImage src={member.user.image || undefined} />
                   <AvatarFallback>
                     {getInitials(member.user.name)}
@@ -185,7 +185,7 @@ export function MemberList({
                       >
                         {removingId === member.id ||
                         updatingRoleId === member.id ? (
-                          <Spinner className="h-4 w-4" />
+                          <Spinner size="sm" />
                         ) : (
                           <MoreHorizontal className="h-4 w-4" />
                         )}

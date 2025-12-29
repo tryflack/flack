@@ -22,7 +22,7 @@ export default function WelcomePage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Spinner className="h-6 w-6" />
+        <Spinner size="lg" />
       </div>
     );
   }
