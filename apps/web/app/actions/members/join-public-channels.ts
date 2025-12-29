@@ -54,10 +54,10 @@ export const joinPublicChannels = authActionClient
     });
 
     const existingChannelIds = new Set(
-      existingMemberships.map((m) => m.channelId)
+      existingMemberships.map((m) => m.channelId),
     );
     const channelsToJoin = publicChannels.filter(
-      (c) => !existingChannelIds.has(c.id)
+      (c) => !existingChannelIds.has(c.id),
     );
 
     if (channelsToJoin.length === 0) {
@@ -73,8 +73,8 @@ export const joinPublicChannels = authActionClient
             userId,
             role: "member",
           },
-        })
-      )
+        }),
+      ),
     );
 
     return {
